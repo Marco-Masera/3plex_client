@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { TriplexServiceService } from '../services/triplex-service.service';
 import { JobToSubmit } from '../model/jobToSubmit';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-send-job',
@@ -12,7 +13,7 @@ export class SendJobComponent {
   formGroup: FormGroup;
   ssRNAFile: File | undefined;
   dsDNAFile: File | undefined;
-  constructor(private triplexService: TriplexServiceService) {
+  constructor(private triplexService: TriplexServiceService, private _router: Router) {
     this.formGroup = new FormGroup({
       ssRNA: new FormControl(null, [Validators.required]),
       dsDNA: new FormControl(null, [Validators.required]),
@@ -41,11 +42,17 @@ export class SendJobComponent {
     }
   }
 
+  onSuccess(response: any){
+    this._router.navigate(['checkjob/token/', response.payload.token.token]);
+  }
+
+  onFailure(response: any){
+    window.alert("Cannot submit job: " + response.error);
+  }
+
   submitForm() {
     if (this.formGroup.valid && this.ssRNAFile && this.dsDNAFile) {
       console.log("Submit job...")
-      console.log(this.ssRNAFile)
-      console.log(this.formGroup.value);
       let job: JobToSubmit = {
         SSRNA_FASTA: this.ssRNAFile,
         DSDNA_FASTA: this.dsDNAFile,
@@ -60,8 +67,12 @@ export class SendJobComponent {
         SSTRAND: this.formGroup.value.SSTRAND || undefined
       }
       this.triplexService.submitJob(job).then(response => {
-        console.log(response)
-      }).catch(error => { console.log(error) });
+        if (response["success"]){
+          this.onSuccess(response);
+        } else {
+          this.onFailure(response);
+        }
+      }).catch(error => { this.onFailure(error); });
     }
   }
 

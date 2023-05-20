@@ -3,13 +3,15 @@ import { RouterModule, Routes } from '@angular/router';
 import { NavbarComponent } from './navbar/navbar.component';
 import { SendJobComponent } from './send-job/send-job.component';
 import { HomePageComponent } from './home-page/home-page.component';
+import { CheckjobComponent } from './checkjob/checkjob.component';
+import { CheckByEmailComponent } from './check-by-email/check-by-email.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full' },
   { path: 'home', component: HomePageComponent },
   { path: 'submit', component: SendJobComponent },
-  { path: 'checkjob/token/:token', component: SendJobComponent },
-  { path: 'checkjobs/email/:email', component: NavbarComponent }
+  { path: 'checkjob/token/:token', component: CheckjobComponent },
+  { path: 'checkjobs/email/:email', component: CheckByEmailComponent }
 ];
 
 @NgModule({

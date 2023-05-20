@@ -44,17 +44,24 @@ export class TriplexServiceService {
   post_data_form(url: String, body: any){
     return fetch(BASE_URL+url, {
       method: "POST",
-      mode: "no-cors",  
+      mode: "cors",  
       body: body,
     }).then(
       async (response:any) => {
-        if (response.ok){
-          response = await response.json()
-          response = await JSON.parse(response)
-          return response
-        }
+        console.log(response)
+        response = await response.json()
+        response = await JSON.parse(response)
+        return response
       }
     )
+  }
+
+  checkJob(token: String){
+    return this.get_data("api/checkjob/"+token)
+  }
+
+  checkJobsMyEmail(email: String){
+    return this.get_data("api/checkjobs/email/"+email)
   }
 
   submitJob(jobToSubmit: JobToSubmit){
@@ -92,5 +99,9 @@ export class TriplexServiceService {
       formData.append('SSTRAND', String(jobToSubmit.SSTRAND));
     }
     return this.post_data_form("api/submitjob/", formData) 
+  }
+
+  getBaseUrl(){
+    return BASE_URL
   }
 }

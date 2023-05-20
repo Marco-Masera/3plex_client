@@ -1,0 +1,54 @@
+<div class="checkJobContainer">
+    <mat-card class="checkJobCard">
+        <h2 style=" margin-bottom: 0px;">Job with token:</h2>
+        <h3 style="background-color: rgb(216, 223, 228);">{{token}}</h3>
+        <hr style="width:90%"/>
+
+        <div *ngIf="onError==true" class="centered">
+            <h3 style="color: red; margin-bottom: 0px;">Cannot retrieve job data</h3>
+            <h3>{{errorMessage}}</h3>
+        </div>
+        
+        <div *ngIf="jobData==undefined && onError==false" class="centered">
+            <h3>Loading...</h3>
+        </div>
+
+        <div *ngIf="jobData != undefined" class="centered">
+            <h2 style=" margin-bottom: 0px;">Job info</h2>
+            <mat-list>
+                <mat-list-item>
+                      <span matListItemTitle><b>State:</b> {{ jobData.state }}</span>
+                  </mat-list-item>
+                  <mat-list-item>
+                      <span matListItemTitle><b>Submitted at:</b> {{ jobData.date || 'NA' }}</span>
+                  </mat-list-item>
+                  <mat-list-item>
+                    <span matListItemTitle><b>Job name:</b> {{ jobData.job_name  || 'NA' }}</span>
+                  </mat-list-item>
+                  <mat-list-item>
+                    <span matListItemTitle><b>Job email:</b> {{ jobData.email_address || 'NA'  }}</span>
+                  </mat-list-item>
+              </mat-list>
+
+              <div *ngIf="files">
+                <mat-accordion>
+                    <mat-expansion-panel [expanded]="true" style="max-width: 650px;">
+                      <mat-expansion-panel-header>
+                            <mat-panel-title>
+                            <span class="right">Data</span>
+                            </mat-panel-title>
+                      </mat-expansion-panel-header>
+                      <div>
+                        <div class="spacedListItem" *ngFor="let key of files">
+                            <div class="spacedList" >
+                                <span matListItemTitle><b>{{ key }}:</b></span>
+                                <a [href]="jobData.results[key]" target="_blank">Download</a>
+                            </div>
+                        </div>
+                    </div>
+                    </mat-expansion-panel>
+                </mat-accordion>
+              </div>
+        </div>
+    </mat-card>
+</div>

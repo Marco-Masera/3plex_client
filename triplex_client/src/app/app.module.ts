@@ -18,6 +18,8 @@ import {MatDialogModule} from '@angular/material/dialog';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { PopupComponent } from './navbar/popup/popup.component';
 import { HomePageComponent } from './home-page/home-page.component';
+import { CheckjobComponent } from './checkjob/checkjob.component';
+import { CheckByEmailComponent } from './check-by-email/check-by-email.component';
 
 @NgModule({
   declarations: [
@@ -25,7 +27,9 @@ import { HomePageComponent } from './home-page/home-page.component';
     NavbarComponent,
     SendJobComponent,
     PopupComponent,
-    HomePageComponent
+    HomePageComponent,
+    CheckjobComponent,
+    CheckByEmailComponent
   ],
   imports: [
     BrowserModule,

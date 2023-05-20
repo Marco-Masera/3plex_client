@@ -1,0 +1,29 @@
+<div class="checkJobContainer">
+    <mat-card class="checkJobCard">
+        <h2 style=" margin-bottom: 0px;">Job associated to mail:</h2>
+        <h3 style="background-color: rgb(216, 223, 228);">{{email}}</h3>
+        <hr style="width:90%"/>
+
+        <div *ngIf="onError==true" class="centered">
+            <h3 style="color: red; margin-bottom: 0px;">Cannot retrieve jobs data</h3>
+            <h3>{{errorMessage}}</h3>
+        </div>
+        
+        <div *ngIf="jobsData==undefined && onError==false" class="centered">
+            <h3>Loading...</h3>
+        </div>
+
+        <div *ngIf="jobsData != undefined" class="centered" >
+            <h2 style=" margin-bottom: 8px;">Jobs found:</h2>
+            <div *ngFor="let jobData of jobsData;  let isLast = last" style="width: 100%; max-width: 750px;">
+                <div class="spacedList" (click)="navigate(jobData.link_)">
+                    <p><b>Name:</b> {{ jobData.job_name || 'NA' }}</p>
+                    <p><b>State:</b> {{ jobData.state }}</p>
+                    <p><b>Submitted at:</b> {{ jobData.date || 'NA' }}</p>
+                    <p><b>Job email:</b> {{ jobData.email_address || 'NA'  }}</p>
+                </div>
+                <hr *ngIf="!isLast">
+            </div>
+        </div>
+    </mat-card>
+</div>
