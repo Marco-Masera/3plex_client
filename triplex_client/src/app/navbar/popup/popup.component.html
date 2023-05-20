@@ -1,0 +1,13 @@
+<div mat-dialog-content>
+  <p *ngIf="state.state=='token'">Insert your job's token here</p>
+  <p *ngIf="state.state=='email'">Insert your email here</p>
+  <mat-form-field>
+    <mat-label *ngIf="state.state=='token'">Token</mat-label>
+    <mat-label *ngIf="state.state=='email'">Email</mat-label>
+    <input matInput [(ngModel)]="userInput">
+  </mat-form-field>
+</div>
+<div mat-dialog-actions>
+  <button mat-button (click)="onNoClick()">Return</button>
+  <button mat-button [mat-dialog-close]="{'response': userInput, 'state': state.state}" cdkFocusInitial>Search</button>
+</div>
