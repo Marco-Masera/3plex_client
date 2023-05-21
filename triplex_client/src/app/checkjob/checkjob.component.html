@@ -26,13 +26,16 @@
                     <span matListItemTitle><b>Job name:</b> {{ jobData.job_name  || 'NA' }}</span>
                   </mat-list-item>
                   <mat-list-item>
-                    <span matListItemTitle><b>Job email:</b> {{ jobData.email_address || 'NA'  }}</span>
+                    <span *ngIf="jobData.email_address" matListItemTitle><b>Job email:  </b> <a target="_blank" [href]="'checkjobs/email/'+ jobData.email_address">{{ jobData.email_address || 'NA'  }} </a>
+                    </span>
+                    <span *ngIf="!jobData.email_address" matListItemTitle><b>Job email:  </b> NA
+                    </span>
                   </mat-list-item>
               </mat-list>
 
               <div *ngIf="files">
                 <mat-accordion>
-                    <mat-expansion-panel [expanded]="true" style="max-width: 650px;">
+                    <mat-expansion-panel [expanded]="true" style="min-width: 650px; max-width: 700px;">
                       <mat-expansion-panel-header>
                             <mat-panel-title>
                             <span class="right">Data</span>

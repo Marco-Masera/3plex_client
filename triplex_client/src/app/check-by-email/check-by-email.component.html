@@ -16,7 +16,7 @@
         <div *ngIf="jobsData != undefined" class="centered" >
             <h2 style=" margin-bottom: 8px;">Jobs found:</h2>
             <div *ngFor="let jobData of jobsData;  let isLast = last" style="width: 100%; max-width: 750px;">
-                <div class="spacedList" (click)="navigate(jobData.link_)">
+                <div style="cursor: pointer;" class="spacedList" (click)="navigate(jobData.link_)">
                     <p><b>Name:</b> {{ jobData.job_name || 'NA' }}</p>
                     <p><b>State:</b> {{ jobData.state }}</p>
                     <p><b>Submitted at:</b> {{ jobData.date || 'NA' }}</p>
