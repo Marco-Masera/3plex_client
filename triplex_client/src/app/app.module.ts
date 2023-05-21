@@ -6,6 +6,7 @@ import { AppComponent } from './app.component';
 import {MatExpansionModule} from '@angular/material/expansion';
 import { ReactiveFormsModule } from '@angular/forms';
 import {MatListModule} from '@angular/material/list';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import { NavbarComponent } from './navbar/navbar.component';
 import { MatInputModule } from '@angular/material/input';
@@ -43,6 +44,7 @@ import { CheckByEmailComponent } from './check-by-email/check-by-email.component
     MatInputModule,
     MatListModule,
     ReactiveFormsModule,
+    MatProgressSpinnerModule,
     MatExpansionModule,
     MatButtonToggleModule,
     MatCardModule

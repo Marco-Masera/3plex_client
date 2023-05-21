@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { TriplexServiceService } from '../services/triplex-service.service';
 import { ActivatedRoute } from '@angular/router';
-
 interface JobData{
   job_name: string | undefined,
   email_address: string | undefined,
@@ -22,15 +21,33 @@ export class CheckjobComponent {
   onError: boolean = false
   errorMessage: string = ""
   files: string[] = []
+  pollingTimer: any | null = null
   constructor(private triplexService: TriplexServiceService, private route: ActivatedRoute){}
   
-  ngOnInit() {this.token = this.route.snapshot.paramMap.get('token'); if (this.token != null) {this.load_data();}}
+  ngOnInit() {
+    this.token = this.route.snapshot.paramMap.get('token'); 
+    if (this.token != null) {
+      this.load_data();
+      this.pollingTimer = setInterval(()=> { this.load_data() }, 60 * 1000);
+    }
+  }
 
   downloadFile(file: String){
+    
+  }
 
+  stopPolling(){
+    if (this.pollingTimer) {
+      clearInterval(this.pollingTimer);
+    }
   }
 
   load_data(){
+    if (!this.onError && this.jobData && !(this.jobData.state=="Submitted")){
+      this.stopPolling();
+      return;
+    }
+    console.log("Loading data")
     if (this.token != null){
       this.triplexService.checkJob(this.token).then(
         (response: any) => {

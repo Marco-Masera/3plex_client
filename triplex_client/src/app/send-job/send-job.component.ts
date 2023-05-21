@@ -13,6 +13,7 @@ export class SendJobComponent {
   formGroup: FormGroup;
   ssRNAFile: File | undefined;
   dsDNAFile: File | undefined;
+  sending: boolean = false;
   constructor(private triplexService: TriplexServiceService, private _router: Router) {
     this.formGroup = new FormGroup({
       ssRNA: new FormControl(null, [Validators.required]),
@@ -51,6 +52,8 @@ export class SendJobComponent {
   }
 
   submitForm() {
+    if (this.sending){return;}
+    this.sending = true;
     if (this.formGroup.valid && this.ssRNAFile && this.dsDNAFile) {
       console.log("Submit job...")
       let job: JobToSubmit = {
@@ -67,12 +70,13 @@ export class SendJobComponent {
         SSTRAND: this.formGroup.value.SSTRAND || undefined
       }
       this.triplexService.submitJob(job).then(response => {
+        this.sending = false;
         if (response["success"]){
           this.onSuccess(response);
         } else {
           this.onFailure(response);
         }
-      }).catch(error => { this.onFailure(error); });
+      }).catch(error => {this.sending = false; this.onFailure(error); });
     }
   }
 
