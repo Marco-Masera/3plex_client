@@ -68,7 +68,11 @@ export class TriplexServiceService {
     const formData = new FormData();
     
     // Append files to the form data object
-    formData.append('SSRNA_FASTA', jobToSubmit.SSRNA_FASTA);
+    if (jobToSubmit.SSRNA_FASTA){
+      formData.append('SSRNA_FASTA', jobToSubmit.SSRNA_FASTA);
+    } else if (jobToSubmit.SSRNA_STRING){
+      formData.append('SSRNA_STRING', jobToSubmit.SSRNA_STRING);
+    }
     formData.append('DSDNA_FASTA', jobToSubmit.DSDNA_FASTA);
 
     if (jobToSubmit.JOBNAME !== undefined) {
@@ -98,6 +102,7 @@ export class TriplexServiceService {
     if (jobToSubmit.SSTRAND !== undefined) {
       formData.append('SSTRAND', String(jobToSubmit.SSTRAND));
     }
+    console.log(formData)
     return this.post_data_form("api/submitjob/", formData) 
   }
 

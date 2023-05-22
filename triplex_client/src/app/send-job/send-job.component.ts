@@ -1,8 +1,17 @@
 import { Component } from '@angular/core';
-import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { Validators, FormControl, FormGroup, AbstractControl } from '@angular/forms';
 import { TriplexServiceService } from '../services/triplex-service.service';
 import { JobToSubmit } from '../model/jobToSubmit';
 import { Router } from '@angular/router';
+
+function atLeastOneRequired(control: AbstractControl): { [key: string]: boolean } | null {
+  const ssRNAValue: String | null = control.get('ssRNA')?.value;
+  const ssRNATextual = control.get('ssRNATextual')?.value;
+  if (!ssRNAValue && !ssRNATextual) {
+    return { atLeastOneRequired: true };
+  }
+  return null;
+}
 
 @Component({
   selector: 'app-send-job',
@@ -16,8 +25,9 @@ export class SendJobComponent {
   sending: boolean = false;
   constructor(private triplexService: TriplexServiceService, private _router: Router) {
     this.formGroup = new FormGroup({
-      ssRNA: new FormControl(null, [Validators.required]),
-      dsDNA: new FormControl(null, [Validators.required]),
+      ssRNA: new FormControl(null),
+      ssRNATextual: new FormControl(null),
+      dsDNA: new FormControl(null),
       jobName: new FormControl(null),
       email: new FormControl(null),
       min_len: new FormControl(null),
@@ -27,13 +37,25 @@ export class SendJobComponent {
       filter_repeat : new FormControl(null),//on off
       consecutive_errors: new FormControl(null),
       SSTRAND: new FormControl(null)
-    });
+    }, { validators: atLeastOneRequired });
   }
+
+  reset_selected_ssRNA(){
+    this.formGroup.patchValue({ssRNA: null});
+    this.ssRNAFile = undefined;
+  }
+  reset_selected_dsDNA(){
+    this.formGroup.patchValue({dsDNA: null});
+    this.dsDNAFile = undefined;
+  }
+
 
   onRnaChange(event: Event){
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length) {
+      this.formGroup.patchValue({ssRNATextual: null});
       this.ssRNAFile = input.files[0];
+
     }
   }
   onDnaChange(event: Event){
@@ -54,10 +76,11 @@ export class SendJobComponent {
   submitForm() {
     if (this.sending){return;}
     this.sending = true;
-    if (this.formGroup.valid && this.ssRNAFile && this.dsDNAFile) {
+    if (this.formGroup.valid && (this.ssRNAFile || this.formGroup.value.ssRNATextual) && this.dsDNAFile) {
       console.log("Submit job...")
       let job: JobToSubmit = {
         SSRNA_FASTA: this.ssRNAFile,
+        SSRNA_STRING: this.formGroup.value.ssRNATextual,
         DSDNA_FASTA: this.dsDNAFile,
         JOBNAME: this.formGroup.value.jobName || undefined,
         EMAIL: this.formGroup.value.email || undefined,

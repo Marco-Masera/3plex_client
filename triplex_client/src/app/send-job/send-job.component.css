@@ -45,3 +45,19 @@ mat-list-item:nth-child(n){
 .transparentForm{
     opacity: 0.5;
 }
+
+.fileInputSection{
+    min-height: 45px;
+    display: flex;
+    flex-direction: row;
+    justify-content: start;
+    align-items: start;
+}
+.verticalInputSection{
+    min-height: 45px;
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    align-items: start;
+    margin-bottom: 12px;
+}

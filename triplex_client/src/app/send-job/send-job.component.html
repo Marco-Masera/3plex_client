@@ -7,25 +7,33 @@
     <fieldset [disabled]="sending" style="border: 0ch;">
     <!-- Section 1: Input data -->
     <section>
-      <h3>Input Data</h3>
-      <mat-list role="list">
-        <mat-list-item class="line" role="listitem">
-            <mat-label>ssRNA*</mat-label>
-            <button class="fileButton" type="button" mat-stroked-button (click)="fileInput.click()">Choose File</button>
-            <input hidden formControlName="ssRNA" #fileInput type="file" (change)="onRnaChange($event)">
-            <span class="file-name">{{pathToName(formGroup.value.ssRNA)}}</span></mat-list-item>
-        <mat-list-item class="line" role="listitem">
-            <mat-label>dsDNA*</mat-label>
-            <button class="fileButton" type="button" mat-stroked-button (click)="fileInput2.click()">Choose File</button>
-            <input hidden formControlName="dsDNA" #fileInput2 type="file" (change)="onDnaChange($event)">
-            <span class="file-name">{{pathToName(formGroup.value.dsDNA)}}</span>
-        </mat-list-item>
-      </mat-list>
+      <h4>Input Data</h4>
+      <div class="verticalInputSection">
+        <h3>ssRNA*</h3>
+            <label for="ssRNATextArea">Provide ssRNA sequence</label>
+            <textarea [attr.disabled]="ssRNAFile? true : null" style="min-width: 450px; min-height: 100px; max-height: 300px;" id="ssRNATextArea" formControlName="ssRNATextual"></textarea>
+            <label style="margin-top: 20px; margin-bottom: 10px;" for="ssRNAFileInput">or choose a file in FASTA format</label>
+            <div class="fileInputSection">
+                <button id="ssRNAFileInput" class="fileButton" type="button" mat-stroked-button (click)="fileInput.click()">Choose File</button>
+                <input hidden formControlName="ssRNA" #fileInput type="file" (change)="onRnaChange($event)">
+                <span class="file-name">{{pathToName(formGroup.value.ssRNA)}}</span>
+                <mat-icon  (click)="reset_selected_ssRNA()" style="margin-left: 3px;  transform: scale(0.7); cursor: pointer;" *ngIf="pathToName(formGroup.value.ssRNA)" aria-hidden="false" fontIcon="highlight_off"></mat-icon>
+            </div>
+        </div>
+      <div class="verticalInputSection">
+            <h3>dsDNA*</h3>
+            <div class="fileInputSection">
+                <button class="fileButton" type="button" mat-stroked-button (click)="fileInput2.click()">Choose File</button>
+                <input hidden formControlName="dsDNA" #fileInput2 type="file" (change)="onDnaChange($event)">
+                <span class="file-name">{{pathToName(formGroup.value.dsDNA)}}</span>
+                <mat-icon (click)="reset_selected_dsDNA()" style="margin-left: 3px; transform: scale(0.7); cursor: pointer;" *ngIf="pathToName(formGroup.value.dsDNA)" aria-hidden="false" fontIcon="highlight_off"></mat-icon>
+            </div>
+        </div>
     </section>
   
     <!-- Section 2: Job info -->
     <section>
-      <h3>Job Info</h3>
+      <h4>Job Info</h4>
       <p class="notTooBig">
         You can write your email to receive a notification once the job is completed and to retrieve your previous jobs; you can also name your job to easily identify it.
       </p>

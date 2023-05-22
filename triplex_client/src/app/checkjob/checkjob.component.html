@@ -33,6 +33,31 @@
                   </mat-list-item>
               </mat-list>
 
+              <div *ngIf="jobData.state=='Submitted'" style="margin-top: 30px;">
+                <h4>This page will be automatically updated untill the job is completed</h4>
+                <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+              </div>
+
+              <div *ngIf="jobData.triplex_params" style="margin-top: 15px; margin-bottom: 30px;">
+                <mat-accordion>
+                    <mat-expansion-panel [expanded]="false" style="min-width: 650px; max-width: 700px;">
+                      <mat-expansion-panel-header>
+                            <mat-panel-title>
+                            <span class="right">3plex parameters</span>
+                            </mat-panel-title>
+                      </mat-expansion-panel-header>
+                      <div style="max-width: 450px">
+                        <div class="spacedListItem" *ngFor="let param of triplex_params()">
+                            <div class="spacedList" >
+                                <span matListItemTitle><b>{{ param[0] }}:</b></span>
+                                <a>{{ param[1] }}</a>
+                            </div>
+                        </div>
+                    </div>
+                    </mat-expansion-panel>
+                </mat-accordion>
+              </div>
+
               <div *ngIf="files && files.length > 0">
                 <mat-accordion>
                     <mat-expansion-panel [expanded]="true" style="min-width: 650px; max-width: 700px;">

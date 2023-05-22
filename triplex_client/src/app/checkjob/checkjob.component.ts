@@ -8,6 +8,7 @@ interface JobData{
   token: string,
   results: any | undefined
   date: string | undefined
+  triplex_params: any | undefined
 }
 
 @Component({
@@ -42,8 +43,19 @@ export class CheckjobComponent {
     }
   }
 
+  triplex_params(){
+    if (!this.jobData || !this.jobData.triplex_params){
+      return []
+    }
+    let r: any[][] = []
+    Object.keys(this.jobData.triplex_params).forEach((elem) => {
+      r.push([elem, this.jobData?.triplex_params[elem]])
+    })
+    return r;
+  }
+
   load_data(){
-    if (!this.onError && this.jobData && !(this.jobData.state=="Submitted")){
+    if (this.onError || (this.jobData && !(this.jobData.state=="Submitted"))){
       this.stopPolling();
       return;
     }
@@ -59,7 +71,8 @@ export class CheckjobComponent {
               state: response.payload.job.state,
               token: response.payload.job.token,
               results: response.payload.results,
-              date: response.payload.job.date
+              date: response.payload.job.date,
+              triplex_params: response.payload.params
             }
             this.files = Object.keys(this.jobData.results)
             let BASE_URL = this.triplexService.getBaseUrl()
@@ -67,7 +80,6 @@ export class CheckjobComponent {
             for (let elem of this.files){
               this.jobData.results[elem] = BASE_URL+this.jobData.results[elem]
             }
-            console.log(this.jobData)
             this.onError = false;
           } else {
             this.onError = true; this.errorMessage = response.error;
