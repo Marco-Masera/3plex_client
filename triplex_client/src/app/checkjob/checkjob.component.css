@@ -28,3 +28,10 @@ mat-list-item:nth-child(n){
     justify-content: space-between;
     align-items: center;
 }
+.smallSpacedList{
+    width: 100%; height: 30px;
+    display: flex;
+    flex-direction:row;
+    justify-content: space-between;
+    align-items: center;
+}

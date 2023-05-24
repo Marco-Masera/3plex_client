@@ -4,6 +4,9 @@ import { TriplexServiceService } from '../services/triplex-service.service';
 import { JobToSubmit } from '../model/jobToSubmit';
 import { Router } from '@angular/router';
 
+const ssRNAMaxSize = 1;
+const dsDNAMaxSize = 300;
+
 function atLeastOneRequired(control: AbstractControl): { [key: string]: boolean } | null {
   const ssRNAValue: String | null = control.get('ssRNA')?.value;
   const ssRNATextual = control.get('ssRNATextual')?.value;
@@ -11,6 +14,10 @@ function atLeastOneRequired(control: AbstractControl): { [key: string]: boolean 
     return { atLeastOneRequired: true };
   }
   return null;
+}
+
+interface triplex_param_descr{
+  default: string; description: string
 }
 
 @Component({
@@ -23,6 +30,11 @@ export class SendJobComponent {
   ssRNAFile: File | undefined;
   dsDNAFile: File | undefined;
   sending: boolean = false;
+  default_triplex_params: any
+
+  ssRNAToolTip = "A single ssRNA sequence - either provided as a single fasta file or as simple text (max size: " + ssRNAMaxSize + " MB)."
+  dsDNAToolTip = "A multi-FASTA file containing one or multiple dsDNA sequences (max size: " + dsDNAMaxSize + " MB)."
+
   constructor(private triplexService: TriplexServiceService, private _router: Router) {
     this.formGroup = new FormGroup({
       ssRNA: new FormControl(null),
@@ -40,6 +52,37 @@ export class SendJobComponent {
     }, { validators: atLeastOneRequired });
   }
 
+  ngOnInit(){
+    this.triplexService.get_triplex_default_params().then( response => {
+      if (response.success){
+        this.default_triplex_params = response.payload
+        this.formGroup.patchValue({filter_repeat: this.default_triplex_params?.filter_repeat.default});
+        console.log(this.default_triplex_params)
+      }
+    })
+  }
+
+  get_triplex_params_default_value(param: string): string{
+    let to_ret: any | undefined;
+    if (this.default_triplex_params)
+      to_ret = this.default_triplex_params[param]?.default
+    if (to_ret !== undefined){
+      return to_ret
+    }
+    return ""
+  }
+  get_triplex_param_l_b(param: string): string{
+    return this.default_triplex_params?.[param]?.bounds?.[0] ?? -9999999
+  }
+  get_triplex_param_h_b(param: string): string{
+    return this.default_triplex_params?.[param]?.bounds?.[1] ?? 9999999
+  }
+  get_triplex_params_description(param: string): string{
+    if (this.default_triplex_params)
+      return this.default_triplex_params[param]?.description || ""
+    return ""
+  }
+
   reset_selected_ssRNA(){
     this.formGroup.patchValue({ssRNA: null});
     this.ssRNAFile = undefined;
@@ -49,19 +92,41 @@ export class SendJobComponent {
     this.dsDNAFile = undefined;
   }
 
+  checkFileFastaFormat(file: File): boolean{
+    return file.name.split(".").pop()=="fa"
+  }
 
   onRnaChange(event: Event){
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length) {
-      this.formGroup.patchValue({ssRNATextual: null});
-      this.ssRNAFile = input.files[0];
-
+      if (input.files[0].size > ssRNAMaxSize*1000000 ){
+        window.alert("Your input file exceed maximum file size of " + ssRNAMaxSize + " MB")
+        this.formGroup.patchValue({ssRNA: null});
+      } else {
+        if (!this.checkFileFastaFormat(input.files[0])){
+          window.alert("Please provide a file in FASTA format (.fa)")
+          this.formGroup.patchValue({ssRNA: null});
+        } else {
+          this.formGroup.patchValue({ssRNATextual: null});
+          this.ssRNAFile = input.files[0];
+        }
+      }
     }
   }
   onDnaChange(event: Event){
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length) {
-      this.dsDNAFile = input.files[0];
+      if (input.files[0].size > dsDNAMaxSize*1000000){
+        window.alert("Your input file exceed maximum file size of " + dsDNAMaxSize + " MB")
+        this.formGroup.patchValue({dsDNA: null});
+      } else {
+        if (!this.checkFileFastaFormat(input.files[0])){
+          window.alert("Please provide a file in FASTA format (.fa)")
+          this.formGroup.patchValue({dsDNA: null});
+        } else {
+          this.dsDNAFile = input.files[0];
+        }
+      }
     }
   }
 
@@ -73,11 +138,10 @@ export class SendJobComponent {
     window.alert("Cannot submit job: " + response.error);
   }
 
-  submitForm() {
-    if (this.sending){return;}
-    this.sending = true;
+  submitForm() {if (this.sending){return;}
     if (this.formGroup.valid && (this.ssRNAFile || this.formGroup.value.ssRNATextual) && this.dsDNAFile) {
       console.log("Submit job...")
+      this.sending = true;
       let job: JobToSubmit = {
         SSRNA_FASTA: this.ssRNAFile,
         SSRNA_STRING: this.formGroup.value.ssRNATextual,
@@ -115,7 +179,7 @@ export class SendJobComponent {
       max_len: null,
       error_rate: null,
       guanine_rate: null,
-      filter_repeat: null,
+      filter_repeat: this.default_triplex_params?.filter_repeat.default,
       consecutive_errors: null
     });
   }

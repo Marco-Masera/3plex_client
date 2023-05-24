@@ -9,7 +9,12 @@
     <section>
       <h4>Input Data</h4>
       <div class="verticalInputSection">
-        <h3>ssRNA*</h3>
+        <div class="paramNameContainer">
+            <h3>ssRNA*</h3>
+            <mat-icon [matTooltip]="ssRNAToolTip" matTooltipPosition="above"
+                aria-hidden="false" aria-label="Example home icon" fontIcon="help_outline"></mat-icon>
+        </div>
+        
             <label for="ssRNATextArea">Provide ssRNA sequence</label>
             <textarea [attr.disabled]="ssRNAFile? true : null" style="min-width: 450px; min-height: 100px; max-height: 300px;" id="ssRNATextArea" formControlName="ssRNATextual"></textarea>
             <label style="margin-top: 20px; margin-bottom: 10px;" for="ssRNAFileInput">or choose a file in FASTA format</label>
@@ -21,7 +26,12 @@
             </div>
         </div>
       <div class="verticalInputSection">
-            <h3>dsDNA*</h3>
+            <div class="paramNameContainer">
+                <h3>dsDNA*</h3>
+                <mat-icon [matTooltip]="dsDNAToolTip" matTooltipPosition="above"
+                aria-hidden="false" aria-label="Example home icon" fontIcon="help_outline"></mat-icon>
+            </div>
+            
             <div class="fileInputSection">
                 <button class="fileButton" type="button" mat-stroked-button (click)="fileInput2.click()">Choose File</button>
                 <input hidden formControlName="dsDNA" #fileInput2 type="file" (change)="onDnaChange($event)">
@@ -58,59 +68,83 @@
               </mat-expansion-panel-header>
 
             <mat-list role="list">
-                <mat-list-item style="height:50px !important" class="line" role="listitem">
+                <mat-list-item [matTooltip]="get_triplex_params_description('min_len')" matTooltipPosition="above" style="height:50px !important" class="line" role="listitem">
                     <div class="row">
-                        <p>Min len</p>
+                        <div class="paramNameContainer">
+                            <p>Min len</p>
+                            <mat-icon aria-hidden="false" aria-label="Example home icon" fontIcon="help_outline"></mat-icon>
+                        </div>
                         <mat-form-field class="smallInput">
-                            <input matInput type="number" formControlName="min_len" placeholder="default">
+                            <input matInput [min]="get_triplex_param_l_b('min_len')" [max]="get_triplex_param_h_b('min_len')" type="number" formControlName="min_len" [placeholder]="'default ' + get_triplex_params_default_value('min_len')">
                         </mat-form-field>
                     </div>
                 </mat-list-item>
-                <mat-list-item style="height:50px !important" class="line" role="listitem">
+                <mat-list-item [matTooltip]="get_triplex_params_description('max_len')" matTooltipPosition="above" style="height:50px !important" class="line" role="listitem">
                     <div class="row">
-                        <p>Max len</p>
+                        <div class="paramNameContainer">
+                            <p>Max len</p>
+                            <mat-icon aria-hidden="false" aria-label="Example home icon" fontIcon="help_outline"></mat-icon>
+                        </div>
+                        
                         <mat-form-field class="smallInput">
-                            <input matInput type="number" formControlName="max_len" placeholder="default">
+                            <input matInput type="number" [placeholder]="'default ' + get_triplex_params_default_value('max_len')" [min]="get_triplex_param_l_b('max_len')" [max]="get_triplex_param_h_b('max_len')"  formControlName="max_len">
                         </mat-form-field>
                     </div>
                 </mat-list-item>
-                <mat-list-item style="height:50px !important" class="line" role="listitem">
+                <mat-list-item [matTooltip]="get_triplex_params_description('error_rate')" matTooltipPosition="above" style="height:50px !important" class="line" role="listitem">
                     <div class="row">
-                        <p>Error rate</p>
+                        <div class="paramNameContainer">
+                            <p >Error rate</p>
+                            <mat-icon aria-hidden="false" aria-label="Example home icon" fontIcon="help_outline"></mat-icon>
+                        </div>
+                       
                         <mat-form-field class="smallInput">
-                            <input matInput type="number" formControlName="error_rate" placeholder="default">
+                            <input matInput type="number" [placeholder]="'default ' + get_triplex_params_default_value('error_rate')" [min]="get_triplex_param_l_b('error_rate')" [max]="get_triplex_param_h_b('error_rate')"  formControlName="error_rate">
                         </mat-form-field>
                     </div>
                 </mat-list-item>
-            <mat-list-item style="height:50px !important" class="line" role="listitem">
+            <mat-list-item  [matTooltip]="get_triplex_params_description('guanine_rate')" matTooltipPosition="above" style="height:50px !important" class="line" role="listitem">
                 <div class="row">
-                    <p>Guanine len</p>
+                    <div class="paramNameContainer">
+                        <p>Guanine rate</p>
+                        <mat-icon aria-hidden="false" aria-label="Example home icon" fontIcon="help_outline"></mat-icon>
+                    </div>
+                   
                     <mat-form-field class="smallInput">
-                        <input matInput type="number" formControlName="guanine_rate" placeholder="default">
+                        <input matInput type="number" [placeholder]="'default ' + get_triplex_params_default_value('guanine_rate')" [min]="get_triplex_param_l_b('guanine_rate')" [max]="get_triplex_param_h_b('guanine_rate')"  formControlName="guanine_rate">
                     </mat-form-field>
                 </div>
             </mat-list-item>
-            <mat-list-item style="height:50px !important" class="line" role="listitem">
+            <mat-list-item [matTooltip]="get_triplex_params_description('consecutive_errors')" matTooltipPosition="above" style="height:50px !important" class="line" role="listitem">
                 <div class="row">
-                    <p>Consecutive errors</p>
+                    <div class="paramNameContainer">
+                        <p>Consecutive errors</p>
+                        <mat-icon aria-hidden="false" aria-label="Example home icon" fontIcon="help_outline"></mat-icon>
+                    </div>
                     <mat-form-field class="smallInput">
-                        <input matInput type="number" formControlName="consecutive_errors" placeholder="default">
+                        <input matInput type="number" [placeholder]="'default ' + get_triplex_params_default_value('consecutive_errors')" [min]="get_triplex_param_l_b('consecutive_errors')" [max]="get_triplex_param_h_b('consecutive_errors')"  formControlName="consecutive_errors">
                     </mat-form-field>
                 </div>
             </mat-list-item>
-            <mat-list-item style="height:50px !important" class="line" role="listitem">
+            <mat-list-item  [matTooltip]="get_triplex_params_description('SSTRAND')" matTooltipPosition="above" style="height:50px !important" class="line" role="listitem">
                 <div class="row">
-                    <p>SSTRAND</p>
+                    <div class="paramNameContainer">
+                        <p>SSTRAND</p>
+                        <mat-icon aria-hidden="false" aria-label="Example home icon" fontIcon="help_outline"></mat-icon>
+                    </div>
                     <mat-form-field class="smallInput">
-                        <input matInput type="number" formControlName="SSTRAND" placeholder="default">
+                        <input matInput type="number" [placeholder]="'default ' + get_triplex_params_default_value('SSTRAND')" [min]="get_triplex_param_l_b('SSTRAND')" [max]="get_triplex_param_h_b('SSTRAND')"  formControlName="SSTRAND">
                     </mat-form-field>
                 </div>
             </mat-list-item>
             <!--Filter repeat on off-->
-            <mat-list-item style="height:50px !important" class="line" role="listitem">
+            <mat-list-item  [matTooltip]="get_triplex_params_description('filter_repeat')" matTooltipPosition="above" style="height:50px !important" class="line" role="listitem">
                 <div class="row">
-                    <p>Guanine rate</p>
-                    <mat-button-toggle-group formControlName="guanine_rate" name="fontStyle" aria-label="Font Style" style="margin-right: 20px;">
+                    <div class="paramNameContainer">
+                        <p>Filter repeat</p>
+                        <mat-icon aria-hidden="false" aria-label="Example home icon" fontIcon="help_outline"></mat-icon>
+                    </div>
+                    <mat-button-toggle-group formControlName="filter_repeat" name="fontStyle" aria-label="Font Style" style="margin-right: 20px;">
                         <mat-button-toggle value="on">On</mat-button-toggle>
                         <mat-button-toggle value="off">Off</mat-button-toggle>
                     </mat-button-toggle-group>
@@ -130,7 +164,7 @@
     </section>
 
     <div style="margin-top: 15px; width:100%; display:flex; justify-content: end;">
-        <button mat-raised-button type="submit" style="margin-right: 15px;">Submit job</button>
+        <button [disabled]="!formGroup.valid" mat-raised-button type="submit" style="margin-right: 15px;">Submit job</button>
     </div>
 </fieldset>
   </form>

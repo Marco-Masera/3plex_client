@@ -38,21 +38,23 @@
                 <mat-progress-bar mode="indeterminate"></mat-progress-bar>
               </div>
 
-              <div *ngIf="jobData.triplex_params" style="margin-top: 15px; margin-bottom: 30px;">
+              <div *ngIf="jobData.triplex_params" style="width: 100%; max-width: 500px; margin-top: 15px; margin-bottom: 30px;">
                 <mat-accordion>
-                    <mat-expansion-panel [expanded]="false" style="min-width: 650px; max-width: 700px;">
+                    <mat-expansion-panel [expanded]="false">
                       <mat-expansion-panel-header>
                             <mat-panel-title>
                             <span class="right">3plex parameters</span>
                             </mat-panel-title>
                       </mat-expansion-panel-header>
-                      <div style="max-width: 450px">
-                        <div class="spacedListItem" *ngFor="let param of triplex_params()">
-                            <div class="spacedList" >
+                      <div>
+                        <div class="spacedListItem" *ngFor="let param of triplex_params(); let last = last">
+                            <div class="smallSpacedList" >
                                 <span matListItemTitle><b>{{ param[0] }}:</b></span>
                                 <a>{{ param[1] }}</a>
                             </div>
+                            <hr *ngIf="!last"/>
                         </div>
+        
                     </div>
                     </mat-expansion-panel>
                 </mat-accordion>

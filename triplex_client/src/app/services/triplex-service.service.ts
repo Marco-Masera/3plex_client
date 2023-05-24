@@ -64,6 +64,10 @@ export class TriplexServiceService {
     return this.get_data("api/checkjobs/email/"+email)
   }
 
+  get_triplex_default_params(){
+    return this.get_data("api/3plex_default_params");
+  }
+
   submitJob(jobToSubmit: JobToSubmit){
     const formData = new FormData();
     

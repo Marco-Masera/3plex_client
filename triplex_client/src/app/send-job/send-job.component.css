@@ -36,6 +36,18 @@ mat-list-item:nth-child(n){
     align-items: center;
     justify-content:space-between
 }
+.paramNameContainer{
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items:flex-start;
+    justify-content:flex-start
+}
+.paramNameContainer mat-icon{
+    transform: scale(0.7);
+    margin-top: 1px;
+    margin-left: 10px;
+}
 
 .spinnerDiv{
     width: 100%; height: 100%;
@@ -50,14 +62,20 @@ mat-list-item:nth-child(n){
     min-height: 45px;
     display: flex;
     flex-direction: row;
-    justify-content: start;
-    align-items: start;
+    justify-content: flex-start;
+    align-items: flex-start;
 }
 .verticalInputSection{
     min-height: 45px;
     display: flex;
     flex-direction: column;
-    justify-content: start;
-    align-items: start;
+    justify-content: flex-start;
+    align-items: flex-start;
     margin-bottom: 12px;
 }
+mat-list-item:hover{
+    padding-bottom: 1.2px;
+}
+mat-list-item:hover > :not(mat-list-item) {
+    padding-bottom: 0px;
+  }
