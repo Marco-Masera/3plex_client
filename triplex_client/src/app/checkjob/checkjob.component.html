@@ -16,7 +16,7 @@
         <div *ngIf="jobData != undefined" class="centered">
             <h2 style=" margin-bottom: 0px;">Job info</h2>
             <mat-list>
-                <mat-list-item>
+                  <mat-list-item>
                       <span matListItemTitle><b>State:</b> {{ jobData.state }}</span>
                   </mat-list-item>
                   <mat-list-item>
@@ -24,6 +24,9 @@
                   </mat-list-item>
                   <mat-list-item>
                     <span matListItemTitle><b>Job name:</b> {{ jobData.job_name  || 'NA' }}</span>
+                  </mat-list-item>
+                  <mat-list-item *ngIf="jobData.ssRNA_id">
+                    <span matListItemTitle><b>Transcript id:</b> {{ jobData.ssRNA_id  || 'NA' }}</span>
                   </mat-list-item>
                   <mat-list-item>
                     <span *ngIf="jobData.email_address" matListItemTitle><b>Job email:  </b> <a target="_blank" [href]="'checkjobs/email/'+ jobData.email_address">{{ jobData.email_address || 'NA'  }} </a>
@@ -79,6 +82,13 @@
                     </mat-expansion-panel>
                 </mat-accordion>
               </div>
+
+              <div *ngIf="jobData.state == 'Ready'" style="margin-top: 15px;">
+                <button type="button" mat-stroked-button (click)="goToVisuals()" style=" min-width: 300px;">
+                  Visualize data
+                </button>
+              </div>
+
         </div>
     </mat-card>
 </div>

@@ -1,7 +1,9 @@
 export interface JobToSubmit{
     SSRNA_FASTA: File | undefined;
     SSRNA_STRING: File | undefined;
-    DSDNA_FASTA: File;
+    SSRNA_TRANSCRIPT_ID: string | undefined,
+    DSDNA_FASTA: File | undefined;
+    DSDNA_BED: File | undefined;
     JOBNAME: String | undefined;
     EMAIL: String | undefined;
     

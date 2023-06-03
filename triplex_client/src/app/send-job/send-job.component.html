@@ -15,14 +15,28 @@
                 aria-hidden="false" aria-label="Example home icon" fontIcon="help_outline"></mat-icon>
         </div>
         
-            <label for="ssRNATextArea">Provide ssRNA sequence</label>
-            <textarea [attr.disabled]="ssRNAFile? true : null" style="min-width: 450px; min-height: 100px; max-height: 300px;" id="ssRNATextArea" formControlName="ssRNATextual"></textarea>
-            <label style="margin-top: 20px; margin-bottom: 10px;" for="ssRNAFileInput">or choose a file in FASTA format</label>
-            <div class="fileInputSection">
-                <button id="ssRNAFileInput" class="fileButton" type="button" mat-stroked-button (click)="fileInput.click()">Choose File</button>
-                <input hidden formControlName="ssRNA" #fileInput type="file" (change)="onRnaChange($event)">
-                <span class="file-name">{{pathToName(formGroup.value.ssRNA)}}</span>
-                <mat-icon  (click)="reset_selected_ssRNA()" style="margin-left: 3px;  transform: scale(0.7); cursor: pointer;" *ngIf="pathToName(formGroup.value.ssRNA)" aria-hidden="false" fontIcon="highlight_off"></mat-icon>
+            <mat-radio-group formControlName="ssRNA_chosen_type" aria-label="Select an option">
+                <mat-radio-button value="t">Choose a transcript</mat-radio-button>
+                <mat-radio-button value="s">Provide your own sequence</mat-radio-button>
+            </mat-radio-group>
+
+            <!--Section to Choose a transcript-->
+            <app-generic-searchable-dropdown style="margin-top: 15px;" *ngIf="formGroup.get('ssRNA_chosen_type')?.value=='t'" 
+                class="lncRnaSearchbar" 
+                [get_options]="transcriptSearchGetQuery" 
+                (itemSelectedEvent)="transcriptSearchSelectOption($event)"></app-generic-searchable-dropdown>
+
+            <!--Section to provide your own sequence-->
+            <div class="verticalInputSection" *ngIf="formGroup.get('ssRNA_chosen_type')?.value=='s'" style="margin-top: 15px;">
+                <label for="ssRNATextArea">Provide ssRNA sequence</label>
+                <textarea [attr.disabled]="ssRNAFile? true : null" style="min-width: 450px; min-height: 100px; max-height: 300px;" id="ssRNATextArea" formControlName="ssRNATextual"></textarea>
+                <label style="margin-top: 20px; margin-bottom: 10px;" for="ssRNAFileInput">or choose a file in FASTA format</label>
+                <div class="fileInputSection">
+                    <button id="ssRNAFileInput" class="fileButton" type="button" mat-stroked-button (click)="fileInput.click()">Choose File</button>
+                    <input hidden formControlName="ssRNA" #fileInput type="file" (change)="onRnaChange($event)">
+                    <span class="file-name">{{pathToName(formGroup.value.ssRNA)}}</span>
+                    <mat-icon  (click)="reset_selected_ssRNA()" style="margin-left: 3px;  transform: scale(0.7); cursor: pointer;" *ngIf="pathToName(formGroup.value.ssRNA)" aria-hidden="false" fontIcon="highlight_off"></mat-icon>
+                </div>
             </div>
         </div>
       <div class="verticalInputSection">
@@ -34,7 +48,7 @@
             
             <div class="fileInputSection">
                 <button class="fileButton" type="button" mat-stroked-button (click)="fileInput2.click()">Choose File</button>
-                <input hidden formControlName="dsDNA" #fileInput2 type="file" (change)="onDnaChange($event)">
+                <input hidden #fileInput2 type="file" (change)="onDnaChange($event)">
                 <span class="file-name">{{pathToName(formGroup.value.dsDNA)}}</span>
                 <mat-icon (click)="reset_selected_dsDNA()" style="margin-left: 3px; transform: scale(0.7); cursor: pointer;" *ngIf="pathToName(formGroup.value.dsDNA)" aria-hidden="false" fontIcon="highlight_off"></mat-icon>
             </div>

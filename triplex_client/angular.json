@@ -28,7 +28,9 @@
               "@angular/material/prebuilt-themes/indigo-pink.css",
               "src/styles.css"
             ],
-            "scripts": []
+            "scripts": [
+              "src/assets/plotly-2.20.0.min.js"
+            ]
           },
           "configurations": {
             "production": {
@@ -91,7 +93,9 @@
               "@angular/material/prebuilt-themes/indigo-pink.css",
               "src/styles.css"
             ],
-            "scripts": []
+            "scripts": [
+              "src/assets/plotly-2.20.0.min.js"
+            ]
           }
         }
       }

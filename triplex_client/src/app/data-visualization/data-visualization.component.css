@@ -1,0 +1,24 @@
+
+#profilePlotContainer{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+#plotDiv{
+    margin-left: 10px; margin-right: 10px;
+    width: 90%;
+    margin-bottom: 0px; padding-bottom: 0px;
+    background-color: aliceblue;
+}
+
+#minStabilitySlider{
+    width: 70%; max-width: 500px;
+    margin-top: 0px; padding-top: 0px;
+}
+
+.withTransparency{
+    opacity: 0.5;
+}

@@ -1,0 +1,16 @@
+<form>
+    <mat-form-field appearance="fill">
+      <mat-label>lncRna</mat-label>
+      <input type="text"
+             placeholder="type to search"
+             aria-label="lncRNA"
+             matInput
+             [formControl]="searchBarControl"
+             [matAutocomplete]="auto">
+      <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onValueSelected($event)">
+        <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
+          {{option.toStringWithBold(queryText)[0]}}<b>{{option.toStringWithBold(queryText)[1]}}</b>{{option.toStringWithBold(queryText)[2]}}
+        </mat-option>
+      </mat-autocomplete>
+    </mat-form-field>
+  </form>

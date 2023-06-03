@@ -8,7 +8,8 @@ interface JobData{
   token: string,
   results: any | undefined
   date: string | undefined
-  triplex_params: any | undefined
+  triplex_params: any | undefined,
+  ssRNA_id: string | undefined
 }
 
 @Component({
@@ -27,10 +28,16 @@ export class CheckjobComponent {
   
   ngOnInit() {
     this.token = this.route.snapshot.paramMap.get('token'); 
-    if (this.token != null) {
-      this.load_data();
-      this.pollingTimer = setInterval(()=> { this.load_data() }, 60 * 1000);
-    }
+    this.route.params.subscribe(val => {
+      this.token = this.route.snapshot.paramMap.get('token'); 
+      if (this.token != null) {
+        this.stopPolling()
+        this.jobData = undefined; this.files = []
+        this.onError = false; this.errorMessage = "";
+        this.load_data();
+        this.pollingTimer = setInterval(()=> { this.load_data() }, 60 * 1000);
+      }
+   });
   }
 
   downloadFile(file: String){
@@ -70,6 +77,7 @@ export class CheckjobComponent {
               email_address: response.payload.job.email_address,
               state: response.payload.job.state,
               token: response.payload.job.token,
+              ssRNA_id: response.payload.job.ssRNA_id,
               results: response.payload.results,
               date: response.payload.job.date,
               triplex_params: response.payload.params
@@ -91,5 +99,9 @@ export class CheckjobComponent {
     } else {
       this.onError = true;
     }
+  }
+
+  goToVisuals(){
+    window.open("/data_visualization/" + this.token, '_blank')
   }
 }

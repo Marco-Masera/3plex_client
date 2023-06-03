@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
 import { JobToSubmit } from '../model/jobToSubmit';
+import { LncRnaTranscript } from '../model/lnc_rna_transcript';
+import { encode, decode } from "@msgpack/msgpack";
 
 const BASE_URL="http://192.168.186.10:8001/"
 
@@ -76,8 +78,14 @@ export class TriplexServiceService {
       formData.append('SSRNA_FASTA', jobToSubmit.SSRNA_FASTA);
     } else if (jobToSubmit.SSRNA_STRING){
       formData.append('SSRNA_STRING', jobToSubmit.SSRNA_STRING);
+    } else if (jobToSubmit.SSRNA_TRANSCRIPT_ID){
+      formData.append('SSRNA_ID', jobToSubmit.SSRNA_TRANSCRIPT_ID);
     }
-    formData.append('DSDNA_FASTA', jobToSubmit.DSDNA_FASTA);
+    if (jobToSubmit.DSDNA_FASTA){
+      formData.append('DSDNA_FASTA', jobToSubmit.DSDNA_FASTA);
+    } else if (jobToSubmit.DSDNA_BED){
+      formData.append('DSDNA_COORD_BED', jobToSubmit.DSDNA_BED);
+    }
 
     if (jobToSubmit.JOBNAME !== undefined) {
       formData.append('JOBNAME', String(jobToSubmit.JOBNAME));
@@ -112,5 +120,25 @@ export class TriplexServiceService {
 
   getBaseUrl(){
     return BASE_URL
+  }
+
+  //Retrieve LncRnaTranscript objects by query
+  get_lncrna_transcripts_from_query(query: string, max_elems: number): Promise<LncRnaTranscript[]>{
+    return this.get_data("api/search/transcripts/"+query + "?max_elems="+ max_elems).then( r => {
+      if (r.success)
+        return r.payload.map( (elem: any) => new LncRnaTranscript(elem))
+      return []
+    })
+  }
+
+  get_data_for_visualizations(token: string): any{
+    return this.get_data("api/data_for_visuals/"+token)
+  }
+
+  get_profile_data(url: string): any{
+    const filePath = this.getBaseUrl().slice(0,-1) + url
+    return fetch(filePath)
+    .then(response => response.arrayBuffer())
+    .then(buffer => decode(buffer));
   }
 }
