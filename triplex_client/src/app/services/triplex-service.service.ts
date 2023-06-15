@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { JobToSubmit } from '../model/jobToSubmit';
 import { LncRnaTranscript } from '../model/lnc_rna_transcript';
 import { encode, decode } from "@msgpack/msgpack";
+import { DnaTargetSites } from '../model/dna_target_sites';
 
 const BASE_URL="http://192.168.186.10:8001/"
 
@@ -85,6 +86,8 @@ export class TriplexServiceService {
       formData.append('DSDNA_FASTA', jobToSubmit.DSDNA_FASTA);
     } else if (jobToSubmit.DSDNA_BED){
       formData.append('DSDNA_COORD_BED', jobToSubmit.DSDNA_BED);
+    } else if (jobToSubmit.DSDNA_TARGET_NAME){
+      formData.append("DSDNA_TARGET_NAME", jobToSubmit.DSDNA_TARGET_NAME)
     }
 
     if (jobToSubmit.JOBNAME !== undefined) {
@@ -123,10 +126,28 @@ export class TriplexServiceService {
   }
 
   //Retrieve LncRnaTranscript objects by query
-  get_lncrna_transcripts_from_query(query: string, max_elems: number): Promise<LncRnaTranscript[]>{
-    return this.get_data("api/search/transcripts/"+query + "?max_elems="+ max_elems).then( r => {
+  get_lncrna_transcripts_from_query(query: string, species:string, max_elems: number): Promise<LncRnaTranscript[]>{
+    return this.get_data("api/search/transcripts/" + species + "/" +query + "?max_elems="+ max_elems).then( r => {
       if (r.success)
         return r.payload.map( (elem: any) => new LncRnaTranscript(elem))
+      return []
+    })
+  }
+
+  get_dna_targets(): Promise<any>{
+    return this.get_data("api/dnatargetsites").then( r => {
+      if (r.success){
+        let d: { [species: string]: DnaTargetSites[] } = {}
+        r.payload.forEach((element:any) => {
+          let t = new DnaTargetSites(element);
+          if (d[t.species]){
+            d[t.species].push(t)
+          } else {
+            d[t.species] = [t]
+          }
+        });
+        return d;
+      }
       return []
     })
   }
@@ -140,5 +161,9 @@ export class TriplexServiceService {
     return fetch(filePath)
     .then(response => response.arrayBuffer())
     .then(buffer => decode(buffer));
+  }
+
+  get_allowed_species(): any{
+    return this.get_data("api/system_allowed_species");
   }
 }

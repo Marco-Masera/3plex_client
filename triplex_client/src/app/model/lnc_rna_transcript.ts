@@ -5,20 +5,24 @@ export class LncRnaTranscript implements PrintableModelObject {
     obj && Object.assign(this, obj);
   }
   chromosome: string = "";
-  start: number = 0;
-  end: number = 0;
   id: string = "";
-  score: number = 0;
   strand: string = "";
   transcript_type: string = "";
   gene_name: string = "";
   gene_id: string = "";
+  longest: boolean = false;
 
   stored_formatted_str: string[] = [];
   last_query: string | undefined = undefined;
 
+  get_help_tooltip(): string{
+    return ""
+  }
+
   toString(): string{
-    return this.gene_name + " - " + this.gene_id + " - " + this.id;
+    return this.gene_name + " - " + this.gene_id + " - " + this.id + (
+      this.longest ? " [longest]" : ""
+    );
   }
   toStringWithBold(substring: string): string[]{
     //Check if the values are already stored

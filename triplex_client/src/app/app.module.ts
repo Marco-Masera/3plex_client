@@ -6,6 +6,7 @@ import { AppComponent } from './app.component';
 import {MatExpansionModule} from '@angular/material/expansion';
 import { ReactiveFormsModule } from '@angular/forms';
 import {MatListModule} from '@angular/material/list';
+import {MatSelectModule} from '@angular/material/select';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import { NavbarComponent } from './navbar/navbar.component';
@@ -29,6 +30,7 @@ import { CheckjobComponent } from './checkjob/checkjob.component';
 import { CheckByEmailComponent } from './check-by-email/check-by-email.component';
 import { GenericSearchableDropdownComponent } from './send-job/generic-searchable-dropdown/generic-searchable-dropdown.component';
 import { DataVisualizationComponent } from './data-visualization/data-visualization.component';
+import { InfoPopupComponent } from './send-job/generic-searchable-dropdown/info-popup/info-popup.component';
 
 @NgModule({
   declarations: [
@@ -40,12 +42,14 @@ import { DataVisualizationComponent } from './data-visualization/data-visualizat
     CheckjobComponent,
     CheckByEmailComponent,
     GenericSearchableDropdownComponent,
-    DataVisualizationComponent
+    DataVisualizationComponent,
+    InfoPopupComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     MatButtonModule,
+    MatSelectModule,
     BrowserAnimationsModule,
     MatMenuModule,
     MatAutocompleteModule,

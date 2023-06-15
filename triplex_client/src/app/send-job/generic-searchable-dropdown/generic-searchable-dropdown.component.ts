@@ -6,6 +6,8 @@ import {
   debounceTime, distinctUntilChanged, switchMap
 } from 'rxjs/operators';
 import { Observable, Subject, from } from 'rxjs';
+import { InfoPopupComponent } from './info-popup/info-popup.component';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-generic-searchable-dropdown',
@@ -14,12 +16,25 @@ import { Observable, Subject, from } from 'rxjs';
 })
 export class GenericSearchableDropdownComponent<E extends PrintableModelObject> {
   @Input() get_options: ((query: string) => Promise<E[]>) | undefined = undefined
+  @Input() show_help: boolean = false
+  @Input() label: string = "put label here"
+  @Input() set disabled (v: boolean){
+    if (v){
+      this.searchBarControl.disable()
+    } else {
+      this.searchBarControl.enable()
+    }
+ }
   @Output() itemSelectedEvent = new EventEmitter<E>();
   queryText: string = ""
   private searchTerms = new Subject<string>();
 
+  constructor(public dialog: MatDialog) {}
+
   filteredOptions: Observable<E[]> = new Observable<E[]>();
   searchBarControl = new FormControl('');
+
+  
   ngOnInit() {
     this.searchBarControl.valueChanges.subscribe((value:string | null) => {
       if (value != null && typeof(value)=="string"){
@@ -45,5 +60,12 @@ export class GenericSearchableDropdownComponent<E extends PrintableModelObject> 
 
   onValueSelected(event: MatAutocompleteSelectedEvent ){
     this.itemSelectedEvent.emit(event.option.value);
+  }
+
+  helpClicked(event:any, object: any){
+    event.stopPropagation();
+    const dialogRef = this.dialog.open(InfoPopupComponent, {
+      data: {object: object},
+    });
   }
 }

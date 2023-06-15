@@ -4,23 +4,43 @@ import { TriplexServiceService } from '../services/triplex-service.service';
 import { JobToSubmit } from '../model/jobToSubmit';
 import { Router } from '@angular/router';
 import { LncRnaTranscript } from '../model/lnc_rna_transcript';
+import { DnaTargetSites } from '../model/dna_target_sites';
+import { InfoPopupComponent } from './generic-searchable-dropdown/info-popup/info-popup.component';
+import { MatDialog } from '@angular/material/dialog';
 
 const ssRNAMaxSize = 1;
 const dsDNAMaxSize = 300;
 
-function atLeastOneRequired(control: AbstractControl): { [key: string]: boolean } | null {
+//Checks for the Send button
+function sendButtonChecks(control: AbstractControl): { [key: string]: boolean } | null {
   const ssRNAValue: String | null = control.get('ssRNA')?.value;
   const ssRNATextual = control.get('ssRNATextual')?.value;
+  const dsDNA_chosen_type = control.get("dsDNA_chosen_type")?.value
+  const dsDNATargetSite = control.get("dsDNATargetSite")?.value
   const dsDNA = control.get("dsDNA")?.value
   const ssRNA_Id = control.get("ssRNA_transcript_id")?.value
   const ssRNA_chosen_type = control.get("ssRNA_chosen_type")?.value
-  if (!dsDNA){
-    return { atLeastOneRequired: true };
+  const species = control.get("selected_species")?.value
+  //For dna either you provide type=sequence and a file, or you provide a chosen target site
+  if (dsDNA_chosen_type == ssRNA_input_type.sequence){
+    //If file is .bed, a species must be provided
+    if (!dsDNA || (dsDNA.split(".").pop()=="bed" && !species)){
+      return { sendButtonChecks: true };
+    } else {
+      console.log(dsDNA.toString().split(".").pop())
+    }
   }
+  if (dsDNA_chosen_type != ssRNA_input_type.sequence){
+    //dsDNATargetSite must be specified and the species field must be equal to the chosen specie
+    if (!dsDNATargetSite || dsDNATargetSite.species != species){
+      return { sendButtonChecks: true };
+    }
+  }
+
   if (ssRNA_chosen_type == ssRNA_input_type.sequence && !ssRNAValue && !ssRNATextual) {
-    return { atLeastOneRequired: true };
-  } else if (ssRNA_chosen_type == ssRNA_input_type.transcript_id && !ssRNA_Id){
-    return { atLeastOneRequired: true };
+    return { sendButtonChecks: true };
+  } else if (ssRNA_chosen_type == ssRNA_input_type.transcript_id && (!ssRNA_Id || !species)){
+    return { sendButtonChecks: true };
   }
   return null;
 }
@@ -43,20 +63,24 @@ export class SendJobComponent {
   ssRNAFile: File | undefined;
   dsDNAFile: File | undefined;
   sending: boolean = false;
-  default_triplex_params: any
+  default_triplex_params: any;
+  allowed_species: string[] = [];
+  dsDnaTargetSites: { [species: string]: DnaTargetSites[] } = {}
 
   ssRNAToolTip = "A single ssRNA sequence - either chosen from our transcript's database or provided as a single fasta file or as simple text (max size: " + ssRNAMaxSize + " MB)."
-  dsDNAToolTip = "Target DNA sequences, either provided as a multi-FASTA file containing dsDNA sequences or a bed file containing the target coordinates (max size: " + dsDNAMaxSize + " MB)."
+  dsDNAToolTip = "Target DNA sequences, either chosen from our database of target sites or provided as a multi-FASTA file containing dsDNA sequences or a bed file containing the target coordinates (max size: " + dsDNAMaxSize + " MB)."
 
   transcriptSearchGetQuery: ((query: string) => Promise<LncRnaTranscript[]>) | undefined = undefined
-
-  constructor(private triplexService: TriplexServiceService, private _router: Router) {
+  constructor(private triplexService: TriplexServiceService, private _router: Router, public dialog: MatDialog) {
     this.formGroup = new FormGroup({
+      selected_species: new FormControl(null),
       ssRNA_chosen_type: new FormControl(ssRNA_input_type.transcript_id),
       ssRNA_transcript_id: new FormControl(null),
       ssRNA: new FormControl(null),
       ssRNATextual: new FormControl(null),
+      dsDNA_chosen_type: new FormControl(ssRNA_input_type.sequence),
       dsDNA: new FormControl(null),
+      dsDNATargetSite: new FormControl(null),
       jobName: new FormControl(null),
       email: new FormControl(null),
       min_len: new FormControl(null),
@@ -66,20 +90,26 @@ export class SendJobComponent {
       filter_repeat : new FormControl(null),//on off
       consecutive_errors: new FormControl(null),
       SSTRAND: new FormControl(null)
-    }, { validators: atLeastOneRequired });
+    }, { validators: sendButtonChecks });
   }
 
   ngOnInit(){
     const s = this.triplexService
+    var self = this;
     this.transcriptSearchGetQuery = function(query: string){
-      return s.get_lncrna_transcripts_from_query(query, 30)
+      return s.get_lncrna_transcripts_from_query(query, self.formGroup.value.selected_species, 30)
     }
+    this.triplexService.get_dna_targets().then(response => this.dsDnaTargetSites = response);
+
     this.triplexService.get_triplex_default_params().then( response => {
       if (response.success){
         this.default_triplex_params = response.payload
         this.formGroup.patchValue({filter_repeat: this.default_triplex_params?.filter_repeat.default});
         console.log(this.default_triplex_params)
       }
+    })
+    this.triplexService.get_allowed_species().then ((response: any) => {
+      if (response.success){ this.allowed_species = response.payload; console.log(this.allowed_species)}
     })
   }
 
@@ -186,12 +216,14 @@ export class SendJobComponent {
       console.log("Submit job...")
       this.sending = true;
       const isUsingSequence = this.formGroup.value.ssRNA_chosen_type==ssRNA_input_type.sequence;
+      const isUsingdsDNATarget = this.formGroup.value.dsDNA_chosen_type!=ssRNA_input_type.sequence
       let job: JobToSubmit = {
         SSRNA_FASTA: isUsingSequence ? this.ssRNAFile : undefined,
         SSRNA_STRING: isUsingSequence ? this.formGroup.value.ssRNATextual : undefined,
         SSRNA_TRANSCRIPT_ID: !isUsingSequence ? this.formGroup.value.ssRNA_transcript_id : undefined,
-        DSDNA_FASTA: this.checkFileFastaFormat(this.dsDNAFile) ? this.dsDNAFile : undefined,
-        DSDNA_BED: this.checkFileBedFormat(this.dsDNAFile) ? this.dsDNAFile : undefined,
+        DSDNA_FASTA: !isUsingdsDNATarget ? (this.checkFileFastaFormat(this.dsDNAFile) ? this.dsDNAFile : undefined) : undefined,
+        DSDNA_BED: !isUsingdsDNATarget ? (this.checkFileBedFormat(this.dsDNAFile) ? this.dsDNAFile : undefined) : undefined,
+        DSDNA_TARGET_NAME: isUsingdsDNATarget ? this.formGroup.value.dsDNATargetSite.name : undefined,
         JOBNAME: this.formGroup.value.jobName || undefined,
         EMAIL: this.formGroup.value.email || undefined,
         min_len: this.formGroup.value.min_len || undefined,
@@ -231,8 +263,18 @@ export class SendJobComponent {
   }
 
   
-  
   transcriptSearchSelectOption(selected: LncRnaTranscript){
     this.formGroup.patchValue({ssRNA_transcript_id: selected.id});
+  }
+
+  dnaTargetSearchSelectOption(selected: DnaTargetSites){
+    this.formGroup.patchValue({dsDNATargetSite: selected});
+  }
+
+  dsDNAhelpClicked(event:any, object: any){
+    event.stopPropagation();
+    const dialogRef = this.dialog.open(InfoPopupComponent, {
+      data: {object: object},
+    });
   }
 }

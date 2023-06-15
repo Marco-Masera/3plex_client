@@ -1,9 +1,11 @@
-<p>data-visualization works!</p>
 
 <div id="profilePlotContainer">
+<mat-card class="visualsCard">
     <div *ngIf="profileGraphDiv == undefined" class="spinnerDiv">
         <mat-spinner></mat-spinner>
     </div>
+
+    <h4 *ngIf="profileGraphDiv != undefined">TFO count</h4>
     <div id="plotDiv" [ngClass]="{'withTransparency' : loading}"></div>
     <p *ngIf="profileGraphDiv != undefined">Adjust stability threshold (current: {{minStability}})</p>
     <mat-slider *ngIf="profileGraphDiv != undefined" 
@@ -14,4 +16,12 @@
             discrete="true">
         <input  matSliderThumb [(ngModel)]="minStability" (change)="drawProfilePlot()" >
     </mat-slider>
+
+    <h4 *ngIf="dataForVisuals?.available.conservation">Conservation</h4>
+    <div id="plotDivConservation"></div>
+
+    <h4 *ngIf="dataForVisuals?.available.repeats">Repeats</h4>
+    <div id="plotDivRepeats"></div>
+
+</mat-card>
 </div>

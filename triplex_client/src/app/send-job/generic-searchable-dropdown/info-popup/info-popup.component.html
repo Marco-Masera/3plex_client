@@ -1,0 +1,13 @@
+<div mat-dialog-content id="infoPopup">
+
+    <h3><b>{{object_r.object.name}}</b></h3>
+    <hr/>
+    <p><b>Description</b>: {{object_r.object.description}}</p>
+    <p><b>Sequences</b>: {{object_r.object.n_sequences}}</p>
+    <p><b>Size in kb</b>: {{object_r.object.total_size_KB}}</p>
+    <a [href]="object_r.object.external_ref" target="_blank">see reference</a>
+
+</div>
+  <div mat-dialog-actions>
+    <button mat-button (click)="onNoClick()">Return</button>
+</div>

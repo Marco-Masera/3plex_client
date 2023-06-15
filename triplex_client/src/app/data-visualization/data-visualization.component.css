@@ -1,3 +1,10 @@
+.visualsCard{
+    width: 90%;
+    margin-left: 90px; margin-right: 90px; margin-top: 25px; margin-bottom: 30px; padding:20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
 
 #profilePlotContainer{
     width: 100%;
@@ -11,7 +18,6 @@
     margin-left: 10px; margin-right: 10px;
     width: 90%;
     margin-bottom: 0px; padding-bottom: 0px;
-    background-color: aliceblue;
 }
 
 #minStabilitySlider{
@@ -21,4 +27,8 @@
 
 .withTransparency{
     opacity: 0.5;
+}
+
+h4{
+    margin-top: 15px;
 }

@@ -1,6 +1,9 @@
 import { Component } from '@angular/core';
 import { TriplexServiceService } from '../services/triplex-service.service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+import { PlottableRepeat, Repeat } from '../model/repeats';
+import { repeat } from 'rxjs';
+import { PathLocationStrategy } from '@angular/common';
 
 declare let Plotly: any;
 
@@ -23,16 +26,20 @@ export class DataVisualizationComponent {
   maxAvailableStability: number = 100
   loading: boolean = false
   maxStability: any = {}
+  graphBusy: any = {}
 
 
-  constructor(private triplexService: TriplexServiceService, private route: ActivatedRoute){}
+  constructor(private triplexService: TriplexServiceService, private route: ActivatedRoute,
+    private _router: Router){}
 
   ngOnInit() {
     this.token = this.route.snapshot.paramMap.get('token'); 
     if (this.token != null) {
       this.triplexService.get_data_for_visualizations(this.token).then( (response:any) => {
         if (!response.success){
-          window.alert("Failed to retrieve data: " + response.error)
+          console.log(response)
+          //Redirect to check job
+          this._router.navigate(['checkjob/token/', this.token]);
         } else {
           this.dataForVisuals = response.payload
           this.initializePlots()
@@ -43,7 +50,87 @@ export class DataVisualizationComponent {
 
   //This function is called once dataForVisuals has been retrieved
   initializePlots(){
-    this.initializeProfilePlot(this.dataForVisuals?.available?.tfo_profile)
+    this.initializeProfilePlot(this.dataForVisuals?.available?.tfo_profile);
+    this.initializeConservationPlot();
+    this.initializeRepeatsPlot();
+  }
+
+
+  graph_changed_zoom_callback(plot_div: string, eventdata: any){
+    if (this.graphBusy[plot_div]){
+      this.graphBusy[plot_div] = false;
+      return;
+    }
+    console.log("Agent: " + plot_div + ", zoom: " + eventdata["xaxis.range[0]"] + "-" + eventdata["xaxis.range[1]"])
+    const plots = ["plotDiv","plotDivConservation","plotDivRepeats"]
+    plots.forEach( (plot: string)=> {
+      if (plot != plot_div){
+        const div:any = document.getElementById(plot);
+        let oldLayout = div.layout
+        console.log("Target:" + plot)
+        oldLayout.xaxis.range[0] = eventdata["xaxis.range[0]"]
+        oldLayout.xaxis.range[1] = eventdata["xaxis.range[1]"]
+        this.graphBusy[plot] = true;
+        Plotly.relayout(plot, oldLayout);
+      }
+    })
+  }
+
+  async initializeRepeatsPlot(){
+    const repeats: Repeat[] = this.dataForVisuals?.available.repeats.map(
+      (r: any[]) => {
+        const info = r[2].split(";")
+        return {repClass: info[2], repName: info[0], repFamily:info[1],
+        start: r[0], end: r[1]}
+      })
+    let max_size = this.dataForVisuals?.available.conservation.length;
+    const traces: any[] = PlottableRepeat.format_repeats_for_plotlt(repeats, max_size).map (
+        (value: PlottableRepeat) => {
+          return {
+              x: value.xAxis, y: value.yAzis, mode: "lines+markers", type: "scatter", 
+              connectgaps: false, name: value.repClass, text: value.text,
+              hovertemplate: "<b>%{text}</b><br>X: %{x}<br>"
+            }
+        })
+    const layout = {
+          yaxis: {
+            fixedrange: true,
+            visible: false,
+            showticklabels: false,
+          },
+          xaxis: {
+            showline: false,
+            zeroline: false
+          },  margin:{b: 30, t: 5, l:0,r:0},height: 240
+        };
+    Plotly.newPlot('plotDivRepeats', traces, layout).then((x:any) => {
+      let myDiv: any = document.getElementById("plotDivRepeats");
+      if (myDiv != null){
+        myDiv.on("plotly_relayout", (eventdata:any) => {
+          this.graph_changed_zoom_callback("plotDivRepeats", eventdata);
+        });
+      }
+    })
+  }
+
+  async initializeConservationPlot(){
+    if (this.dataForVisuals?.available.conservation){
+      const layout = {
+        yaxis: {title: 'Conservation', autorange: true, fixedrange: true}, margin:{b: 30, t: 5, l:0,r:0},height: 240
+      }
+      const data = {
+        'x': Array.from({length: this.dataForVisuals?.available.conservation.length}, (_, index) => index),
+        'y': this.dataForVisuals?.available.conservation, type: 'line'
+      }
+      Plotly.newPlot('plotDivConservation', [data], layout).then((x:any) => {
+        let myDiv: any = document.getElementById("plotDivConservation");
+        if (myDiv != null){
+          myDiv.on("plotly_relayout", (eventdata:any) => {
+            this.graph_changed_zoom_callback("plotDivConservation", eventdata);
+          });
+        }
+      })
+    }
   }
 
   async initializeProfilePlot(urlToProfiles: string){
@@ -59,16 +146,19 @@ export class DataVisualizationComponent {
     await new Promise((r) => setTimeout(r, 20))
     if (this.profileGraphDiv==undefined){
       const layout = {
-        yaxis: {title: 'TFO Count'},
+        yaxis: {title: 'TFO Count'}, margin:{b: 30, t: 5, l:0,r:0},height: 320
       }
       Plotly.newPlot('plotDiv', [data], layout, {responsive: true}).then((x:any) => {
         this.loading = false;
         this.profileGraphDiv = document?.getElementById('plotDiv')
+        this.profileGraphDiv.on("plotly_relayout", (eventdata:any) => {
+            this.graph_changed_zoom_callback("plotDiv", eventdata);
+        });
       })
     } else {
       let oldRange = this.profileGraphDiv.layout.xaxis.range;
       const layout = {
-        yaxis: {title: 'TFO Count'}, xaxis: {range: oldRange}
+        yaxis: {title: 'TFO Count'}, xaxis: {range: oldRange}, margin:{b: 30, t: 5, l:0,r:0},height: 320
       }
       Plotly.react('plotDiv', [data], layout).then((x:any) => {
         this.loading = false;
@@ -139,7 +229,7 @@ export class DataVisualizationComponent {
     }
     x.push(biggestX+1); y.push(0); w.push(1);  t.push(""); marker.color.push(0)
     return {
-      'x': x, 'y': y, 'with': w, type: 'bar', name: 'yaxis data', marker: marker, text: t,
+      'x': x, 'y': y, 'with': w, type: 'bar', name: '', marker: marker, text: t,
       hovertemplate: '<b>Pos</b>: %{text}' +
                         '<br><b>TFO Count</b>: %{y}<br>',
                         textposition: "none"
