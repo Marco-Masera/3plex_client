@@ -1,7 +1,7 @@
-<div mat-dialog-content>
+<div mat-dialog-content class="dialogContainer">
   <p *ngIf="state.state=='token'">Insert your job's token here</p>
   <p *ngIf="state.state=='email'">Insert your email here</p>
-  <mat-form-field>
+  <mat-form-field style="margin-top: 10px; width: 240px;">
     <mat-label *ngIf="state.state=='token'">Token</mat-label>
     <mat-label *ngIf="state.state=='email'">Email</mat-label>
     <input matInput [(ngModel)]="userInput">

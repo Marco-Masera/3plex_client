@@ -156,7 +156,7 @@ export class TriplexServiceService {
     return this.get_data("api/data_for_visuals/"+token)
   }
 
-  get_profile_data(url: string): any{
+  get_mspack_data(url: string): any{
     const filePath = this.getBaseUrl().slice(0,-1) + url
     return fetch(filePath)
     .then(response => response.arrayBuffer())

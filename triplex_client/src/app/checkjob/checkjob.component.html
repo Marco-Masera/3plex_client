@@ -37,7 +37,7 @@
               </mat-list>
 
               <div *ngIf="jobData.state=='Submitted'" style="margin-top: 30px;">
-                <h4>This page will be automatically updated untill the job is completed</h4>
+                <h4>This page will be automatically updated until the job is completed</h4>
                 <mat-progress-bar mode="indeterminate"></mat-progress-bar>
               </div>
 
@@ -63,6 +63,12 @@
                 </mat-accordion>
               </div>
 
+              <div *ngIf="jobData.state == 'Ready'" style="margin-bottom: 30px;">
+                <button type="button" mat-raised-button (click)="goToVisuals()" style=" min-width: 340px;">
+                  Visualize data
+                </button>
+              </div>
+
               <div *ngIf="files && files.length > 0">
                 <mat-accordion>
                     <mat-expansion-panel [expanded]="true" style="min-width: 650px; max-width: 700px;">
@@ -81,12 +87,6 @@
                     </div>
                     </mat-expansion-panel>
                 </mat-accordion>
-              </div>
-
-              <div *ngIf="jobData.state == 'Ready'" style="margin-top: 15px;">
-                <button type="button" mat-stroked-button (click)="goToVisuals()" style=" min-width: 300px;">
-                  Visualize data
-                </button>
               </div>
 
         </div>

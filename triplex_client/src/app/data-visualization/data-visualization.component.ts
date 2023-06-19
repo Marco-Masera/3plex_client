@@ -21,6 +21,7 @@ export class DataVisualizationComponent {
   token: string | null = null
   dataForVisuals: DataForVisuals | undefined = undefined
   profileData: any | undefined = undefined
+  secondaryStructureData: number[] | undefined
   profileGraphDiv: any | undefined = undefined
   minStability: number = 0
   maxAvailableStability: number = 100
@@ -37,7 +38,6 @@ export class DataVisualizationComponent {
     if (this.token != null) {
       this.triplexService.get_data_for_visualizations(this.token).then( (response:any) => {
         if (!response.success){
-          console.log(response)
           //Redirect to check job
           this._router.navigate(['checkjob/token/', this.token]);
         } else {
@@ -51,10 +51,39 @@ export class DataVisualizationComponent {
   //This function is called once dataForVisuals has been retrieved
   initializePlots(){
     this.initializeProfilePlot(this.dataForVisuals?.available?.tfo_profile);
+    this.initializeSecondaryStructurePlot(this.dataForVisuals?.available?.secondary_structure);
     this.initializeConservationPlot();
     this.initializeRepeatsPlot();
   }
 
+  initializeSecondaryStructurePlot(path: string){
+    if (!path){
+      return;
+    }
+    this.triplexService.get_mspack_data(path).then((data:number[]) => {
+      this.secondaryStructureData = data;
+      const layout = {
+        yaxis: {
+          tickformat: '.3f'
+        }, margin:{b: 30, t: 5, l:0,r:0},height: 240
+      }
+      const plotlyData = {
+        'x': Array.from({length: data.length}, (_, index) => index),
+        'y': data, type: 'line',
+        line: {
+          color: "green"
+        }
+      }
+      Plotly.newPlot('plotDivSecondaryStructure', [plotlyData], layout).then((x:any) => {
+        let myDiv: any = document.getElementById("plotDivSecondaryStructure");
+        if (myDiv != null){
+          myDiv.on("plotly_relayout", (eventdata:any) => {
+            this.graph_changed_zoom_callback("plotDivSecondaryStructure", eventdata);
+          });
+        }
+      })
+    })
+  }
 
   graph_changed_zoom_callback(plot_div: string, eventdata: any){
     if (this.graphBusy[plot_div]){
@@ -62,16 +91,19 @@ export class DataVisualizationComponent {
       return;
     }
     console.log("Agent: " + plot_div + ", zoom: " + eventdata["xaxis.range[0]"] + "-" + eventdata["xaxis.range[1]"])
-    const plots = ["plotDiv","plotDivConservation","plotDivRepeats"]
+    const plots = ["plotDiv","plotDivConservation","plotDivRepeats", "plotDivSecondaryStructure"]
     plots.forEach( (plot: string)=> {
       if (plot != plot_div){
         const div:any = document.getElementById(plot);
         let oldLayout = div.layout
-        console.log("Target:" + plot)
-        oldLayout.xaxis.range[0] = eventdata["xaxis.range[0]"]
-        oldLayout.xaxis.range[1] = eventdata["xaxis.range[1]"]
-        this.graphBusy[plot] = true;
-        Plotly.relayout(plot, oldLayout);
+        if (oldLayout && eventdata){
+          console.log(div)
+          console.log("Target:" + plot)
+          oldLayout.xaxis.range[0] = eventdata["xaxis.range[0]"]
+          oldLayout.xaxis.range[1] = eventdata["xaxis.range[1]"]
+          this.graphBusy[plot] = true;
+          Plotly.relayout(plot, oldLayout);
+        }
       }
     })
   }
@@ -89,6 +121,12 @@ export class DataVisualizationComponent {
           return {
               x: value.xAxis, y: value.yAzis, mode: "lines+markers", type: "scatter", 
               connectgaps: false, name: value.repClass, text: value.text,
+              line:{
+                width:8
+              },
+              marker:{
+                size: 8
+              },
               hovertemplate: "<b>%{text}</b><br>X: %{x}<br>"
             }
         })
@@ -116,11 +154,11 @@ export class DataVisualizationComponent {
   async initializeConservationPlot(){
     if (this.dataForVisuals?.available.conservation){
       const layout = {
-        yaxis: {title: 'Conservation', autorange: true, fixedrange: true}, margin:{b: 30, t: 5, l:0,r:0},height: 240
+        yaxis: {autorange: true, fixedrange: true}, margin:{b: 30, t: 5, l:0,r:0},height: 240
       }
       const data = {
         'x': Array.from({length: this.dataForVisuals?.available.conservation.length}, (_, index) => index),
-        'y': this.dataForVisuals?.available.conservation, type: 'line'
+        'y': this.dataForVisuals?.available.conservation, type: 'line',
       }
       Plotly.newPlot('plotDivConservation', [data], layout).then((x:any) => {
         let myDiv: any = document.getElementById("plotDivConservation");
@@ -134,7 +172,7 @@ export class DataVisualizationComponent {
   }
 
   async initializeProfilePlot(urlToProfiles: string){
-    this.triplexService.get_profile_data(urlToProfiles).then((data:any) => {
+    this.triplexService.get_mspack_data(urlToProfiles).then((data:any) => {
       this.profileData = data
       this.getMaxStabilityShapes()
       this.drawProfilePlot()
@@ -266,7 +304,7 @@ export class DataVisualizationAlternativeTwoComponent {
 
   async initializeProfilePlot(token: string){
     const l1: any = new Date()
-    this.triplexService.get_profile_data(token).then((data:any) => {
+    this.triplexService.get_mspack_data(token).then((data:any) => {
       this.profileData = data
       const l2: any = new Date()
       console.log("Retrieving and unpacking data: " + (l2 - l1)/1000)

@@ -1,9 +1,11 @@
 .visualsCard{
-    width: 90%;
+    width: 80%;
     margin-left: 90px; margin-right: 90px; margin-top: 25px; margin-bottom: 30px; padding:20px;
+    padding-top: 24px;
     display: flex;
     justify-content: center;
     align-items: center;
+    background-color: rgb(250, 250, 250);
 }
 
 #profilePlotContainer{
@@ -14,9 +16,10 @@
     align-items: center;
 }
 
-#plotDiv{
+.containsPlot{
     margin-left: 10px; margin-right: 10px;
-    width: 90%;
+    width: 100%;
+    max-width: 950px;
     margin-bottom: 0px; padding-bottom: 0px;
 }
 
@@ -31,4 +34,13 @@
 
 h4{
     margin-top: 15px;
+}
+
+#jobInfoCont{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+#jobInfoCont span{
+    margin-right: 8px;
 }

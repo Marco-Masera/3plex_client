@@ -1,242 +1,244 @@
 <div class="submitJobContainer">
-<mat-card class="submitJobCard">
-<div *ngIf="sending" class="spinnerDiv">
-    <mat-spinner></mat-spinner>
-</div>
-<form [formGroup]="formGroup" (ngSubmit)="submitForm()" novalidate [ngClass]="{'transparentForm' : sending}">
-    <fieldset [disabled]="sending" style="border: 0ch;">
-    <!-- Section 1: Input data -->
-    <section>
-      <h4>Input Data</h4>
-      <div class="verticalInputSection">
-        <div class="paramNameContainer">
-            <h3>ssRNA*</h3>
-            <mat-icon [matTooltip]="ssRNAToolTip" matTooltipPosition="above"
-                aria-hidden="false" aria-label="Example home icon" fontIcon="help_outline"></mat-icon>
-        </div>
-        
-            <mat-radio-group formControlName="ssRNA_chosen_type" aria-label="Select an option" style="margin-bottom: 15px;">
-                <mat-radio-button value="t">Choose a transcript</mat-radio-button>
-                <mat-radio-button value="s">Provide your own sequence</mat-radio-button>
-            </mat-radio-group>
-            
-            <div class="verticalInputSection" style="margin-left: 15px;">
-                <!--Section to Choose a transcript-->
-                <p *ngIf="formGroup.get('ssRNA_chosen_type')?.value=='t'">Choose species</p>
-                    <mat-radio-group 
-                        *ngIf="formGroup.get('ssRNA_chosen_type')?.value=='t'" formControlName="selected_species" aria-label="Select an option">
-                        <mat-radio-button *ngFor="let specie of allowed_species" 
-                            [value]="specie">{{specie}}</mat-radio-button>
-                    </mat-radio-group>
-
-                <app-generic-searchable-dropdown style="margin-top: 10px; width: 300px;" *ngIf="formGroup.get('ssRNA_chosen_type')?.value=='t'" 
-                    class="lncRnaSearchbar" 
-                    [disabled] = "!formGroup.get('selected_species')?.value"
-                    [label]="'Search for transcripts or genes'"
-                    [get_options]="transcriptSearchGetQuery" 
-                    (itemSelectedEvent)="transcriptSearchSelectOption($event)"></app-generic-searchable-dropdown>
-                
-
-                <!--Section to provide your own sequence-->
-                <div class="verticalInputSection" *ngIf="formGroup.get('ssRNA_chosen_type')?.value=='s'" style="margin-top: 15px;">
-                    <label for="ssRNATextArea">Provide ssRNA sequence</label>
-                    <textarea [attr.disabled]="ssRNAFile? true : null" style="min-width: 450px; min-height: 100px; max-height: 300px;" id="ssRNATextArea" formControlName="ssRNATextual"></textarea>
-                    <label style="margin-top: 20px; margin-bottom: 10px;" for="ssRNAFileInput">or choose a file in FASTA format</label>
-                    <div class="fileInputSection">
-                        <button id="ssRNAFileInput" class="fileButton" type="button" mat-stroked-button (click)="fileInput.click()">Choose File</button>
-                        <input hidden formControlName="ssRNA" #fileInput type="file" (change)="onRnaChange($event)">
-                        <span class="file-name">{{pathToName(formGroup.value.ssRNA)}}</span>
-                        <mat-icon  (click)="reset_selected_ssRNA()" style="margin-left: 3px;  transform: scale(0.7); cursor: pointer;" *ngIf="pathToName(formGroup.value.ssRNA)" aria-hidden="false" fontIcon="highlight_off"></mat-icon>
-                    </div>
-                </div>
-            </div>
-        </div>
-      <div class="verticalInputSection">
-            <div class="paramNameContainer">
-                <h3>dsDNA*</h3>
-                <mat-icon [matTooltip]="dsDNAToolTip" matTooltipPosition="above"
-                aria-hidden="false" aria-label="Example home icon" fontIcon="help_outline"></mat-icon>
-            </div>
-            <mat-radio-group style="margin-bottom: 20px;"  formControlName="dsDNA_chosen_type" aria-label="Select an option">
-                <mat-radio-button value="s">Provide your own sequence(s)</mat-radio-button>
-                <mat-radio-button value="t">Choose a target</mat-radio-button>
-            </mat-radio-group>
-            
-            <div class="verticalInputSection" style="margin-left: 15px;">
-                <!--Section to Choose a target site-->
-                <p *ngIf="formGroup.get('dsDNA_chosen_type')?.value=='s'">Upload a multi-fasta file or a .bed file</p>
-                <div class="fileInputSection" *ngIf="formGroup.get('dsDNA_chosen_type')?.value=='s'">
-                    <button class="fileButton" type="button" mat-stroked-button (click)="fileInput2.click()">Choose File</button>
-                    <input hidden #fileInput2 type="file" (change)="onDnaChange($event)">
-                    <span class="file-name">{{pathToName(formGroup.value.dsDNA)}}</span>
-                    <mat-icon (click)="reset_selected_dsDNA()" style="margin-left: 3px; transform: scale(0.7); cursor: pointer;" *ngIf="pathToName(formGroup.value.dsDNA)" aria-hidden="false" fontIcon="highlight_off"></mat-icon>
-                </div>
-                <p *ngIf="formGroup.get('dsDNA_chosen_type')?.value=='s' && formGroup.get('ssRNA_chosen_type')?.value=='s' && checkFileBedFormat(dsDNAFile)">Choose species</p>
-                    <mat-radio-group 
-                        *ngIf="formGroup.get('dsDNA_chosen_type')?.value=='s' && formGroup.get('ssRNA_chosen_type')?.value=='s' && checkFileBedFormat(dsDNAFile)" formControlName="selected_species" aria-label="Select an option">
-                        <mat-radio-button *ngFor="let specie of allowed_species" 
-                            [value]="specie">{{specie}}</mat-radio-button>
-                    </mat-radio-group>
-
-
-                <!--dsDNA target sequences-->
-                <p *ngIf="formGroup.get('ssRNA_chosen_type')?.value=='s' && formGroup.get('dsDNA_chosen_type')?.value!='s'">Choose species</p>
-                    <mat-radio-group 
-                        *ngIf="formGroup.get('dsDNA_chosen_type')?.value!='s' && formGroup.get('ssRNA_chosen_type')?.value=='s'" formControlName="selected_species" aria-label="Select an option">
-                        <mat-radio-button *ngFor="let specie of allowed_species" 
-                            [value]="specie">{{specie}}</mat-radio-button>
-                    </mat-radio-group>
-                <mat-form-field style="width: 300px;" *ngIf="formGroup.get('dsDNA_chosen_type')?.value=='t'">
-                    <mat-label>dsDNA target sites</mat-label>
-                    <mat-select [disabled]="!formGroup.get('selected_species')?.value">
-                        <mat-option 
-                            *ngFor="let t of dsDnaTargetSites[formGroup.get('selected_species')?.value ?? '']" 
-                            value="t"
-                            (click)="dnaTargetSearchSelectOption(t)">
-                                {{t.toString()}}
-                                <mat-icon (click)="dsDNAhelpClicked($event, t)" [matTooltip]="'Show details'" matTooltipPosition="above"
-                                    aria-hidden="false" aria-label="Example home icon" fontIcon="help_outline"></mat-icon>
-                            </mat-option>
-                    </mat-select>
-                </mat-form-field>
-                <!--
-                <app-generic-searchable-dropdown style="margin-top: 10px; width: 300px;" *ngIf="formGroup.get('dsDNA_chosen_type')?.value!='s' && formGroup.get('dsDNA_chosen_type')?.value=='t'" 
-                    class="lncRnaSearchbar" 
-                    [label]="'dsDNA target site'"
-                    [show_help]="true"
-                    [get_options]="dnaTargetSearchGetQuery" 
-                    (itemSelectedEvent)="dnaTargetSearchSelectOption($event)"></app-generic-searchable-dropdown>
-                -->
-            </div>
-        </div>
-    </section>
-  
-    <!-- Section 2: Job info -->
-    <section>
-      <h4>Job Info</h4>
-      <p class="notTooBig">
-        You can write your email to receive a notification once the job is completed and to retrieve your previous jobs; you can also name your job to easily identify it.
-      </p>
-      <mat-form-field class="smallInput">
-        <mat-label>Job Name</mat-label>
-        <input matInput formControlName="jobName">
-      </mat-form-field>
-      <mat-form-field class="smallInput">
-        <mat-label>Email</mat-label>
-        <input matInput formControlName="email">
-      </mat-form-field>
-    </section>
-  
-    <!-- Section 3: 3plex parameters -->
-    <section>
-        <mat-accordion>
-            <mat-expansion-panel style="max-width: 650px;" class="mat-elevation-z0">
-              <mat-expansion-panel-header>
-                    <mat-panel-title>
-                    <span class="right">Additional 3plex parameters</span>
-                    </mat-panel-title>
-              </mat-expansion-panel-header>
-
-            <mat-list role="list">
-                <mat-list-item [matTooltip]="get_triplex_params_description('min_len')" matTooltipPosition="above" style="height:50px !important" class="line" role="listitem">
-                    <div class="row">
-                        <div class="paramNameContainer">
-                            <p>Min len</p>
-                            <mat-icon aria-hidden="false" aria-label="Example home icon" fontIcon="help_outline"></mat-icon>
-                        </div>
-                        <mat-form-field class="smallInput">
-                            <input matInput [min]="get_triplex_param_l_b('min_len')" [max]="get_triplex_param_h_b('min_len')" type="number" formControlName="min_len" [placeholder]="'default ' + get_triplex_params_default_value('min_len')">
-                        </mat-form-field>
-                    </div>
-                </mat-list-item>
-                <mat-list-item [matTooltip]="get_triplex_params_description('max_len')" matTooltipPosition="above" style="height:50px !important" class="line" role="listitem">
-                    <div class="row">
-                        <div class="paramNameContainer">
-                            <p>Max len</p>
-                            <mat-icon aria-hidden="false" aria-label="Example home icon" fontIcon="help_outline"></mat-icon>
-                        </div>
-                        
-                        <mat-form-field class="smallInput">
-                            <input matInput type="number" [placeholder]="'default ' + get_triplex_params_default_value('max_len')" [min]="get_triplex_param_l_b('max_len')" [max]="get_triplex_param_h_b('max_len')"  formControlName="max_len">
-                        </mat-form-field>
-                    </div>
-                </mat-list-item>
-                <mat-list-item [matTooltip]="get_triplex_params_description('error_rate')" matTooltipPosition="above" style="height:50px !important" class="line" role="listitem">
-                    <div class="row">
-                        <div class="paramNameContainer">
-                            <p >Error rate</p>
-                            <mat-icon aria-hidden="false" aria-label="Example home icon" fontIcon="help_outline"></mat-icon>
-                        </div>
-                       
-                        <mat-form-field class="smallInput">
-                            <input matInput type="number" [placeholder]="'default ' + get_triplex_params_default_value('error_rate')" [min]="get_triplex_param_l_b('error_rate')" [max]="get_triplex_param_h_b('error_rate')"  formControlName="error_rate">
-                        </mat-form-field>
-                    </div>
-                </mat-list-item>
-            <mat-list-item  [matTooltip]="get_triplex_params_description('guanine_rate')" matTooltipPosition="above" style="height:50px !important" class="line" role="listitem">
-                <div class="row">
-                    <div class="paramNameContainer">
-                        <p>Guanine rate</p>
-                        <mat-icon aria-hidden="false" aria-label="Example home icon" fontIcon="help_outline"></mat-icon>
-                    </div>
-                   
-                    <mat-form-field class="smallInput">
-                        <input matInput type="number" [placeholder]="'default ' + get_triplex_params_default_value('guanine_rate')" [min]="get_triplex_param_l_b('guanine_rate')" [max]="get_triplex_param_h_b('guanine_rate')"  formControlName="guanine_rate">
-                    </mat-form-field>
-                </div>
-            </mat-list-item>
-            <mat-list-item [matTooltip]="get_triplex_params_description('consecutive_errors')" matTooltipPosition="above" style="height:50px !important" class="line" role="listitem">
-                <div class="row">
-                    <div class="paramNameContainer">
-                        <p>Consecutive errors</p>
-                        <mat-icon aria-hidden="false" aria-label="Example home icon" fontIcon="help_outline"></mat-icon>
-                    </div>
-                    <mat-form-field class="smallInput">
-                        <input matInput type="number" [placeholder]="'default ' + get_triplex_params_default_value('consecutive_errors')" [min]="get_triplex_param_l_b('consecutive_errors')" [max]="get_triplex_param_h_b('consecutive_errors')"  formControlName="consecutive_errors">
-                    </mat-form-field>
-                </div>
-            </mat-list-item>
-            <mat-list-item  [matTooltip]="get_triplex_params_description('SSTRAND')" matTooltipPosition="above" style="height:50px !important" class="line" role="listitem">
-                <div class="row">
-                    <div class="paramNameContainer">
-                        <p>SSTRAND</p>
-                        <mat-icon aria-hidden="false" aria-label="Example home icon" fontIcon="help_outline"></mat-icon>
-                    </div>
-                    <mat-form-field class="smallInput">
-                        <input matInput type="number" [placeholder]="'default ' + get_triplex_params_default_value('SSTRAND')" [min]="get_triplex_param_l_b('SSTRAND')" [max]="get_triplex_param_h_b('SSTRAND')"  formControlName="SSTRAND">
-                    </mat-form-field>
-                </div>
-            </mat-list-item>
-            <!--Filter repeat on off-->
-            <mat-list-item  [matTooltip]="get_triplex_params_description('filter_repeat')" matTooltipPosition="above" style="height:50px !important" class="line" role="listitem">
-                <div class="row">
-                    <div class="paramNameContainer">
-                        <p>Filter repeat</p>
-                        <mat-icon aria-hidden="false" aria-label="Example home icon" fontIcon="help_outline"></mat-icon>
-                    </div>
-                    <mat-button-toggle-group formControlName="filter_repeat" name="fontStyle" aria-label="Font Style" style="margin-right: 20px;">
-                        <mat-button-toggle value="on">On</mat-button-toggle>
-                        <mat-button-toggle value="off">Off</mat-button-toggle>
-                    </mat-button-toggle-group>
-                </div>
-            </mat-list-item>
-            <mat-list-item style="height:50px !important" class="line" role="listitem">
-                <div class="row">
-                    <p style="font-weight: 50;">Reset all to default</p>
-                    <button type="button" mat-stroked-button (click)="reset_triplex_params()">Reset</button>
-                </div>
-            </mat-list-item>
-            </mat-list>
-            
-
-    </mat-expansion-panel>
-    </mat-accordion>
-    </section>
-
-    <div style="margin-top: 15px; width:100%; display:flex; justify-content: end;">
-        <button [disabled]="!formGroup.valid" mat-raised-button type="submit" style="margin-right: 15px;">Submit job</button>
-    </div>
-</fieldset>
-  </form>
+	<mat-card class="submitJobCard">
+		<div *ngIf="sending" class="spinnerDiv">
+			<mat-spinner></mat-spinner>
+		</div>
+		<form  [formGroup]="formGroup" (ngSubmit)="submitForm()" novalidate [ngClass]="{'transparentForm' : sending}">
+			<fieldset [disabled]="sending" style="border: 0ch;">
+				<!-- Section 1: Input data -->
+				<section>
+					<h4>Input Data</h4>
+					<div class="verticalInputSection">
+						<!--Species selection-->
+						<div style="margin-bottom: 15px;">
+							<h3>Choosen species</h3>
+							<mat-radio-group formControlName="selected_species" aria-label="Select an option">
+								<mat-radio-button *ngFor="let specie of allowed_species" 
+								[value]="specie">{{specie}}</mat-radio-button>
+								<mat-radio-button [value]="null">Other/None</mat-radio-button>
+							</mat-radio-group>
+						</div>  
+						
+						<div class="horizontalInputSection">
+							<div class="verticalInputSection" style="margin-right: 60px;">
+								<!--ssRNA selection-->
+								<div class="paramNameContainer">
+									<h3>ssRNA*</h3>
+									<mat-icon [matTooltip]="ssRNAToolTip" matTooltipPosition="above"
+									aria-hidden="false" aria-label="Example home icon" fontIcon="help_outline"></mat-icon>
+								</div>
+								<mat-radio-group formControlName="ssRNA_chosen_type" aria-label="Select an option" style="margin-bottom: 15px;">
+									<mat-radio-button value="s">Provide your own sequence</mat-radio-button>
+									<mat-radio-button value="t" [disabled]="!formGroup.get('selected_species')?.value"
+									[matTooltip]="formGroup.get('selected_species')?.value ? '' : 'Please select a species first'"
+									matTooltipPosition="above">Choose a transcript</mat-radio-button>
+								</mat-radio-group>
+								
+								<!--If transcript is chosen-->
+								<div class="verticalInputSection" style="margin-left: 15px;">
+									<app-generic-searchable-dropdown style="margin-top: 10px; width: 300px;" 
+									*ngIf="formGroup.get('ssRNA_chosen_type')?.value=='t'" 
+									class="lncRnaSearchbar" 
+									[matTooltip]="formGroup.get('selected_species')?.value ? '' : 'Please select a species first'"
+									matTooltipPosition="above"
+									[disabled] = "!formGroup.get('selected_species')?.value"
+									[label]="'Search for transcripts or genes'"
+									[get_options]="transcriptSearchGetQuery" 
+									(itemSelectedEvent)="transcriptSearchSelectOption($event)"></app-generic-searchable-dropdown>
+									
+									
+									<!--Section to provide your own sequence-->
+									<div class="verticalInputSection" *ngIf="formGroup.get('ssRNA_chosen_type')?.value=='s'" style="margin-top: 15px;">
+										<label for="ssRNATextArea">Provide ssRNA sequence</label>
+										<textarea [attr.disabled]="ssRNAFile? true : null" style="min-width: 360px; min-height: 100px; max-height: 300px;" id="ssRNATextArea" formControlName="ssRNATextual"></textarea>
+										<label style="margin-top: 20px; margin-bottom: 10px;" for="ssRNAFileInput">or choose a file in FASTA format</label>
+										<div class="fileInputSection">
+											<button id="ssRNAFileInput" class="fileButton" type="button" mat-stroked-button (click)="fileInput.click()">Choose File</button>
+											<input hidden formControlName="ssRNA" #fileInput type="file" (change)="onRnaChange($event)">
+											<span class="file-name">{{pathToName(formGroup.value.ssRNA)}}</span>
+											<mat-icon  (click)="reset_selected_ssRNA()" style="margin-left: 3px;  transform: scale(0.7); cursor: pointer;" *ngIf="pathToName(formGroup.value.ssRNA)" aria-hidden="false" fontIcon="highlight_off"></mat-icon>
+										</div>
+									</div>
+								</div>
+							</div>
+							
+							<div class="verticalInputSection">
+								<div class="paramNameContainer">
+									<h3>dsDNA*</h3>
+									<mat-icon [matTooltip]="dsDNAToolTip" matTooltipPosition="above"
+									aria-hidden="false" aria-label="Example home icon" fontIcon="help_outline"></mat-icon>
+								</div>
+								<mat-radio-group style="margin-bottom: 20px;"  formControlName="dsDNA_chosen_type" aria-label="Select an option">
+									<mat-radio-button value="s">Provide your own sequence(s)</mat-radio-button>
+									<mat-radio-button value="t"  [disabled]="!formGroup.get('selected_species')?.value"
+									[matTooltip]="formGroup.get('selected_species')?.value ? '' : 'Please select a species first'"
+									matTooltipPosition="above">Choose a target</mat-radio-button>
+								</mat-radio-group>
+								
+								<div class="verticalInputSection" style="margin-left: 15px;">
+									<!--Section to Choose a target site-->
+									<p *ngIf="formGroup.get('dsDNA_chosen_type')?.value=='s'">Upload a multi-fasta file or a .bed file</p>
+									<div class="fileInputSection" *ngIf="formGroup.get('dsDNA_chosen_type')?.value=='s'">
+										<button class="fileButton" type="button" mat-stroked-button (click)="fileInput2.click()">Choose File</button>
+										<input hidden #fileInput2 type="file" (change)="onDnaChange($event)">
+										<span class="file-name">{{pathToName(formGroup.value.dsDNA)}}</span>
+										<mat-icon (click)="reset_selected_dsDNA()" style="margin-left: 3px; transform: scale(0.7); cursor: pointer;" *ngIf="pathToName(formGroup.value.dsDNA)" aria-hidden="false" fontIcon="highlight_off"></mat-icon>
+									</div>
+									<mat-error  
+										*ngIf="formGroup.get('dsDNA')?.value?.split('.')?.pop()=='bed' && !formGroup.get('selected_species')?.value">
+										A species must be selected in order to use .bed format
+									</mat-error>
+									
+									
+									<!--dsDNA target sequences-->
+									<mat-form-field style="width: 300px;" 
+									*ngIf="formGroup.get('dsDNA_chosen_type')?.value=='t'"
+									[matTooltip]="formGroup.get('selected_species')?.value ? '' : 'Please select a species first'"
+									matTooltipPosition="above">
+									<mat-label>dsDNA target sites</mat-label>
+									<mat-select [disabled]="!formGroup.get('selected_species')?.value">
+											<mat-option 
+											*ngFor="let t of dsDnaTargetSites[formGroup.get('selected_species')?.value ?? '']" 
+											value="t"
+											(click)="dnaTargetSearchSelectOption(t)">
+											{{t.toString()}}
+											<mat-icon (click)="dsDNAhelpClicked($event, t)" [matTooltip]="'Show details'" matTooltipPosition="above"
+											aria-hidden="false" aria-label="Example home icon" fontIcon="help_outline"></mat-icon>
+										</mat-option>
+									</mat-select>
+							</mat-form-field>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+		
+		<!-- Section 2: Job info -->
+		<section style="margin-top: 0px;">
+			<h4>Job Info</h4>
+			<p class="notTooBig">
+				You can write your email to receive a notification once the job is completed and to retrieve your previous jobs; you can also name your job to easily identify it.
+			</p>
+			<mat-form-field class="smallInput">
+				<mat-label>Job Name</mat-label>
+				<input matInput formControlName="jobName">
+			</mat-form-field>
+			<mat-form-field class="smallInput">
+				<mat-label>Email</mat-label>
+				<input matInput formControlName="email">
+			</mat-form-field>
+		</section>
+		
+		<!-- Section 3: 3plex parameters -->
+		<section>
+			<mat-accordion>
+				<mat-expansion-panel style="max-width: 650px;" class="mat-elevation-z0">
+					<mat-expansion-panel-header>
+						<mat-panel-title>
+							<span class="right">Additional 3plex parameters</span>
+						</mat-panel-title>
+					</mat-expansion-panel-header>
+					
+					<mat-list role="list">
+						<mat-list-item [matTooltip]="get_triplex_params_description('min_len')" matTooltipPosition="above" style="height:50px !important" class="line" role="listitem">
+							<div class="row">
+								<div class="paramNameContainer">
+									<p>Min len</p>
+									<mat-icon aria-hidden="false" aria-label="Example home icon" fontIcon="help_outline"></mat-icon>
+								</div>
+								<mat-form-field class="smallInput">
+									<input matInput [min]="get_triplex_param_l_b('min_len')" [max]="get_triplex_param_h_b('min_len')" type="number" formControlName="min_len" [placeholder]="'default ' + get_triplex_params_default_value('min_len')">
+								</mat-form-field>
+							</div>
+						</mat-list-item>
+						<mat-list-item [matTooltip]="get_triplex_params_description('max_len')" matTooltipPosition="above" style="height:50px !important" class="line" role="listitem">
+							<div class="row">
+								<div class="paramNameContainer">
+									<p>Max len</p>
+									<mat-icon aria-hidden="false" aria-label="Example home icon" fontIcon="help_outline"></mat-icon>
+								</div>
+								
+								<mat-form-field class="smallInput">
+									<input matInput type="number" [placeholder]="'default ' + get_triplex_params_default_value('max_len')" [min]="get_triplex_param_l_b('max_len')" [max]="get_triplex_param_h_b('max_len')"  formControlName="max_len">
+								</mat-form-field>
+							</div>
+						</mat-list-item>
+						<mat-list-item [matTooltip]="get_triplex_params_description('error_rate')" matTooltipPosition="above" style="height:50px !important" class="line" role="listitem">
+							<div class="row">
+								<div class="paramNameContainer">
+									<p >Error rate</p>
+									<mat-icon aria-hidden="false" aria-label="Example home icon" fontIcon="help_outline"></mat-icon>
+								</div>
+								
+								<mat-form-field class="smallInput">
+									<input matInput type="number" [placeholder]="'default ' + get_triplex_params_default_value('error_rate')" [min]="get_triplex_param_l_b('error_rate')" [max]="get_triplex_param_h_b('error_rate')"  formControlName="error_rate">
+								</mat-form-field>
+							</div>
+						</mat-list-item>
+						<mat-list-item  [matTooltip]="get_triplex_params_description('guanine_rate')" matTooltipPosition="above" style="height:50px !important" class="line" role="listitem">
+							<div class="row">
+								<div class="paramNameContainer">
+									<p>Guanine rate</p>
+									<mat-icon aria-hidden="false" aria-label="Example home icon" fontIcon="help_outline"></mat-icon>
+								</div>
+								
+								<mat-form-field class="smallInput">
+									<input matInput type="number" [placeholder]="'default ' + get_triplex_params_default_value('guanine_rate')" [min]="get_triplex_param_l_b('guanine_rate')" [max]="get_triplex_param_h_b('guanine_rate')"  formControlName="guanine_rate">
+								</mat-form-field>
+							</div>
+						</mat-list-item>
+						<mat-list-item [matTooltip]="get_triplex_params_description('consecutive_errors')" matTooltipPosition="above" style="height:50px !important" class="line" role="listitem">
+							<div class="row">
+								<div class="paramNameContainer">
+									<p>Consecutive errors</p>
+									<mat-icon aria-hidden="false" aria-label="Example home icon" fontIcon="help_outline"></mat-icon>
+								</div>
+								<mat-form-field class="smallInput">
+									<input matInput type="number" [placeholder]="'default ' + get_triplex_params_default_value('consecutive_errors')" [min]="get_triplex_param_l_b('consecutive_errors')" [max]="get_triplex_param_h_b('consecutive_errors')"  formControlName="consecutive_errors">
+								</mat-form-field>
+							</div>
+						</mat-list-item>
+						<mat-list-item  [matTooltip]="get_triplex_params_description('SSTRAND')" matTooltipPosition="above" style="height:50px !important" class="line" role="listitem">
+							<div class="row">
+								<div class="paramNameContainer">
+									<p>SSTRAND</p>
+									<mat-icon aria-hidden="false" aria-label="Example home icon" fontIcon="help_outline"></mat-icon>
+								</div>
+								<mat-form-field class="smallInput">
+									<input matInput type="number" [placeholder]="'default ' + get_triplex_params_default_value('SSTRAND')" [min]="get_triplex_param_l_b('SSTRAND')" [max]="get_triplex_param_h_b('SSTRAND')"  formControlName="SSTRAND">
+								</mat-form-field>
+							</div>
+						</mat-list-item>
+						<!--Filter repeat on off-->
+						<mat-list-item  [matTooltip]="get_triplex_params_description('filter_repeat')" matTooltipPosition="above" style="height:50px !important" class="line" role="listitem">
+							<div class="row">
+								<div class="paramNameContainer">
+									<p>Filter repeat</p>
+									<mat-icon aria-hidden="false" aria-label="Example home icon" fontIcon="help_outline"></mat-icon>
+								</div>
+								<mat-button-toggle-group formControlName="filter_repeat" name="fontStyle" aria-label="Font Style" style="margin-right: 20px;">
+									<mat-button-toggle value="on">On</mat-button-toggle>
+									<mat-button-toggle value="off">Off</mat-button-toggle>
+								</mat-button-toggle-group>
+							</div>
+						</mat-list-item>
+						<mat-list-item style="height:50px !important" class="line" role="listitem">
+							<div class="row">
+								<p style="font-weight: 50;">Reset all to default</p>
+								<button type="button" mat-stroked-button (click)="reset_triplex_params()">Reset</button>
+							</div>
+						</mat-list-item>
+					</mat-list>
+					
+					
+				</mat-expansion-panel>
+			</mat-accordion>
+		</section>
+		
+		<div style="margin-top: 15px; width:100%; display:flex; justify-content: end;">
+			<button [disabled]="!formGroup.valid" mat-raised-button type="submit" style="margin-right: 15px;">Submit job</button>
+		</div>
+	</fieldset>
+</form>
 </mat-card>
 </div>

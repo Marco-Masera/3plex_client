@@ -73,8 +73,8 @@ export class SendJobComponent {
   transcriptSearchGetQuery: ((query: string) => Promise<LncRnaTranscript[]>) | undefined = undefined
   constructor(private triplexService: TriplexServiceService, private _router: Router, public dialog: MatDialog) {
     this.formGroup = new FormGroup({
-      selected_species: new FormControl(null),
-      ssRNA_chosen_type: new FormControl(ssRNA_input_type.transcript_id),
+      selected_species: new FormControl('hsapiens'),
+      ssRNA_chosen_type: new FormControl(ssRNA_input_type.sequence),
       ssRNA_transcript_id: new FormControl(null),
       ssRNA: new FormControl(null),
       ssRNATextual: new FormControl(null),
@@ -94,6 +94,22 @@ export class SendJobComponent {
   }
 
   ngOnInit(){
+    this.formGroup
+    .controls["selected_species"]
+    .valueChanges
+    .subscribe(selectedValue => {
+          console.log(selectedValue);
+          if (!selectedValue){
+            this.formGroup.patchValue({
+              ssRNA_chosen_type: ssRNA_input_type.sequence,
+              dsDNA_chosen_type: ssRNA_input_type.sequence
+            });
+          }
+          this.formGroup.patchValue({
+            ssRNA_transcript_id: null,
+            dsDNATargetSite: null
+          })
+    });
     const s = this.triplexService
     var self = this;
     this.transcriptSearchGetQuery = function(query: string){
