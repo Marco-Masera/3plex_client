@@ -30,6 +30,9 @@ mat-list-item:nth-child(n){
     justify-content: space-evenly;
     align-items: center;
 }
+.spacedList p{
+    margin-right: 1px;
+}
 .spacedList:hover{
     background-color: #e4e4e4;
 }

@@ -15,4 +15,6 @@ export interface JobToSubmit{
     filter_repeat: String | undefined
     consecutive_errors: number | undefined;
     SSTRAND: number | undefined;
+
+    SPECIES: string | undefined;
 }

@@ -6,6 +6,7 @@ import { HomePageComponent } from './home-page/home-page.component';
 import { CheckjobComponent } from './checkjob/checkjob.component';
 import { CheckByEmailComponent } from './check-by-email/check-by-email.component';
 import { DataVisualizationComponent } from './data-visualization/data-visualization.component';
+import { DataVisualizationAltComponent } from './data-visualization-alt/data-visualization-alt.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full' },
@@ -13,7 +14,8 @@ const routes: Routes = [
   { path: 'submit', component: SendJobComponent },
   { path: 'checkjob/token/:token', component: CheckjobComponent },
   { path: 'checkjobs/email/:email', component: CheckByEmailComponent },
-  { path: 'data_visualization/:token', component: DataVisualizationComponent }
+  { path: 'data_visualization/:token', component: DataVisualizationAltComponent },
+ // { path: 'data_visualization_alt/:token', component: DataVisualizationAltComponent }
 ];
 
 @NgModule({

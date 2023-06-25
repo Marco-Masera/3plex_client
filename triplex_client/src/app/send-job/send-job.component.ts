@@ -110,11 +110,13 @@ export class SendJobComponent {
             dsDNATargetSite: null
           })
     });
+
     const s = this.triplexService
     var self = this;
     this.transcriptSearchGetQuery = function(query: string){
       return s.get_lncrna_transcripts_from_query(query, self.formGroup.value.selected_species, 30)
     }
+
     this.triplexService.get_dna_targets().then(response => this.dsDnaTargetSites = response);
 
     this.triplexService.get_triplex_default_params().then( response => {
@@ -248,7 +250,8 @@ export class SendJobComponent {
         guanine_rate: this.formGroup.value.guanine_rate || undefined,
         filter_repeat: this.formGroup.value.filter_repeat || undefined,
         consecutive_errors: this.formGroup.value.consecutive_errors || undefined,
-        SSTRAND: this.formGroup.value.SSTRAND || undefined
+        SSTRAND: this.formGroup.value.SSTRAND || undefined,
+        SPECIES: this.formGroup.value.selected_species || undefined
       }
       this.triplexService.submitJob(job).then(response => {
         this.sending = false;
@@ -281,6 +284,10 @@ export class SendJobComponent {
   
   transcriptSearchSelectOption(selected: LncRnaTranscript){
     this.formGroup.patchValue({ssRNA_transcript_id: selected.id});
+    //If no job name specified, add the filename
+    if (!this.formGroup.value.jobName){
+      this.formGroup.patchValue({jobName: selected.toString()});
+    }
   }
 
   dnaTargetSearchSelectOption(selected: DnaTargetSites){

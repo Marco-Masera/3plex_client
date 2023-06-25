@@ -31,6 +31,7 @@ import { CheckByEmailComponent } from './check-by-email/check-by-email.component
 import { GenericSearchableDropdownComponent } from './send-job/generic-searchable-dropdown/generic-searchable-dropdown.component';
 import { DataVisualizationComponent } from './data-visualization/data-visualization.component';
 import { InfoPopupComponent } from './send-job/generic-searchable-dropdown/info-popup/info-popup.component';
+import { DataVisualizationAltComponent } from './data-visualization-alt/data-visualization-alt.component';
 
 @NgModule({
   declarations: [
@@ -43,7 +44,8 @@ import { InfoPopupComponent } from './send-job/generic-searchable-dropdown/info-
     CheckByEmailComponent,
     GenericSearchableDropdownComponent,
     DataVisualizationComponent,
-    InfoPopupComponent
+    InfoPopupComponent,
+    DataVisualizationAltComponent
   ],
   imports: [
     BrowserModule,

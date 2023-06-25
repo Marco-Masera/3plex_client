@@ -89,7 +89,10 @@ export class TriplexServiceService {
     } else if (jobToSubmit.DSDNA_TARGET_NAME){
       formData.append("DSDNA_TARGET_NAME", jobToSubmit.DSDNA_TARGET_NAME)
     }
-
+    
+    if (jobToSubmit.SPECIES){
+      formData.append('SPECIES', jobToSubmit.SPECIES);
+    }
     if (jobToSubmit.JOBNAME !== undefined) {
       formData.append('JOBNAME', String(jobToSubmit.JOBNAME));
     }
