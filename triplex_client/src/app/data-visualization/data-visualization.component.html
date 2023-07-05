@@ -1,6 +1,7 @@
 
 <div id="profilePlotContainer">
     <mat-card class="visualsCard">
+
         <div *ngIf="dataForVisuals?.job" style="margin-bottom: 24px;">
             <h2 style=" margin-bottom: 10px;">Job info</h2>
             <div id="jobInfoCont">
@@ -8,31 +9,25 @@
                 <span><b>Submitted at:</b> {{ dataForVisuals?.job?.date || 'NA' }}</span>
                 <span><b>Transcript id:</b> {{ dataForVisuals?.job?.ssRNA_id  || 'NA' }}</span>
             </div>
+            <hr style="margin-top: 20px; margin-bottom: 24px;"/>
         </div>
-        <div *ngIf="profileGraphDiv == undefined" class="spinnerDiv">
+
+        <div *ngIf="loading" class="spinnerDiv">
             <mat-spinner></mat-spinner>
         </div>
-        
-        <h4 *ngIf="profileGraphDiv != undefined">TFO count</h4>
-        <div class="containsPlot" id="plotDiv" [ngClass]="{'withTransparency' : loading}"></div>
-        <p *ngIf="profileGraphDiv != undefined">Adjust stability threshold (current: {{minStability}})</p>
-        <mat-slider *ngIf="profileGraphDiv != undefined" 
-        id="minStabilitySlider"
-        [max]="maxAvailableStability"
-        min="0"
-        step="0.1"
-        discrete="true">
-        <input  matSliderThumb [(ngModel)]="minStability" (change)="drawProfilePlot()" >
-    </mat-slider>
-    
-    <h4 *ngIf="secondaryStructureData">Secondary structure</h4>
-    <div class="containsPlot" id="plotDivSecondaryStructure"></div>
 
-    <h4 *ngIf="dataForVisuals?.available.conservation">Conservation</h4>
-    <div class="containsPlot" id="plotDivConservation"></div>
-    
-    <h4 *ngIf="dataForVisuals?.available.repeats">Repeats</h4>
-    <div class="containsPlot" id="plotDivRepeats"></div>
+        <p *ngIf="!loading" >Max stability threshold</p>
+        <mat-slider
+             *ngIf="!loading"
+                id="minStabilitySlider"
+                [max]="maxAvailableStability"
+                min="0"
+                step="0.1"
+                discrete="false"
+                [matTooltip]="'Threshold: ' + minStability">
+                <input  matSliderThumb [(ngModel)]="minStability" (change)="updateProfilePlot()" >
+            </mat-slider>
+        <div class="containsPlot" [ngClass]="{'withTransparency' : updating}" id="uniquePlotDiv" [ngStyle]="{height: height + 'px'}"></div>
     
 </mat-card>
 </div>

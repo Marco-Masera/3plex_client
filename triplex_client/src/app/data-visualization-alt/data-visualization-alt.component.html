@@ -42,11 +42,12 @@
         <!--<h4 *ngIf="dataForVisuals?.available.repeats">Repeats</h4>-->
         <div class="containsPlot" id="plotDivRepeats"></div>
         </div>
-    <button type="button" mat-raised-button (click)="exportPlots()" style=" min-width: 340px;" [disabled]="isExporting">
-        Export plots
-    </button>
     <div *ngIf="isExporting" class="spinnerDiv">
         <mat-spinner></mat-spinner>
     </div>
+    <button type="button" mat-raised-button (click)="exportPlots()" style=" min-width: 340px;" [disabled]="isExporting">
+        Export plots
+    </button>
+    
 </mat-card>
 </div>

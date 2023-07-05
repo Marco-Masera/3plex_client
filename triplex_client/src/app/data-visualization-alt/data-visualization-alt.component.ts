@@ -67,8 +67,9 @@ export class DataVisualizationAltComponent {
     this.initializeRepeatsPlot();
   }
 
-  exportPlots(){
+  async exportPlots(){
     this.isExporting = true;
+    await new Promise((r) => setTimeout(r, 20))
     let DATA: any = document.getElementById('toPrint');
     html2canvas(DATA, {scale: 4}).then((canvas) => {
       let fileWidth = 208;

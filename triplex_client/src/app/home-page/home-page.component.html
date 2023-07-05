@@ -1,1 +1,64 @@
-<p>home-page works!</p>
+<div class="homepageContainer">
+    <mat-card class="homePageCard">
+        <h1>About 3plex</h1>
+        <hr/>
+        <section>
+            3plex is a software that predict the interaction between a single strand RNA (ssRNA) with a double strand DNA region (dsDNA) through triple helix formation (ssRNA:dsDNA TPX).
+            <br>
+            Triplexator algorithm (Buske et al., 2011) is used to scan a couple of input nucleotide sequences and to return all the TPX that satisfy a set of user-defined constraints. We lowered the minimum length required for the definition of a TPX from 10 to 5 (see our paper results).
+            <br><br>
+            The identified putative TPX are scored according to their thermal stability derived from LongTarget collection of thermal denaturation experiments (He et al., 2015).
+            <br>
+            3plex integrates RNAplfold from the ViennaRNA package (Lorentz et al., 2011) to consider the RNA secondary structure information in the definition of a TPX.
+            <br><br>
+            Extensive description of the tool can be foud in out paper:
+            3plex enables deep computational investigation of triplex forming lncRNAs.
+            Cicconetti C, Lauria A, Proserpio V, Masera M, Tamburrini A, Maldotti M, Oliviero S, Molineris I.
+            Comput Struct Biotechnol J. 2023 May 17;21:3091-3102. doi: <a href="https://www.sciencedirect.com/science/article/pii/S2001037023001988">10.1016/j.csbj.2023.05.016</a>. PMID: <a href="https://pubmed.ncbi.nlm.nih.gov/37273849/">37273849</a>; PMCID: PMC10236371.
+        </section>
+        <h1>Usage</h1>
+        <hr>
+        <section>
+            This web platform allows to submit jobs to 3plex, either providing input sequences in FASTA or BED format, or choosing from our database of transcripts.
+            <br>
+            The user can then retrieve and download the results or visualize them using interactive plots inside the browser.
+        </section>
+        <h3>Usage: submitting a job</h3>
+        <section>
+            In order to submit a job to 3plex, the following inputs must be provided: 
+            <ul>
+                <li>
+                    ssRNA [required]: input ssRNA sequence for 3plex. Can be either provided as:
+                    <ul>
+                        <li>Single FASTA file</li>
+                        <li>
+                            Transcript ID from our database. In order to select an ID the user must specify a species, and then use searchbar.
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    dsDNA [required]: input dsDNA sequences for 3plex- Can be either provided as:
+                    <ul>
+                        <li>Multi -FASTA file</li>
+                        <li>Bed file</li>
+                        <li>
+                            List of dsDNA target sites from our database
+                        </li>
+                    </ul>
+                </li>
+                <li>3plex parameters: default 3plex parameters can be modified-</li>
+                <li>Job informations: optionally the user can name its jobs and assign them to an email address, in order to receive
+                    a notification when the job completes and track all the jobs assigned to the same email.
+                </li>
+              </ul>
+        </section>
+        <h3>Usage: checking on your job's status</h3>
+        <section>
+            Every job is associated to a unique token. If the user does not provide an email address, the token is the only way to track the submitted job. If an email address is provided, the jobs can be retrieved using it.
+            <ul>
+                <li>Check Job => Check by token: retrieve a single job using the token.</li>
+                <li>Check Job => Check by email: retrieve list of jobs associated to the email address.</li>
+            </ul>
+        </section>
+    </mat-card>
+</div>

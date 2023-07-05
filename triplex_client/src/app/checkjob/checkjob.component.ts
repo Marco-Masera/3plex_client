@@ -9,7 +9,8 @@ interface JobData{
   results: any | undefined
   date: string | undefined
   triplex_params: any | undefined,
-  ssRNA_id: string | undefined
+  ssRNA_id: string | undefined,
+  species: string | undefined
 }
 
 @Component({
@@ -35,7 +36,7 @@ export class CheckjobComponent {
         this.jobData = undefined; this.files = []
         this.onError = false; this.errorMessage = "";
         this.load_data();
-        this.pollingTimer = setInterval(()=> { this.load_data() }, 60 * 1000);
+        this.pollingTimer = setInterval(()=> { this.load_data() }, 40 * 1000);
       }
    });
   }
@@ -73,6 +74,7 @@ export class CheckjobComponent {
           console.log(response);
           if (response.success){
             this.jobData = {
+              species: response.payload.job.species,
               job_name: response.payload.job.job_name,
               email_address: response.payload.job.email_address,
               state: response.payload.job.state,
