@@ -4,7 +4,8 @@ import { LncRnaTranscript } from '../model/lnc_rna_transcript';
 import { encode, decode } from "@msgpack/msgpack";
 import { DnaTargetSites } from '../model/dna_target_sites';
 
-const BASE_URL="http://192.168.186.10:8001/"
+const BASE_URL="http://192.168.99.164:80/"
+const API_PATH = "debug/api/"
 
 @Injectable({
   providedIn: 'root'
@@ -13,7 +14,7 @@ export class TriplexServiceService {
   constructor() { }
   //Generic method to fetch some data
   get_data(url: String){
-    return fetch(BASE_URL+url).then(
+    return fetch(BASE_URL+API_PATH+url).then(
       async (response:any) => {
         response = await response.json()
         response = await JSON.parse(response)
@@ -23,7 +24,7 @@ export class TriplexServiceService {
   }
   //Generic method to post data
   post_data(url: String, body: any){
-    return fetch(BASE_URL+url, {
+    return fetch(BASE_URL+API_PATH+url, {
       method: "POST", 
       mode: "no-cors", 
       cache: "no-cache", 
@@ -45,7 +46,7 @@ export class TriplexServiceService {
 
   //Post data with body as FormData
   post_data_form(url: String, body: any){
-    return fetch(BASE_URL+url, {
+    return fetch(BASE_URL+API_PATH+url, {
       method: "POST",
       mode: "cors",  
       body: body,
@@ -60,15 +61,15 @@ export class TriplexServiceService {
   }
 
   checkJob(token: String){
-    return this.get_data("api/checkjob/"+token)
+    return this.get_data("checkjob/"+token)
   }
 
   checkJobsMyEmail(email: String){
-    return this.get_data("api/checkjobs/email/"+email)
+    return this.get_data("checkjobs/email/"+email)
   }
 
   get_triplex_default_params(){
-    return this.get_data("api/3plex_default_params");
+    return this.get_data("3plex_default_params");
   }
 
   submitJob(jobToSubmit: JobToSubmit){
@@ -121,7 +122,7 @@ export class TriplexServiceService {
       formData.append('SSTRAND', String(jobToSubmit.SSTRAND));
     }
     console.log(formData)
-    return this.post_data_form("api/submitjob/", formData) 
+    return this.post_data_form("submitjob/", formData) 
   }
 
   getBaseUrl(){
@@ -130,7 +131,7 @@ export class TriplexServiceService {
 
   //Retrieve LncRnaTranscript objects by query
   get_lncrna_transcripts_from_query(query: string, species:string, max_elems: number): Promise<LncRnaTranscript[]>{
-    return this.get_data("api/search/transcripts/" + species + "/" +query + "?max_elems="+ max_elems).then( r => {
+    return this.get_data("search/transcripts/" + species + "/" +query + "?max_elems="+ max_elems).then( r => {
       if (r.success)
         return r.payload.map( (elem: any) => new LncRnaTranscript(elem))
       return []
@@ -138,7 +139,7 @@ export class TriplexServiceService {
   }
 
   get_dna_targets(): Promise<any>{
-    return this.get_data("api/dnatargetsites").then( r => {
+    return this.get_data("dnatargetsites").then( r => {
       if (r.success){
         let d: { [species: string]: DnaTargetSites[] } = {}
         r.payload.forEach((element:any) => {
@@ -156,7 +157,7 @@ export class TriplexServiceService {
   }
 
   get_data_for_visualizations(token: string): any{
-    return this.get_data("api/data_for_visuals/"+token)
+    return this.get_data("data_for_visuals/"+token)
   }
 
   get_mspack_data(url: string): any{
@@ -167,6 +168,6 @@ export class TriplexServiceService {
   }
 
   get_allowed_species(): any{
-    return this.get_data("api/system_allowed_species");
+    return this.get_data("system_allowed_species");
   }
 }
