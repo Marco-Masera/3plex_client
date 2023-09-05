@@ -26,6 +26,7 @@ export class DataVisualizationComponent {
   token: string | null = null
   dataForVisuals: DataForVisuals | undefined = undefined
   profileData: any | undefined = undefined
+  statisticData: any | undefined = undefined;
   minStability: number = 0
   maxAvailableStability: number = 100
   loading: boolean = true
@@ -33,6 +34,7 @@ export class DataVisualizationComponent {
   maxStability: any = {}
   fullSequence: string[] = [];
   plotTraces: any[] = [];
+  plotTracesIndexForStatistics: number[] = []
 
   plotsLayout: any = {
     grid: {rows: 1, columns: 1},
@@ -76,27 +78,21 @@ export class DataVisualizationComponent {
     const secondaryStruct = this.initializeSecondaryStructurePlot(this.dataForVisuals?.available?.secondary_structure);
     const conservation = this.initializeConservationPlot();
     const repeats = this.initializeRepeatsPlot();
+    //TODO True url: this.dataForVisuals?.available?.statistics
+    const randomizationStatistics = this.initializeRandomPlot("/debug/3plex/results/jobs/CtfFDY_9ksd1keQz3KGqHdMM9iCc1f14rKXnF2UBti4/profile_random_compressed.msgpack")
     const annotations: {
       text: string; font: { size: number; color: string; }; showarrow: boolean; align: string; x: number; //position in x domain
       y: number; //position in y domain
       xref: string; yref: string;
     }[] = []
-    Promise.all([profile, secondaryStruct, conservation, repeats]).then(async (data) => {
+    Promise.all([profile, secondaryStruct, conservation, randomizationStatistics, repeats]).then(async (data) => {
       const repeats = data.pop();
+      const statistics = data.pop()
       const plots = data.filter(x => x!=null);
       this.loading = false;
       plots.forEach((plot, index) => {
         const y = "y"+(index+1)
         plot.yaxis = y;
-        /*if (index > 0){
-          this.plotsLayout["yaxis"+(1+index)] = {
-            domain: this.getDomain(plots.length + (repeats.size>0 ? 1 : 0), index)
-          }
-        } else {
-          this.plotsLayout["yaxis"] = {
-            domain: this.getDomain(plots.length + (repeats.size>0 ? 1 : 0), index)
-          }
-        }*/
         annotations.push({
             text: plot.name,
               font: {
@@ -147,6 +143,14 @@ export class DataVisualizationComponent {
       if (this.height > 760){this.height = 760;}
       await new Promise((r) => setTimeout(r, 100));
       this.plotsLayout.annotations = annotations;
+
+      if (statistics.length > 0){
+        statistics.forEach((st:any) => {
+          this.plotTracesIndexForStatistics.push(this.plotTraces.length)
+          this.plotTraces.push(st);
+        });
+      }
+
       Plotly.newPlot('uniquePlotDiv', this.plotTraces, this.plotsLayout).then( (x:any) =>{
         let busy = false;
         let myDiv: any = document.getElementById("uniquePlotDiv");
@@ -164,13 +168,18 @@ export class DataVisualizationComponent {
         }
       })
       console.log(this.plotTraces);
+      console.log(this.plotsLayout)
     });
   }
   
   async updateProfilePlot(){
     this.updating = true;
     const new_plot: any[] = this.getDataForProfilePlot();
+    const new_random_plot: any[] = this.getDataForRandomPlot();
     this.plotTraces[0] = new_plot;
+    this.plotTracesIndexForStatistics.forEach(index => {
+      this.plotTraces[index] = new_random_plot.pop();
+    })
     await new Promise((r) => setTimeout(r, 100))
       Plotly.react('uniquePlotDiv',this.plotTraces, this.plotsLayout).then((x:any) => {
         this.updating = false;
@@ -193,6 +202,7 @@ export class DataVisualizationComponent {
       return plotlyData
     });
   }
+
   async initializeConservationPlot(){
     if (this.dataForVisuals?.available.conservation){
       const data = {
@@ -204,6 +214,15 @@ export class DataVisualizationComponent {
       return null;
     }
   }
+
+  async initializeRandomPlot(urlToStatistics: string){
+    if (!urlToStatistics){return []}
+    return this.triplexService.get_mspack_data(urlToStatistics).then((data:any) => {
+      this.statisticData = data
+      return this.getDataForRandomPlot();
+    });
+  }
+
   async initializeProfilePlot(urlToProfiles: string){
     return this.triplexService.get_mspack_data(urlToProfiles).then((data:any) => {
       this.profileData = data
@@ -211,6 +230,114 @@ export class DataVisualizationComponent {
       return this.getDataForProfilePlot()
     })
   }
+
+  processArray(data: any){
+    const final: number[] = [];
+    data.forEach((elem: number[]) => {
+      if (elem[0] == null){elem[0] = 0;}
+      if (elem.length==1){
+        final.push(elem[0])
+      } else {
+        for (let i=0; i<elem[1]; i++){
+          final.push(elem[0]);
+        }
+      }
+    })
+    return final;
+  }
+
+  getDataForRandomPlot():any{
+    //Find position in the statistics object
+    const statistics = this.statisticData["data"]
+    const stabilityValues = Object.keys(statistics)
+    stabilityValues.sort((a, b) => +a - +b)
+    let position = -1
+    for (let i=0; i<stabilityValues.length; i++){
+      if (+stabilityValues[i]>= this.minStability){
+        position = i; break;
+      }
+    }
+    if (position == -1){return []}
+
+    const dataToProcess = statistics[String(stabilityValues[position])];
+    //Data in form: [ [value, (len)] for each statistics ]
+    //  statistics are ["median","lower_quartile","upper_quartile","percentile_95", "max"]
+    //statistics must be processed into simple array from 0 to len
+    const data = dataToProcess.map((value:any) => this.processArray(value));
+    //Data might contain empty arrays, meaning they are equal to the preceding one
+    for (let i=1; i<data.length; i++){
+      if (data[i].length==0){
+        data[i] = data[i-1];
+      }
+      if (data[i].length != data[i-1].length){
+        console.log("Data for randomization broken")
+        return [];
+      }
+    }
+
+    /*Assertions on data for (let i = 0; i < data[0].length; i++){
+      if (data[1][i] > data[0][i] || data[0][i] > data[2][i] || data[2][i] > data[3][i] || data[3][i] > data[4][i]){
+        console.log("???")
+      } else {console.log("Ok")}
+    }*/
+    const len = data[0].length;
+    const medianData = [...data[0]];
+    const xValues = Array.from({length: len}, (_, index) => index);
+    const xValuesReversed = [...xValues].reverse();
+    const upperQuartileData = [...data[2]].reverse();
+    const upperQuartileDataNotreversed = data[2];
+    const lowerQuartileData = [...data[1]].reverse();
+    const ninetyFivePercentData = [...data[3]].reverse();
+
+    const medianTrace = {
+      x: xValues, 
+      y: medianData, 
+      line: {color: "rgb(0,100,80)"}, 
+      mode: "lines", 
+      name: "Median", 
+      type: "scatter"
+    };
+    const maxTrace = {
+      x: xValues, 
+      y: data[4], 
+      line: {color: "rgb(0,100,80)"}, 
+      mode: "lines", 
+      name: "Max", 
+      type: "scatter"
+    };
+    const upperQuartile = {
+      x: xValues.concat(xValuesReversed),  //0 to len to 0 again
+      y: medianData.concat(upperQuartileData), 
+      fill: "tozerox", 
+      fillcolor: "rgba(0,100,80,0.2)", 
+      line: {color: "transparent"}, 
+      name: "Upper q.", 
+      showlegend: false, 
+      type: "scatter"
+    };
+    const lowerQuartile = {
+      x: xValues.concat(xValuesReversed),  //0 to len to 0 again
+      y: medianData.concat(lowerQuartileData), 
+      fill: "tozerox", 
+      fillcolor: "rgba(0,10,200,0.2)", 
+      line: {color: "transparent"}, 
+      name: "Lower q.", 
+      showlegend: false, 
+      type: "scatter"
+    };
+    const ninetyFivePercent = {
+      x: xValues.concat(xValuesReversed),  //0 to len to 0 again
+      y: upperQuartileDataNotreversed.concat(ninetyFivePercentData), 
+      fill: "tozerox", 
+      fillcolor: "rgba(0,20,120,0.2)", 
+      line: {color: "transparent"}, 
+      name: "95p", 
+      showlegend: false, 
+      type: "scatter"
+    };
+    return [medianTrace, upperQuartile, lowerQuartile, ninetyFivePercent, maxTrace]
+  }
+
   getDataForProfilePlot(): any{
     let x: number[] = []; let y: number[] = []; let w: number[] = []; let t: string[] = []
     const profiles = this.profileData["profiles"]
