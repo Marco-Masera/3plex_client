@@ -166,9 +166,7 @@ export class DataVisualizationComponent {
             Plotly.relayout("uniquePlotDiv", l2);
           });
         }
-      })
-      console.log(this.plotTraces);
-      console.log(this.plotsLayout)
+      });
     });
   }
   
@@ -274,12 +272,6 @@ export class DataVisualizationComponent {
         return [];
       }
     }
-
-    /*Assertions on data for (let i = 0; i < data[0].length; i++){
-      if (data[1][i] > data[0][i] || data[0][i] > data[2][i] || data[2][i] > data[3][i] || data[3][i] > data[4][i]){
-        console.log("???")
-      } else {console.log("Ok")}
-    }*/
     const len = data[0].length;
     const medianData = [...data[0]];
     const xValues = Array.from({length: len}, (_, index) => index);
@@ -289,51 +281,62 @@ export class DataVisualizationComponent {
     const lowerQuartileData = [...data[1]].reverse();
     const ninetyFivePercentData = [...data[3]].reverse();
 
+    //BASE CONSTANT TO SET
+    const LEGEND_FOR_ALL = false;
+    const TRANSPARENCY = 0.12;
+
     const medianTrace = {
       x: xValues, 
       y: medianData, 
-      line: {color: "rgb(0,100,80)"}, 
+      line: {color: `rgb(43, 66, 46)`, width: 1}, 
       mode: "lines", 
-      name: "Median", 
-      type: "scatter"
+      name: "Randomization", 
+      type: "scatter",
+      legendgroup:"randomization",
+      hoverinfo:"text+y", text:"Randomization - Median"
     };
     const maxTrace = {
       x: xValues, 
       y: data[4], 
-      line: {color: "rgb(0,100,80)"}, 
-      mode: "lines", 
+      line: {color: "rgb(43, 66, 46)", width: 0.7, dash: 'dot'}, 
+      mode: "line", 
       name: "Max", 
-      type: "scatter"
+      type: "scatter",
+      legendgroup:"randomization", showlegend: LEGEND_FOR_ALL, 
+      hoverinfo:"skip"
     };
     const upperQuartile = {
       x: xValues.concat(xValuesReversed),  //0 to len to 0 again
       y: medianData.concat(upperQuartileData), 
       fill: "tozerox", 
-      fillcolor: "rgba(0,100,80,0.2)", 
+      fillcolor: `rgba(80, 80, 80,${TRANSPARENCY})`, 
       line: {color: "transparent"}, 
-      name: "Upper q.", 
-      showlegend: false, 
-      type: "scatter"
+      name: "Upper quartile", 
+      legendgroup:"randomization",
+      type: "scatter", showlegend: LEGEND_FOR_ALL,
+      hoverinfo:"skip"
     };
     const lowerQuartile = {
       x: xValues.concat(xValuesReversed),  //0 to len to 0 again
       y: medianData.concat(lowerQuartileData), 
       fill: "tozerox", 
-      fillcolor: "rgba(0,10,200,0.2)", 
+      fillcolor: `rgba(80, 80, 80,${TRANSPARENCY})`, 
       line: {color: "transparent"}, 
-      name: "Lower q.", 
-      showlegend: false, 
-      type: "scatter"
+      name: "Lower quartile", 
+      type: "scatter",
+      legendgroup:"randomization", showlegend: LEGEND_FOR_ALL,
+      hoverinfo:"skip"
     };
     const ninetyFivePercent = {
       x: xValues.concat(xValuesReversed),  //0 to len to 0 again
       y: upperQuartileDataNotreversed.concat(ninetyFivePercentData), 
       fill: "tozerox", 
-      fillcolor: "rgba(0,20,120,0.2)", 
+      fillcolor: `rgba(140, 140, 140,${TRANSPARENCY})`, 
       line: {color: "transparent"}, 
       name: "95p", 
-      showlegend: false, 
-      type: "scatter"
+      legendgroup:"randomization",
+      type: "scatter", showlegend: LEGEND_FOR_ALL,
+      hoverinfo:"skip"
     };
     return [medianTrace, upperQuartile, lowerQuartile, ninetyFivePercent, maxTrace]
   }
