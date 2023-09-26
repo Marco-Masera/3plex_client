@@ -7,6 +7,7 @@ import { LncRnaTranscript } from '../model/lnc_rna_transcript';
 import { DnaTargetSites } from '../model/dna_target_sites';
 import { InfoPopupComponent } from './generic-searchable-dropdown/info-popup/info-popup.component';
 import { MatDialog } from '@angular/material/dialog';
+import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 
 const ssRNAMaxSize = 1;
 const dsDNAMaxSize = 300;
@@ -66,6 +67,7 @@ export class SendJobComponent {
   default_triplex_params: any;
   allowed_species: string[] = [];
   dsDnaTargetSites: { [species: string]: DnaTargetSites[] } = {}
+  randomization_disabled = true
 
   ssRNAToolTip = "A single ssRNA sequence - either chosen from our transcript's database or provided as a single fasta file or as simple text (max size: " + ssRNAMaxSize + " MB)."
   dsDNAToolTip = "Target DNA sequences, either chosen from our database of target sites or provided as a multi-FASTA file containing dsDNA sequences or a bed file containing the target coordinates (max size: " + dsDNAMaxSize + " MB)."
@@ -89,7 +91,8 @@ export class SendJobComponent {
       guanine_rate: new FormControl(null),
       filter_repeat : new FormControl(null),//on off
       consecutive_errors: new FormControl(null),
-      SSTRAND: new FormControl(null)
+      SSTRAND: new FormControl(null),
+      use_random: new FormControl(false)
     }, { validators: sendButtonChecks });
   }
 
@@ -251,7 +254,8 @@ export class SendJobComponent {
         filter_repeat: this.formGroup.value.filter_repeat || undefined,
         consecutive_errors: this.formGroup.value.consecutive_errors || undefined,
         SSTRAND: this.formGroup.value.SSTRAND || undefined,
-        SPECIES: this.formGroup.value.selected_species || undefined
+        SPECIES: this.formGroup.value.selected_species || undefined,
+        USE_RANDOM: this.formGroup.value.use_random
       }
       this.triplexService.submitJob(job).then(response => {
         this.sending = false;

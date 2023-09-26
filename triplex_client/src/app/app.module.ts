@@ -32,6 +32,7 @@ import { GenericSearchableDropdownComponent } from './send-job/generic-searchabl
 import { DataVisualizationComponent } from './data-visualization/data-visualization.component';
 import { InfoPopupComponent } from './send-job/generic-searchable-dropdown/info-popup/info-popup.component';
 import { DataVisualizationAltComponent } from './data-visualization-alt/data-visualization-alt.component';
+import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 
 @NgModule({
   declarations: [
@@ -69,7 +70,8 @@ import { DataVisualizationAltComponent } from './data-visualization-alt/data-vis
     MatIconModule,
     MatProgressBarModule,
     MatTooltipModule,
-    MatRadioModule
+    MatRadioModule,
+    MatSlideToggleModule
   ],
   providers: [],
   bootstrap: [AppComponent]

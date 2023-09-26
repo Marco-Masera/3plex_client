@@ -17,4 +17,6 @@ export interface JobToSubmit{
     SSTRAND: number | undefined;
 
     SPECIES: string | undefined;
+
+    USE_RANDOM: boolean | undefined;
 }

@@ -78,8 +78,7 @@ export class DataVisualizationComponent {
     const secondaryStruct = this.initializeSecondaryStructurePlot(this.dataForVisuals?.available?.secondary_structure);
     const conservation = this.initializeConservationPlot();
     const repeats = this.initializeRepeatsPlot();
-    //TODO True url: this.dataForVisuals?.available?.statistics
-    const randomizationStatistics = this.initializeRandomPlot("/debug/3plex/results/jobs/CtfFDY_9ksd1keQz3KGqHdMM9iCc1f14rKXnF2UBti4/profile_random_compressed.msgpack")
+    const randomizationStatistics = this.initializeRandomPlot(this.dataForVisuals?.available?.statistics)
     const annotations: {
       text: string; font: { size: number; color: string; }; showarrow: boolean; align: string; x: number; //position in x domain
       y: number; //position in y domain
@@ -217,6 +216,7 @@ export class DataVisualizationComponent {
     if (!urlToStatistics){return []}
     return this.triplexService.get_mspack_data(urlToStatistics).then((data:any) => {
       this.statisticData = data
+      console.log(data)
       return this.getDataForRandomPlot();
     });
   }
