@@ -23,7 +23,16 @@ export class CheckByEmailComponent {
   errorMessage: string = ""
   constructor(private triplexService: TriplexServiceService, private route: ActivatedRoute){}
   
-  ngOnInit() {this.email = this.route.snapshot.paramMap.get('email'); if (this.email != null) {this.load_data();}}
+  ngOnInit() {
+    this.email = this.route.snapshot.paramMap.get('email');
+    if (this.email != null) {this.load_data();}
+
+    this.route.params.subscribe(val => {
+      this.email = this.route.snapshot.paramMap.get('email');
+      if (this.email != null) {this.load_data();}
+   });
+  
+  }
 
   navigate(link: string | undefined){
     if (link != undefined){
