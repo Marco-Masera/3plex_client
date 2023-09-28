@@ -4,8 +4,8 @@ import { LncRnaTranscript } from '../model/lnc_rna_transcript';
 import { encode, decode } from "@msgpack/msgpack";
 import { DnaTargetSites } from '../model/dna_target_sites';
 
-const BASE_URL="http://192.168.99.164:80/"
-const API_PATH = "debug/api/"
+const BASE_URL="https://www.3plex.unito.it/"
+const API_PATH = "api/"
 
 @Injectable({
   providedIn: 'root'
