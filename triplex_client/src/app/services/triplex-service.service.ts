@@ -3,9 +3,16 @@ import { JobToSubmit } from '../model/jobToSubmit';
 import { LncRnaTranscript } from '../model/lnc_rna_transcript';
 import { encode, decode } from "@msgpack/msgpack";
 import { DnaTargetSites } from '../model/dna_target_sites';
+import { isDevMode } from '@angular/core';
 
-const BASE_URL="https://www.3plex.unito.it/"
-const API_PATH = "api/"
+if (isDevMode()){
+  console.log("Initialize urls in dev mode")
+  var BASE_URL="http://192.168.99.164:80/"
+  var API_PATH = "debug/api/" 
+} else {
+  var BASE_URL="https://www.3plex.unito.it/"
+  var API_PATH = "api/"
+}
 
 @Injectable({
   providedIn: 'root'

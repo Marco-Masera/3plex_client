@@ -2,6 +2,7 @@ import { Component, Inject } from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
 import { PopupComponent } from './popup/popup.component';
 import { Router } from '@angular/router';
+import { isDevMode } from '@angular/core';
 
 @Component({
   selector: 'app-navbar',
@@ -25,5 +26,9 @@ export class NavbarComponent {
         }
       }
     });
+  }
+
+  checkIsDevMode(){
+    return isDevMode()
   }
 }

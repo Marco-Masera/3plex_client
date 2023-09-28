@@ -1,5 +1,8 @@
 <div class="navbar">
     <img src="../../assets/3plex_logo.png"/>
+    <p style="color: brown;" *ngIf="checkIsDevMode()">
+        DEBUG VERSION
+    </p>
     <div class="navbar-links">
         <a routerLink="/home"><button mat-button>Home</button></a>
         <a routerLink="/submit"><button mat-button>Send Job</button></a>
@@ -8,4 +11,5 @@
             <button mat-menu-item (click)="openDialog('token')">Check by token</button>
             <button mat-menu-item (click)="openDialog('email')">Check by email</button>
         </mat-menu>
+    </div>
 </div>
