@@ -1,6 +1,7 @@
 
 <div id="profilePlotContainer">
     <mat-card class="visualsCard">
+
         <div *ngIf="dataForVisuals?.job" style="margin-bottom: 24px;">
             <h2 style=" margin-bottom: 10px;">Job info</h2>
             <div id="jobInfoCont">
@@ -10,44 +11,29 @@
             </div>
             <hr style="margin-top: 20px; margin-bottom: 24px;"/>
         </div>
-        <div *ngIf="profileGraphDiv == undefined" class="spinnerDiv">
+
+        <div *ngIf="loading" class="spinnerDiv">
             <mat-spinner></mat-spinner>
         </div>
-
-        <div id="toPrint">
-        <div class="firstPlotCont">
-            <div class="containsPlot" id="plotDiv" [ngClass]="{'withTransparency' : loading}"></div>
-            <!--<p *ngIf="profileGraphDiv != undefined">Adjust stability threshold (current: {{minStability}})</p>-->
-            <div style="overflow: visible; width: 1px;">
-                <mat-slider 
-                style="transform: rotate(270deg); width: 115px; margin-left: -80px;  margin-top: 20px;"
-                *ngIf="profileGraphDiv != undefined" 
-                id="minStabilitySlider"
-                [max]="maxAvailableStability"
-                min="0"
-                step="0.1"
-                discrete="false"
-                [matTooltip]="'Threshold: ' + minStability">
-                    <input  matSliderThumb [(ngModel)]="minStability" (change)="drawProfilePlot()" >
-                </mat-slider>
-            </div>
-        </div>
-
-        <!--<h4 *ngIf="secondaryStructureData">Secondary structure</h4>-->
-        <div class="containsPlot" id="plotDivSecondaryStructure"></div>
-
-        <!--<h4 *ngIf="dataForVisuals?.available.conservation">Conservation</h4>-->
-        <div class="containsPlot" id="plotDivConservation"></div>
         
-        <!--<h4 *ngIf="dataForVisuals?.available.repeats">Repeats</h4>-->
-        <div class="containsPlot" id="plotDivRepeats"></div>
+        <div *ngIf="!loading" id="visualsDiv">
+            <p>Max stability threshold</p>
+            <mat-slider
+                *ngIf="!loading"
+                    id="minStabilitySlider"
+                    [max]="maxAvailableStability"
+                    min="0"
+                    step="0.1"
+                    discrete="false"
+                    [matTooltip]="'Threshold: ' + minStability">
+                    <input  matSliderThumb [(ngModel)]="minStability" (change)="updateProfilePlot()" >
+                </mat-slider>
+
+                <button type="button" mat-raised-button (click)="addDbdMode()" style=" min-width: 340px;">
+                    Add BDBs
+                </button>
+            <div class="containsPlot" [ngClass]="{'withTransparency' : updating}" 
+            id="uniquePlotDiv" [ngStyle]="{height: height + 'px'}"></div>
         </div>
-    <div *ngIf="isExporting" class="spinnerDiv">
-        <mat-spinner></mat-spinner>
-    </div>
-    <button type="button" mat-raised-button (click)="exportPlots()" style=" min-width: 340px;" [disabled]="isExporting">
-        Export plots
-    </button>
-    
 </mat-card>
 </div>

@@ -29,7 +29,7 @@
               "src/styles.css"
             ],
             "scripts": [
-              "src/assets/plotly-2.20.0.min.js"
+              "src/assets/plotly-2.26.0.min.js"
             ]
           },
           "configurations": {
@@ -94,7 +94,7 @@
               "src/styles.css"
             ],
             "scripts": [
-              "src/assets/plotly-2.20.0.min.js"
+              "src/assets/plotly-2.26.0.min.js"
             ]
           }
         }
