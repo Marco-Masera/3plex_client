@@ -17,7 +17,38 @@
         </div>
         
         <div *ngIf="!loading" id="visualsDiv">
-            <p>Max stability threshold</p>
+
+            <div id="addingDBDButtonDiv">
+                <h2>DBDs</h2>
+                <div class="dbdContainer">
+                    <div *ngFor="let dbd of selectedDBDs;  index as i" 
+                        class="DBD"
+                        (mouseenter) ="mouseHoverDBD(i, true)"  (mouseleave) ="mouseHoverDBD(i, false)">
+                        <p style="margin-top: 12px; margin-left: 2px;">
+                            {{dbd[0]+1}} - {{dbd[1]+1}}
+                        </p>
+                        <mat-icon  (click)="removeDBD(i)"
+                            style="margin-left: 3px;  transform: scale(0.6); cursor: pointer;" 
+                            aria-hidden="false" fontIcon="highlight_off"></mat-icon>
+                    </div>
+                    <p *ngIf="selectedDBDs.length==0">
+                        No DBD specified
+                    </p>
+                </div>
+                <div class="dbdContainer">
+                    <button *ngIf="!isAddingDBD" type="button" mat-stroked-button (click)="addDbdMode()" style="height: 28px;">
+                        Specify BDBs
+                    </button>
+                    <button *ngIf="!isAddingDBD && selectedDBDs.length>0" type="button" mat-stroked-button style="height: 28px; margin-left: 14px;">
+                        Go do DBD details
+                    </button>
+                    <button *ngIf="isAddingDBD" type="button" mat-stroked-button (click)="addDbdMode()" style="height: 28px;">
+                        Stop adding BDBs
+                    </button>
+                </div>
+            </div>
+
+            <p style="margin-bottom: -3px;">Max stability threshold</p>
             <mat-slider
                 *ngIf="!loading"
                     id="minStabilitySlider"
@@ -27,14 +58,11 @@
                     discrete="false"
                     [matTooltip]="'Threshold: ' + minStability">
                     <input  matSliderThumb [(ngModel)]="minStability" (change)="updateProfilePlot()" >
-                </mat-slider>
+            </mat-slider>
 
-                <button type="button" mat-raised-button (click)="addDbdMode()" style=" min-width: 340px;">
-                    Add BDBs
-                </button>
-                <p *ngFor="let dbd of selectedDBDs">
-                    {{dbd}}
-                </p>
+            <div *ngIf="isAddingDBD" id="addDBDButtonDiv">
+                <h2>Select an area in the plot to add a DBD</h2>
+            </div>
             <div class="containsPlot" [ngClass]="{'withTransparency' : updating}" 
             id="uniquePlotDiv" [ngStyle]="{height: height + 'px'}"></div>
         </div>

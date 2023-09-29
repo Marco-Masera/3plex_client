@@ -39,7 +39,7 @@ export class DataVisualizationAltComponent {
   plotsLayout: any = {
     grid: {rows: 1, columns: 1},
     xaxis: {},
-    legend: {"orientation": "h", x:0, y:1.1, bgcolor: '#E2E2E2',bordercolor: '#FFFFFF',borderwidth: 2},
+    legend: {"orientation": "h", x:0, y:1.15, bgcolor: '#E2E2E2',bordercolor: '#FFFFFF',borderwidth: 2},
     margin: {
       autoexpand: true
     },
@@ -71,33 +71,59 @@ export class DataVisualizationAltComponent {
 
   addDbdMode(){
     if (!this.isAddingDBD){
+      this.isAddingDBD = true
       Plotly.relayout('uniquePlotDiv', 'dragmode', 'select');
+      this.plotsLayout.showlegend = false
+      this.buildDBDsHightlight(this.plotsLayout.yaxis.range[1]);
+      Plotly.react('uniquePlotDiv',this.plotTraces, this.plotsLayout);
     } else {
+      this.isAddingDBD = false;
       Plotly.relayout('uniquePlotDiv', 'dragmode', 'zoom');
+      this.buildDBDsHightlight(this.plotsLayout.yaxis.range[1]);
+      this.plotsLayout.showlegend = true
+      Plotly.react('uniquePlotDiv',this.plotTraces, this.plotsLayout);
     }
-    this.isAddingDBD = !this.isAddingDBD
   }
 
-  buildDBDsHightlight(barHeight:number){
+  buildDBDsHightlight(barHeight:number, hoverOn=-1){
     //Add highlight to plot
     console.log(this.plotsLayout)
-    this.plotsLayout.shapes = this.selectedDBDs.map( (dbd) => {
+    this.plotsLayout.shapes = this.selectedDBDs.map( (dbd, index) => {
       return {
         type: 'rect',
         xref: 'x',
-        x0: dbd[0],
-        x1: dbd[1],
+        x0: dbd[0]-0.5,
+        x1: dbd[1]+0.5,
         y0: 0, 
         y1: barHeight,
-        fillcolor: '#d3d3d3',
-        line: {width: 0}}
+        fillcolor: '#baffec',
+        opacity: (index==hoverOn) ? 0.9
+         : this.isAddingDBD ? 0.5 : 0.3,
+        line: {width: (index==hoverOn) ? 0.2 : 0},
+        layer:'below'}
     });
+  }
+
+  removeDBD(index: number){
+    this.selectedDBDs.splice(index, 1);
+    this.buildDBDsHightlight(this.plotsLayout.yaxis.range[1]);
+    Plotly.react('uniquePlotDiv',this.plotTraces, this.plotsLayout);
+  }
+
+  mouseHoverDBD(index: number, entering: boolean){
+    if (entering){
+      this.buildDBDsHightlight(this.plotsLayout.yaxis.range[1], index);
+      Plotly.react('uniquePlotDiv',this.plotTraces, this.plotsLayout);
+    } else {
+      this.buildDBDsHightlight(this.plotsLayout.yaxis.range[1]);
+      Plotly.react('uniquePlotDiv',this.plotTraces, this.plotsLayout);
+    }
   }
 
   addDBD(eventData: any){
     if (eventData && eventData.range){
-      var start: number = eventData.range.x[0];
-      var end: number = eventData.range.x[1];
+      var start: number = Math.round( eventData.range.x[0] );
+      var end: number = Math.round( eventData.range.x[1] );
       if (start < 0) {start = 0;}
       console.log("Selected: " + start + ", " + end);
       var newDBDs: number[][] = []
