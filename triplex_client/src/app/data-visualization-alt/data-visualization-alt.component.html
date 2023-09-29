@@ -32,6 +32,9 @@
                 <button type="button" mat-raised-button (click)="addDbdMode()" style=" min-width: 340px;">
                     Add BDBs
                 </button>
+                <p *ngFor="let dbd of selectedDBDs">
+                    {{dbd}}
+                </p>
             <div class="containsPlot" [ngClass]="{'withTransparency' : updating}" 
             id="uniquePlotDiv" [ngStyle]="{height: height + 'px'}"></div>
         </div>

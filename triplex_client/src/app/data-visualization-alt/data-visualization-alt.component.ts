@@ -43,7 +43,8 @@ export class DataVisualizationAltComponent {
     margin: {
       autoexpand: true
     },
-    selectdirection: 'h'
+    selectdirection: 'h',
+    shapes: []
   };
   height = 100;
 
@@ -72,16 +73,47 @@ export class DataVisualizationAltComponent {
     if (!this.isAddingDBD){
       Plotly.relayout('uniquePlotDiv', 'dragmode', 'select');
     } else {
-
+      Plotly.relayout('uniquePlotDiv', 'dragmode', 'zoom');
     }
     this.isAddingDBD = !this.isAddingDBD
+  }
+
+  buildDBDsHightlight(barHeight:number){
+    //Add highlight to plot
+    console.log(this.plotsLayout)
+    this.plotsLayout.shapes = this.selectedDBDs.map( (dbd) => {
+      return {
+        type: 'rect',
+        xref: 'x',
+        x0: dbd[0],
+        x1: dbd[1],
+        y0: 0, 
+        y1: barHeight,
+        fillcolor: '#d3d3d3',
+        line: {width: 0}}
+    });
   }
 
   addDBD(eventData: any){
     if (eventData && eventData.range){
       var start: number = eventData.range.x[0];
       var end: number = eventData.range.x[1];
-      console.log(this.plotTraces[0])
+      if (start < 0) {start = 0;}
+      console.log("Selected: " + start + ", " + end);
+      var newDBDs: number[][] = []
+      //Look for DBDs that overlaps with new one
+      this.selectedDBDs.forEach( (dbd:number[]) => {
+        if( (dbd[0] <= start && dbd[1] >= start) || (dbd[0] > start && dbd[0] <= end)){
+          start = Math.min(start, dbd[0]);
+          end = Math.max(end, dbd[1]);
+        } else {
+          newDBDs.push(dbd);
+        }
+      });
+      newDBDs.push([start, end]);
+      this.selectedDBDs = newDBDs;
+      this.buildDBDsHightlight(this.plotsLayout.yaxis.range[1]);
+      Plotly.react('uniquePlotDiv',this.plotTraces, this.plotsLayout);
     }
   }
 
@@ -206,13 +238,14 @@ export class DataVisualizationAltComponent {
         let myDiv: any = document.getElementById("uniquePlotDiv");
         if (myDiv != null){
           myDiv.on('plotly_selected', function(eventData:any) {
-            console.log(eventData); return;
+            if (!eventData || !eventData.range){return;}
             self.addDBD(eventData);
             console.log("Now removing selection")
-            const targets = (myDiv.firstChild.firstChild.firstChild.querySelector('.cartesianlayer').childNodes)
+            const targets = (myDiv.firstChild.firstChild.firstChild.querySelector('.cartesianlayer').childNodes);
             targets.forEach((target:any) => {
               const rect = target.getBoundingClientRect();
-              self.doubleClick(rect.left+100, rect.bottom - (rect.height/2));
+              self.doubleClick(rect.left+200, rect.bottom - 100);
+              self.doubleClick(rect.left+200, rect.bottom - 100);
             });
           });
         }
@@ -227,7 +260,9 @@ export class DataVisualizationAltComponent {
     this.plotTraces[0] = new_plot;
     this.plotTracesIndexForStatistics.forEach(index => {
       this.plotTraces[index] = new_random_plot.pop();
-    })
+    });
+    console.log(this.plotTraces[0].maxY)
+    this.buildDBDsHightlight(this.plotTraces[0].maxY);
     await new Promise((r) => setTimeout(r, 100))
       Plotly.react('uniquePlotDiv',this.plotTraces, this.plotsLayout).then((x:any) => {
         this.updating = false;
@@ -412,13 +447,15 @@ export class DataVisualizationAltComponent {
     }
 
     x.push(0); y.push(0); w.push(1); t.push("")
-    let biggestX = 0
+    let biggestX = 0;
+    let biggestY = 0;
     profiles[String(stabilityValues[position])].forEach((element: any[]) => {
       x.push(element[1])
       if (element[1]> biggestX){
         biggestX = element[1]
       }
-      y.push(element[0])
+      y.push(element[0]);
+      if (element[0] > biggestY){biggestY = element[0]}
       if (element.length==2){
         w.push(1)
         t.push(element[1])
@@ -442,7 +479,7 @@ export class DataVisualizationAltComponent {
     }
     x.push(biggestX+1); y.push(0); w.push(1);  t.push(""); marker.color.push(0)
     return {
-      'x': x, 'y': y, 'with': w, type: 'bar',name: "TTF count", marker: marker, text: t,
+      'x': x, 'y': y, 'with': w, type: 'bar',name: "TTF count", marker: marker, text: t, maxY: biggestY,
       hovertemplate: '<b>Pos</b>: %{text}' +
                         '<br><b>TTF Count</b>: %{y}<br>',
                         textposition: "none"
