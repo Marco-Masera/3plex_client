@@ -3,12 +3,7 @@ import { Component } from '@angular/core';
 import { TriplexServiceService } from '../services/triplex-service.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PlottableRepeat, Repeat } from '../model/repeats';
-import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
-import { Observable } from 'rxjs/internal/Observable';
-import { fromEvent } from 'rxjs/internal/observable/fromEvent';
-import { startWith } from 'rxjs/internal/operators/startWith';
-import { map } from 'rxjs/internal/operators/map';
+import {MatIconModule} from '@angular/material/icon';
 
 declare let Plotly: any;
 

@@ -1,7 +1,11 @@
 
 <div id="profilePlotContainer">
     <mat-card class="visualsCard">
-
+        <div id="backContainer">
+            <button mat-icon-button [routerLink]="'../../checkjob/token/' + token">
+                <mat-icon aria-hidden="false" aria-label="Example home icon" fontIcon="arrow_back_ios"></mat-icon>
+            </button>
+        </div>
         <div *ngIf="dataForVisuals?.job" style="margin-bottom: 24px;">
             <h2 style=" margin-bottom: 10px;">Job info</h2>
             <div id="jobInfoCont">

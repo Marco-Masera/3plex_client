@@ -104,6 +104,6 @@ export class CheckjobComponent {
   }
 
   goToVisuals(){
-    window.open("/data_visualization/" + this.token, '_blank')
+    window.open("/data_visualization/" + this.token)
   }
 }

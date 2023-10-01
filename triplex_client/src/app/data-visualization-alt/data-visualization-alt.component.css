@@ -7,6 +7,12 @@
     align-items: center;
     background-color: rgb(250, 250, 250);
 }
+#backContainer{
+    overflow: visible;
+    height: 0px;
+    width: 100%;
+    padding-left: 10px;
+}
 #visualsDiv{
     width: 100%;
     display: flex;
@@ -49,7 +55,7 @@
     align-items: center;
 }
 .DBD{
-    margin-left: 10px; margin-right: 10px;
+    margin-left: 10px; margin-right: 10px; margin-top: 6px;
     border: 0.2px solid #515151;
     border-radius: 10px;
     padding: 4px;
@@ -69,8 +75,9 @@
 }
 .dbdContainer{
     width: 100%;
-    display: flex; flex-direction: row;
+    display:flex; flex-direction: row;
     align-items: center; justify-content: center;
+    flex-wrap:wrap;
     margin-bottom: 10px;
 }
 .containsPlot{
