@@ -41,6 +41,7 @@ export class DataVisualizationAltComponent {
     selectdirection: 'h',
     shapes: []
   };
+
   height = 100;
 
   constructor(private triplexService: TriplexServiceService, private route: ActivatedRoute,
@@ -261,7 +262,7 @@ export class DataVisualizationAltComponent {
           myDiv.on('plotly_selected', function(eventData:any) {
             if (!eventData || !eventData.range){return;}
             self.addDBD(eventData);
-            console.log("Now removing selection")
+            //Removes selection on plotly graph
             const targets = (myDiv.firstChild.firstChild.firstChild.querySelector('.cartesianlayer').childNodes);
             targets.forEach((target:any) => {
               const rect = target.getBoundingClientRect();
@@ -277,13 +278,14 @@ export class DataVisualizationAltComponent {
   async updateProfilePlot(){
     this.updating = true;
     const new_plot: any[] = this.getDataForProfilePlot();
-    const new_random_plot: any[] = this.getDataForRandomPlot();
     this.plotTraces[0] = new_plot;
-    this.plotTracesIndexForStatistics.forEach(index => {
-      this.plotTraces[index] = new_random_plot.pop();
-    });
-    console.log(this.plotTraces[0].maxY)
-    this.buildDBDsHightlight(this.plotTraces[0].maxY);
+    if (this.statisticData){
+      const new_random_plot: any[] = this.getDataForRandomPlot();
+      this.plotTracesIndexForStatistics.forEach(index => {
+        this.plotTraces[index] = new_random_plot.pop();
+      });
+      this.buildDBDsHightlight(this.plotTraces[0].maxY);
+    }
     await new Promise((r) => setTimeout(r, 100))
       Plotly.react('uniquePlotDiv',this.plotTraces, this.plotsLayout).then((x:any) => {
         this.updating = false;
@@ -320,10 +322,9 @@ export class DataVisualizationAltComponent {
   }
 
   async initializeRandomPlot(urlToStatistics: string){
-    if (!urlToStatistics){return []}
+    if (!urlToStatistics){this.statisticData = null; return []}
     return this.triplexService.get_mspack_data(urlToStatistics).then((data:any) => {
       this.statisticData = data
-      console.log(data)
       return this.getDataForRandomPlot();
     });
   }
@@ -500,9 +501,9 @@ export class DataVisualizationAltComponent {
     }
     x.push(biggestX+1); y.push(0); w.push(1);  t.push(""); marker.color.push(0)
     return {
-      'x': x, 'y': y, 'with': w, type: 'bar',name: "TTF count", marker: marker, text: t, maxY: biggestY,
+      'x': x, 'y': y, 'with': w, type: 'bar',name: "TTS count", marker: marker, text: t, maxY: biggestY,
       hovertemplate: '<b>Pos</b>: %{text}' +
-                        '<br><b>TTF Count</b>: %{y}<br>',
+                        '<br><b>TTS Count</b>: %{y}<br>',
                         textposition: "none"
     }
   }

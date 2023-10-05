@@ -3,12 +3,7 @@ import { Component } from '@angular/core';
 import { TriplexServiceService } from '../services/triplex-service.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PlottableRepeat, Repeat } from '../model/repeats';
-import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
-import { Observable } from 'rxjs/internal/Observable';
-import { fromEvent } from 'rxjs/internal/observable/fromEvent';
-import { startWith } from 'rxjs/internal/operators/startWith';
-import { map } from 'rxjs/internal/operators/map';
+import {MatIconModule} from '@angular/material/icon';
 
 declare let Plotly: any;
 
@@ -33,17 +28,21 @@ export class DataVisualizationComponent {
   updating: boolean = false
   maxStability: any = {}
   fullSequence: string[] = [];
+  maxXaxisRange: number[] = []
   plotTraces: any[] = [];
   plotTracesIndexForStatistics: number[] = []
 
   plotsLayout: any = {
     grid: {rows: 1, columns: 1},
     xaxis: {},
-    legend: {"orientation": "h", x:0, y:1.1, bgcolor: '#E2E2E2',bordercolor: '#FFFFFF',borderwidth: 2},
+    legend: {"orientation": "h", x:0, y:1.15, bgcolor: '#E2E2E2',bordercolor: '#FFFFFF',borderwidth: 2},
     margin: {
       autoexpand: true
-    }
+    },
+    selectdirection: 'h',
+    shapes: []
   };
+
   height = 100;
 
   constructor(private triplexService: TriplexServiceService, private route: ActivatedRoute,
@@ -64,13 +63,195 @@ export class DataVisualizationComponent {
     }
   }
 
-  getDomain(N:number, i:number) {
-    var spacing = 0.2
-    return [
-      (1 / N) * i + (i === 0 ? 0 : spacing / 2),
-      (1 / N) * (i + 1) - (i === (N - 1) ? 0 : spacing / 2)
-    ]
+  isAddingDBD: boolean = false;
+  selectedDBDs: number[][] = []
+
+  addDbdMode(){
+    if (!this.isAddingDBD){
+      this.isAddingDBD = true
+      Plotly.relayout('uniquePlotDiv', 'dragmode', 'select');
+      this.plotsLayout.showlegend = false
+      this.buildDBDsHightlight(this.plotsLayout.yaxis.range[1]);
+      Plotly.react('uniquePlotDiv',this.plotTraces, this.plotsLayout);
+      const myDiv: any = document.getElementById("uniquePlotDiv");
+      const targets = (myDiv.firstChild.firstChild.firstChild.querySelector('.cartesianlayer').childNodes);
+      targets.forEach((target:any, index:number) => {
+        if (index > 0){target.style.opacity = "0.4";}
+      });
+      //Change cursor
+      const dragLayer: any = document.getElementsByClassName('nsewdrag')[0];
+      dragLayer.style.cursor = 'col-resize';
+    } else {
+      this.isAddingDBD = false;
+      let myDiv: any = document.getElementById("uniquePlotDiv");
+      const targets = (myDiv.firstChild.firstChild.firstChild.querySelector('.cartesianlayer').childNodes);
+      this.removeSelection(targets)
+      Plotly.relayout('uniquePlotDiv', 'dragmode', 'zoom');
+      this.buildDBDsHightlight(this.plotsLayout.yaxis.range[1]);
+      this.plotsLayout.showlegend = true
+      Plotly.react('uniquePlotDiv',this.plotTraces, this.plotsLayout);
+      targets.forEach((target:any, index:number) => {
+        if (index > 0){target.style.opacity = "1";}
+      });
+      //Change cursor
+      const dragLayer: any = document.getElementsByClassName('nsewdrag')[0];
+      dragLayer.style.cursor = '';
+    }
   }
+
+  buildDBDsHightlight(barHeight:number, hoverOn=-1){
+    //Add highlight to plot
+    this.plotsLayout.shapes = this.selectedDBDs.map( (dbd, index) => {
+      return {
+        type: 'rect',
+        xref: 'x',
+        x0: dbd[0]-0.5,
+        x1: dbd[1]+0.5,
+        y0: 0, 
+        y1: barHeight,
+        fillcolor: '#baffec',
+        opacity: (index==hoverOn) ? 0.9
+         : this.isAddingDBD ? 0.5 : 0.3,
+        line: {width: (index==hoverOn) ? 0.2 : 0},
+        layer:'below'}
+    });
+  }
+
+  removeDBD(index: number){
+    this.selectedDBDs.splice(index, 1);
+    this.buildDBDsHightlight(this.plotsLayout.yaxis.range[1]);
+    Plotly.react('uniquePlotDiv',this.plotTraces, this.plotsLayout);
+  }
+
+  mouseHoverDBD(index: number, entering: boolean){
+    if (entering){
+      this.buildDBDsHightlight(this.plotsLayout.yaxis.range[1], index);
+      Plotly.react('uniquePlotDiv',this.plotTraces, this.plotsLayout);
+    } else {
+      this.buildDBDsHightlight(this.plotsLayout.yaxis.range[1]);
+      Plotly.react('uniquePlotDiv',this.plotTraces, this.plotsLayout);
+    }
+  }
+
+  addDBD(eventData: any){
+    if (eventData && eventData.range){
+      var start: number = Math.round( eventData.range.x[0] );
+      var end: number = Math.round( eventData.range.x[1] );
+      if (start < 0) {start = 0;}
+      var newDBDs: number[][] = []
+      //Look for DBDs that overlaps with new one
+      this.selectedDBDs.forEach( (dbd:number[]) => {
+        if( (dbd[0] <= start && dbd[1] >= start) || (dbd[0] > start && dbd[0] <= end)){
+          //Do not add
+        } else {
+          newDBDs.push(dbd);
+        }
+      });
+      newDBDs.push([start, end]);
+      newDBDs.sort((a, b) => {
+        return a[0] - b[0];
+      });
+      this.selectedDBDs = newDBDs;
+      this.buildDBDsHightlight(this.plotsLayout.yaxis.range[1]);
+      Plotly.react('uniquePlotDiv',this.plotTraces, this.plotsLayout);
+    }
+  }
+
+  removeSelection(targets: any | undefined){
+    if (!targets){
+      const myDiv: any = document.getElementById("uniquePlotDiv");
+      targets = (myDiv.firstChild.firstChild.firstChild.querySelector('.cartesianlayer').childNodes);
+    }
+    const range = this.plotsLayout.xaxis.range;
+    targets.forEach((target:any) => {
+      const rect = target.getBoundingClientRect();
+      const offset = range[0] * (rect.width / this.fullSequence.length);
+      this.doubleClick(rect.left+200+offset, rect.bottom - 100);
+      this.doubleClick(rect.left+200+offset, rect.bottom - 100);
+    });
+  }
+
+  async changeDBD(index: number){
+    if (!this.isAddingDBD){
+      this.addDbdMode()
+    }
+
+    const xAxis = this.plotsLayout.xaxis.range
+    if (xAxis[0] < 0) {xAxis[0] = 0;}
+    const start = this.selectedDBDs[index][0];
+    const end = this.selectedDBDs[index][1]+0.4;
+    let myDiv: any = document.getElementById("uniquePlotDiv");
+    const targets = (myDiv.firstChild.firstChild.firstChild.querySelector('.cartesianlayer').childNodes);
+    this.removeSelection(targets)
+    await new Promise((r) => setTimeout(r, 100));
+    //If position out of current xaxis, move current xaxis
+    if (start < xAxis[0] || end > xAxis[1]){
+      if (start < xAxis[0]){
+        xAxis[0] = Math.max(start - 30, 0);
+      }
+      if (end > xAxis[1]){
+        xAxis[1] = end + 30;
+      }
+      this.plotsLayout.xaxis.range = xAxis;
+      await Plotly.react('uniquePlotDiv',this.plotTraces, this.plotsLayout);
+    }
+    const plot = targets[0].querySelector('.gridlayer')
+    const rect = plot.getBoundingClientRect();
+    const s = rect.left + (rect.width * ((start-xAxis[0]) / (xAxis[1]-xAxis[0])));
+    const e = rect.left + (rect.width * ((end-xAxis[0]) / (xAxis[1]-xAxis[0])));
+    this.mouseDrag(s, e, rect.bottom-20);
+  }
+
+  mouseDrag(x1:number, x2: number, y:number){
+    const mouseEvent = function(type:any, x:any, y:any, opts:any) {
+      var fullOpts = {
+          bubbles: true,
+          clientX: x,
+          clientY: y
+      };
+      var el = (opts && opts.element) || document.elementFromPoint(x, y),ev;
+      ev = new window.MouseEvent(type, fullOpts);
+      el.dispatchEvent(ev);
+      return el;
+    };
+
+    const click = function(x1:number, x2: number, y:number, opts:any) {
+        mouseEvent('mousemove', x1, y, opts);
+        mouseEvent('mousedown', x1, y, opts);
+        mouseEvent('mousemove', x2, y, opts);
+        mouseEvent('mouseup', x2, y, opts);
+    };
+    return new Promise(function(resolve) {
+        click(x1, x2, y, {});
+    });
+  }
+
+  doubleClick(x:any, y:any) {
+    const mouseEvent = function(type:any, x:any, y:any, opts:any) {
+      var fullOpts = {
+          bubbles: true,
+          clientX: x,
+          clientY: y
+      };
+      var el = (opts && opts.element) || document.elementFromPoint(x, y),ev;
+      ev = new window.MouseEvent(type, fullOpts);
+      el.dispatchEvent(ev);
+      return el;
+    };
+
+    const click = function(x:any, y:any, opts:any) {
+        mouseEvent('mousemove', x, y, opts);
+        mouseEvent('mousedown', x, y, opts);
+        mouseEvent('mouseup', x, y, opts);
+        mouseEvent('click', x, y, opts);
+    };
+    return new Promise(function(resolve) {
+        click(x, y, {});
+        setTimeout(function() {
+            click(x, y, {});
+        }, 10 / 2);
+    });
+};
 
   //This function is called once dataForVisuals has been retrieved
   async initializePlots(){
@@ -118,7 +299,6 @@ export class DataVisualizationComponent {
       this.plotsLayout.grid.rows = plots.length;
       if (repeats?.length>0){
         this.plotsLayout["yaxis"+(1+plots.length)].title = {text:"Repeats"}
-        //this.plotsLayout["yaxis"+(1+plots.length)].domain = this.getDomain(plots.length + 1, plots.length+1)
         
         this.plotsLayout.grid.rows = plots.length + 1;
         this.plotTraces = plots.concat(repeats);
@@ -150,19 +330,20 @@ export class DataVisualizationComponent {
         });
       }
 
-      Plotly.newPlot('uniquePlotDiv', this.plotTraces, this.plotsLayout).then( (x:any) =>{
-        let busy = false;
+      const config = {
+        modeBarButtonsToRemove: ['lasso2d', 'zoomOut2d', 'zoomIn2d', 'select2d'] 
+      }
+      const self = this;
+      var last_s:number[] = []
+      Plotly.newPlot('uniquePlotDiv', this.plotTraces, this.plotsLayout, config).then( (x:any) =>{
+        self.maxXaxisRange = self.plotsLayout.xaxis.range;
         let myDiv: any = document.getElementById("uniquePlotDiv");
         if (myDiv != null){
-          myDiv.on("plotly_relayout", (eventdata:any) => {
-            if (busy){
-              busy = false; return;
-            }
-            busy = true;
-            let oldLayout = myDiv.layout
-            let l2 = Object.assign({}, oldLayout);
-            l2.xaxis = this.getTicks([eventdata["xaxis.range[0]"], eventdata["xaxis.range[1]"] ]);
-            Plotly.relayout("uniquePlotDiv", l2);
+          myDiv.on('plotly_selected', function(eventData:any) {
+            if (!eventData || !eventData.range){return;}
+            if (eventData.range.x[0] == last_s[0] && eventData.range.x[1] == last_s[1]){return;}
+            last_s = eventData.range.x;
+            self.addDBD(eventData);
           });
         }
       });
@@ -172,11 +353,14 @@ export class DataVisualizationComponent {
   async updateProfilePlot(){
     this.updating = true;
     const new_plot: any[] = this.getDataForProfilePlot();
-    const new_random_plot: any[] = this.getDataForRandomPlot();
     this.plotTraces[0] = new_plot;
-    this.plotTracesIndexForStatistics.forEach(index => {
-      this.plotTraces[index] = new_random_plot.pop();
-    })
+    if (this.statisticData){
+      const new_random_plot: any[] = this.getDataForRandomPlot();
+      this.plotTracesIndexForStatistics.forEach(index => {
+        this.plotTraces[index] = new_random_plot.pop();
+      });
+      this.buildDBDsHightlight(this.plotTraces[0].maxY);
+    }
     await new Promise((r) => setTimeout(r, 100))
       Plotly.react('uniquePlotDiv',this.plotTraces, this.plotsLayout).then((x:any) => {
         this.updating = false;
@@ -213,10 +397,9 @@ export class DataVisualizationComponent {
   }
 
   async initializeRandomPlot(urlToStatistics: string){
-    if (!urlToStatistics){return []}
+    if (!urlToStatistics){this.statisticData = null; return []}
     return this.triplexService.get_mspack_data(urlToStatistics).then((data:any) => {
       this.statisticData = data
-      console.log(data)
       return this.getDataForRandomPlot();
     });
   }
@@ -361,13 +544,15 @@ export class DataVisualizationComponent {
     }
 
     x.push(0); y.push(0); w.push(1); t.push("")
-    let biggestX = 0
+    let biggestX = 0;
+    let biggestY = 0;
     profiles[String(stabilityValues[position])].forEach((element: any[]) => {
       x.push(element[1])
       if (element[1]> biggestX){
         biggestX = element[1]
       }
-      y.push(element[0])
+      y.push(element[0]);
+      if (element[0] > biggestY){biggestY = element[0]}
       if (element.length==2){
         w.push(1)
         t.push(element[1])
@@ -389,11 +574,11 @@ export class DataVisualizationComponent {
         ticktext: [0, this.maxAvailableStability]
       }
     }
-    x.push(biggestX+1); y.push(0); w.push(1);  t.push(""); marker.color.push(0)
+    x.push(biggestX+1); y.push(0); w.push(1);  t.push(""); marker.color.push(0);
     return {
-      'x': x, 'y': y, 'with': w, type: 'bar',name: "TTF count", marker: marker, text: t,
+      'x': x, 'y': y, 'with': w, type: 'bar',name: "TTS count", marker: marker, text: t, maxY: biggestY,
       hovertemplate: '<b>Pos</b>: %{text}' +
-                        '<br><b>TTF Count</b>: %{y}<br>',
+                        '<br><b>TTS Count</b>: %{y}<br>',
                         textposition: "none"
     }
   }

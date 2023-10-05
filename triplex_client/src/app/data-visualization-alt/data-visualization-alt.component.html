@@ -41,13 +41,13 @@
                 </div>
                 <div class="dbdContainer">
                     <button *ngIf="!isAddingDBD" type="button" mat-stroked-button (click)="addDbdMode()" style="height: 28px;">
-                        Specify BDBs
+                        Specify DBDs
                     </button>
                     <button *ngIf="!isAddingDBD && selectedDBDs.length>0" type="button" mat-stroked-button style="height: 28px; margin-left: 14px;">
                         Go do DBD details
                     </button>
                     <button *ngIf="isAddingDBD" type="button" mat-stroked-button (click)="addDbdMode()" style="height: 28px;">
-                        Stop adding BDBs
+                        Stop adding DBDs
                     </button>
                 </div>
             </div>
