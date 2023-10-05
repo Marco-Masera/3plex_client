@@ -21,6 +21,7 @@ export class DataVisualizationComponent {
   token: string | null = null
   dataForVisuals: DataForVisuals | undefined = undefined
   profileData: any | undefined = undefined
+  profileMaxX: number = 0
   statisticData: any | undefined = undefined;
   minStability: number = 0
   maxAvailableStability: number = 100
@@ -163,11 +164,13 @@ export class DataVisualizationComponent {
       targets = (myDiv.firstChild.firstChild.firstChild.querySelector('.cartesianlayer').childNodes);
     }
     const range = this.plotsLayout.xaxis.range;
-    targets.forEach((target:any) => {
-      const rect = target.getBoundingClientRect();
-      const offset = range[0] * (rect.width / this.fullSequence.length);
-      this.doubleClick(rect.left+200+offset, rect.bottom - 100);
-      this.doubleClick(rect.left+200+offset, rect.bottom - 100);
+    targets.forEach((target:any, index: number) => {
+      if (index < 3){
+        const rect = target.getBoundingClientRect();
+        const offset = range[0] * (rect.width / this.fullSequence.length);
+        this.doubleClick(rect.left+200+offset, rect.bottom - 100);
+        this.doubleClick(rect.left+200+offset, rect.bottom - 100);
+      }
     });
   }
 
@@ -177,7 +180,7 @@ export class DataVisualizationComponent {
     }
 
     const xAxis = this.plotsLayout.xaxis.range
-    if (xAxis[0] < 0) {xAxis[0] = 0;}
+    if (xAxis[0] <= 0) {xAxis[0] = 1;}
     const start = this.selectedDBDs[index][0];
     const end = this.selectedDBDs[index][1]+0.4;
     let myDiv: any = document.getElementById("uniquePlotDiv");
@@ -187,18 +190,26 @@ export class DataVisualizationComponent {
     //If position out of current xaxis, move current xaxis
     if (start < xAxis[0] || end > xAxis[1]){
       if (start < xAxis[0]){
-        xAxis[0] = Math.max(start - 30, 0);
+        xAxis[0] = Math.max(start - 40, 0);
       }
       if (end > xAxis[1]){
         xAxis[1] = end + 30;
       }
-      this.plotsLayout.xaxis.range = xAxis;
-      await Plotly.react('uniquePlotDiv',this.plotTraces, this.plotsLayout);
     }
-    const plot = targets[0].querySelector('.gridlayer')
+    if (xAxis[1]-xAxis[0] > (end-start)*8){
+      console.log("a")
+      xAxis[0] = start - ((end-start)*4)
+      xAxis[1] = end + ((end-start)*4)
+    }
+    this.plotsLayout.xaxis.range = xAxis;
+    this.plotsLayout.xaxis.autorange = false
+    await Plotly.react('uniquePlotDiv',this.plotTraces, this.plotsLayout);
+    const plot = targets[0].querySelector('.plot')
     const rect = plot.getBoundingClientRect();
-    const s = rect.left + (rect.width * ((start-xAxis[0]) / (xAxis[1]-xAxis[0])));
-    const e = rect.left + (rect.width * ((end-xAxis[0]) / (xAxis[1]-xAxis[0])));
+    /*const s = rect.left + (rect.width * ((start-xAxis[0]) / (xAxis[1]-xAxis[0])));
+    const e = rect.left + (rect.width * ((end-xAxis[0]) / (xAxis[1]-xAxis[0])));*/
+    const s = rect.left + (rect.width * ((start) / this.profileMaxX));
+    const e = rect.left + (rect.width * ((end) / this.profileMaxX));
     this.mouseDrag(s, e, rect.bottom-20);
   }
 
@@ -574,6 +585,7 @@ export class DataVisualizationComponent {
         ticktext: [0, this.maxAvailableStability]
       }
     }
+    this.profileMaxX = biggestX + 1;
     x.push(biggestX+1); y.push(0); w.push(1);  t.push(""); marker.color.push(0);
     return {
       'x': x, 'y': y, 'with': w, type: 'bar',name: "TTS count", marker: marker, text: t, maxY: biggestY,
