@@ -128,8 +128,8 @@ export class TriplexServiceService {
     if (jobToSubmit.SSTRAND !== undefined) {
       formData.append('SSTRAND', String(jobToSubmit.SSTRAND));
     }
-    if (jobToSubmit.USE_RANDOM){
-      formData.append('USE_RAND', "true");
+    if (jobToSubmit.USE_RANDOM && jobToSubmit.USE_RANDOM > 0){
+      formData.append('USE_RAND', String(jobToSubmit.USE_RANDOM));
     }
     console.log(formData)
     return this.post_data_form("submitjob/", formData) 
@@ -177,7 +177,7 @@ export class TriplexServiceService {
     .then(buffer => decode(buffer));
   }
 
-  get_allowed_species(): any{
-    return this.get_data("system_allowed_species");
+  get_allowed_species_and_iterations(): any{
+    return this.get_data("system_allowed_species_and_iterations");
   }
 }

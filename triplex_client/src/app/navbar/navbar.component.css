@@ -6,7 +6,7 @@
     justify-content: center;
 }
 .navbar img{
-    max-width: 50%; max-height: 100%;
+    max-width: 50%; max-height: 140px;
 }
 .navbar-links{
     width: 100%; margin-top: 14px;

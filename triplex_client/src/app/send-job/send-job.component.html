@@ -109,11 +109,29 @@
 									</mat-form-field>
 
 									<!--use randomization-->
-									<mat-label style="margin-top: 30px;">Use randomized target dsDNA</mat-label>
-									<mat-slide-toggle style="margin-top: 8px;" 
-									formControlName="use_random">
-										Randomized dsDNA
-									</mat-slide-toggle>
+									<div class="paramNameContainer"
+										style="margin-top: 24px; margin-bottom: 0px; padding: 0px;">
+										<h3>Use randomized target dsDNA</h3>
+										<mat-icon [matTooltip]="randomizationToolTip" matTooltipPosition="above"
+										aria-hidden="false" aria-label="Example home icon" fontIcon="help_outline"></mat-icon>
+									</div>
+									<div class="paramNameContainer"
+										style="margin-bottom: 0px; padding: 0px;">
+											<mat-slide-toggle style="margin-top: 16px; margin-left: 15px;" 
+											formControlName="use_random">
+												Randomized dsDNA
+											</mat-slide-toggle>
+											<mat-form-field style="margin-left: 18px;">
+												<mat-label>N. iterations</mat-label>
+												<mat-select [disabled]="!formGroup.get('use_random')?.value"
+												formControlName="random_iterations">
+												<mat-option *ngFor="let n_iter of n_iterations_possible" [value]="n_iter">
+													{{n_iter}}
+												</mat-option>
+												</mat-select>
+											</mat-form-field>			
+									</div>
+														  
 						</div>
 					</div>
 				</div>

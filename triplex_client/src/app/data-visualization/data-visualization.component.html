@@ -38,27 +38,33 @@
                 <h2>DBDs</h2>
                 <div class="dbdContainer">
                     <div *ngFor="let dbd of selectedDBDs;  index as i" 
-                        class="DBD"
+                        [ngClass] = "dbdForViewing == i ? 'SelectedDBD' : 'DBD'"
                         (mouseenter) ="mouseHoverDBD(i, true)"  (mouseleave) ="mouseHoverDBD(i, false)"
-                        (click) = "changeDBD(i)">
+                        (click) = "onDBDSelected(i)">
                         <p style="margin-top: 12px; margin-left: 2px;"
                         [matTooltip]="'Click to modify DBD'"  matTooltipPosition="above" >
                             {{dbd[0]}} - {{dbd[1]}}
                         </p>
-                        <mat-icon  (click)="removeDBD(i)"
+                        <mat-icon *ngIf="!isViewingDBD"  (click)="removeDBD(i)"
                             style="margin-left: 3px;  transform: scale(0.6); cursor: pointer;" 
                             aria-hidden="false" fontIcon="highlight_off"></mat-icon>
+                        <mat-icon *ngIf="isViewingDBD" 
+                            style="margin-left: 3px;  transform: scale(0.6);" 
+                            aria-hidden="false" fontIcon="info"></mat-icon>
                     </div>
                     <p *ngIf="selectedDBDs.length==0">
                         No DBD specified
                     </p>
                 </div>
                 <div class="dbdContainer">
-                    <button *ngIf="!isAddingDBD" type="button" mat-stroked-button (click)="addDbdMode()" style="height: 28px;">
+                    <button *ngIf="!isAddingDBD && !isViewingDBD" type="button" mat-stroked-button (click)="addDbdMode()" style="height: 28px;">
                         Specify DBDs
                     </button>
-                    <button *ngIf="!isAddingDBD && selectedDBDs.length>0" type="button" mat-stroked-button style="height: 28px; margin-left: 14px;">
-                        Go do DBD details
+                    <button *ngIf="!isAddingDBD && selectedDBDs.length>0 && !isViewingDBD" (click)="viewDBDDetails()" type="button" mat-stroked-button style="height: 28px; margin-left: 14px;">
+                        View DBD details
+                    </button>
+                    <button *ngIf="isViewingDBD" (click)="stopViewDBDDetails()" type="button" mat-stroked-button style="height: 28px; margin-left: 14px;">
+                        Exit DBD view
                     </button>
                     <button *ngIf="isAddingDBD" type="button" mat-stroked-button (click)="addDbdMode()" style="height: 28px;">
                         Stop adding DBDs
@@ -70,7 +76,17 @@
                 <h2>Select an area in the plot to add a DBD</h2>
             </div>
             <div class="containsPlot" [ngClass]="{'withTransparency' : updating}" 
-            id="uniquePlotDiv" [ngStyle]="{height: height + 'px'}"></div>
+            id="uniquePlotDiv" [ngStyle]="(isViewingDBD) ? {height: '360px'} :  {height: height + 'px'}"></div>
+
+            <div *ngIf="isViewingDBD" style="width:100%">
+                <div *ngIf="dbdForViewing==-1">
+                    <h4>Select a DBD to see details</h4>
+                </div>
+                <div *ngIf="dbdForViewing>=0">
+                    <p>Selected DBD: {{selectedDBDs[dbdForViewing][0]}}-{{selectedDBDs[dbdForViewing][1]}}</p>
+                    <div id="boxplotDBD" style="width:50%"></div>
+                </div>
+            </div>
         </div>
 </mat-card>
 </div>

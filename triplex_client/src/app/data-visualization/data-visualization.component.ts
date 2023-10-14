@@ -31,8 +31,11 @@ export class DataVisualizationComponent {
   fullSequence: string[] = [];
   maxXaxisRange: number[] = []
   plotTraces: any[] = [];
+  oldPlots: any[] = [];
   plotTracesIndexForStatistics: number[] = []
-
+  oldPlotTracesIndexForStatistics: number[] = []
+  medianData: number[] = [];
+  profileLinearY: number[] = [];
   plotsLayout: any = {
     grid: {rows: 1, columns: 1},
     xaxis: {},
@@ -43,7 +46,7 @@ export class DataVisualizationComponent {
     selectdirection: 'h',
     shapes: []
   };
-
+  oldPlotsLayout: any = {}
   height = 100;
 
   constructor(private triplexService: TriplexServiceService, private route: ActivatedRoute,
@@ -66,6 +69,80 @@ export class DataVisualizationComponent {
 
   isAddingDBD: boolean = false;
   selectedDBDs: number[][] = []
+  isViewingDBD: boolean = false;
+  dbdForViewing: number = -1;
+
+  viewDBDDetails(){
+    this.isViewingDBD = true;
+    //Hide all plots except for profile and randomization
+    this.oldPlots = this.plotTraces;
+    this.oldPlotTracesIndexForStatistics = this.plotTracesIndexForStatistics;
+    this.plotTraces = this.plotTraces.filter( (value:any, index:number) => 
+      index==0 || this.plotTracesIndexForStatistics.indexOf(index)>-1
+    );
+    this.plotTracesIndexForStatistics = this.plotTraces.map(
+      (plot:any, index:number)=>index
+      ).slice(1);
+    this.oldPlotsLayout = this.plotsLayout;
+    const layout = JSON.parse(JSON.stringify(this.plotsLayout));
+    layout.annotations = [layout.annotations[0]];
+    layout.grid.rows = 1;
+    layout.height = 360;
+    this.plotsLayout = layout;
+    Plotly.react('uniquePlotDiv', this.plotTraces, layout);
+  }
+
+  async selectDBDForDetails(index: number){
+    this.dbdForViewing = index;
+    this.buildDBDsHightlight(this.plotsLayout.yaxis.range[1], index);
+    //Zoom to dbd
+    const xAxis = this.plotsLayout.xaxis.range
+    if (xAxis[0] <= 0) {xAxis[0] = 1;}
+    const start = this.selectedDBDs[index][0];
+    const end = this.selectedDBDs[index][1]+0.4;
+    this.zoomPlotToDBD(start, end, xAxis);
+    //Add boxplot 
+    await new Promise((r) => setTimeout(r, 100));
+    this.generateTFFBBoxPlotForRandomized();
+  }
+
+  generateTFFBBoxPlotForRandomized(){
+    //If no statisticData or no selected DBD, return
+    if (this.medianData.length == 0 || this.dbdForViewing<0){return;}
+    const dbd:number[] = this.selectedDBDs[this.dbdForViewing]
+    //Get plot for randomized ttf
+    var trace = {
+      y: this.medianData.slice(dbd[0], dbd[1]),
+      type: 'box',
+      name: 'randomized - average'
+    };
+    var trace2 = {
+      y: this.profileLinearY.slice(dbd[0], dbd[1]),
+      type: 'box',
+      name: 'actual'
+    };
+    const l = {
+      title: {
+        text: 'Number of TTF per position'
+      }
+    }
+    var data = [trace, trace2];
+    Plotly.newPlot('boxplotDBD', data, l);
+  }
+
+  stopViewDBDDetails(){
+    this.plotsLayout = this.oldPlotsLayout;
+    console.log(this.plotsLayout)
+    this.isViewingDBD = false;
+    //Restore all plots
+    this.plotTraces = this.oldPlots;
+    this.plotTracesIndexForStatistics = this.oldPlotTracesIndexForStatistics;
+    this.dbdForViewing = -1;
+    this.buildDBDsHightlight(this.plotsLayout.yaxis.range[1], -1)
+    Plotly.react('uniquePlotDiv', this.plotTraces, this.plotsLayout);
+  }
+
+
 
   addDbdMode(){
     if (!this.isAddingDBD){
@@ -111,7 +188,7 @@ export class DataVisualizationComponent {
         y0: 0, 
         y1: barHeight,
         fillcolor: '#baffec',
-        opacity: (index==hoverOn) ? 0.9
+        opacity: (index==hoverOn || index==this.dbdForViewing) ? 0.9
          : this.isAddingDBD ? 0.5 : 0.3,
         line: {width: (index==hoverOn) ? 0.2 : 0},
         layer:'below'}
@@ -174,6 +251,25 @@ export class DataVisualizationComponent {
     });
   }
 
+  async zoomPlotToDBD(start:number, end:number, xAxis: number[]){
+    //If position out of current xaxis, move current xaxis
+    if (start < xAxis[0] || end > xAxis[1]){
+      if (start < xAxis[0]){
+        xAxis[0] = Math.max(start - 40, 0);
+      }
+      if (end > xAxis[1]){
+        xAxis[1] = end + 30;
+      }
+    }
+    if (xAxis[1]-xAxis[0] > (end-start)*8){
+      xAxis[0] = start - ((end-start)*4)
+      xAxis[1] = end + ((end-start)*4)
+    }
+    this.plotsLayout.xaxis.range = xAxis;
+    this.plotsLayout.xaxis.autorange = false
+    await Plotly.react('uniquePlotDiv',this.plotTraces, this.plotsLayout);
+  }
+
   async changeDBD(index: number){
     if (!this.isAddingDBD){
       this.addDbdMode()
@@ -187,31 +283,22 @@ export class DataVisualizationComponent {
     const targets = (myDiv.firstChild.firstChild.firstChild.querySelector('.cartesianlayer').childNodes);
     this.removeSelection(targets)
     await new Promise((r) => setTimeout(r, 100));
-    //If position out of current xaxis, move current xaxis
-    if (start < xAxis[0] || end > xAxis[1]){
-      if (start < xAxis[0]){
-        xAxis[0] = Math.max(start - 40, 0);
-      }
-      if (end > xAxis[1]){
-        xAxis[1] = end + 30;
-      }
-    }
-    if (xAxis[1]-xAxis[0] > (end-start)*8){
-      console.log("a")
-      xAxis[0] = start - ((end-start)*4)
-      xAxis[1] = end + ((end-start)*4)
-    }
-    this.plotsLayout.xaxis.range = xAxis;
-    this.plotsLayout.xaxis.autorange = false
-    await Plotly.react('uniquePlotDiv',this.plotTraces, this.plotsLayout);
+    await this.zoomPlotToDBD(start,end,xAxis);
+
     const plot = targets[0].querySelector('.plot')
     const rect = plot.getBoundingClientRect();
-    /*const s = rect.left + (rect.width * ((start-xAxis[0]) / (xAxis[1]-xAxis[0])));
-    const e = rect.left + (rect.width * ((end-xAxis[0]) / (xAxis[1]-xAxis[0])));*/
     const s = rect.left + (rect.width * ((start) / this.profileMaxX));
     const e = rect.left + (rect.width * ((end) / this.profileMaxX));
     this.mouseDrag(s, e, rect.bottom-20);
   }
+
+onDBDSelected(index:number){
+  if (this.isViewingDBD){
+    this.selectDBDForDetails(index)
+  } else {
+    this.changeDBD(index);
+  }
+}
 
   mouseDrag(x1:number, x2: number, y:number){
     const mouseEvent = function(type:any, x:any, y:any, opts:any) {
@@ -331,6 +418,7 @@ export class DataVisualizationComponent {
       }
       this.height = this.plotTraces.length*260;
       if (this.height > 760){this.height = 760;}
+      this.plotsLayout.height = this.height;
       await new Promise((r) => setTimeout(r, 100));
       this.plotsLayout.annotations = annotations;
 
@@ -376,6 +464,9 @@ export class DataVisualizationComponent {
       Plotly.react('uniquePlotDiv',this.plotTraces, this.plotsLayout).then((x:any) => {
         this.updating = false;
       });
+    if (this.isViewingDBD){
+      this.generateTFFBBoxPlotForRandomized();
+    }
   }
 
 
@@ -438,20 +529,29 @@ export class DataVisualizationComponent {
     return final;
   }
 
-  getDataForRandomPlot():any{
-    //Find position in the statistics object
-    const statistics = this.statisticData["data"]
-    const stabilityValues = Object.keys(statistics)
+  getProfileDataByStability(profiles: any){
+    //Find position in the profiles object
+    const stabilityValues = Object.keys(profiles)
     stabilityValues.sort((a, b) => +a - +b)
     let position = -1
+    this.maxAvailableStability = +stabilityValues[stabilityValues.length-1]
     for (let i=0; i<stabilityValues.length; i++){
       if (+stabilityValues[i]>= this.minStability){
         position = i; break;
       }
     }
-    if (position == -1){return []}
+    if (position == -1){
+      return []
+    }
+    return profiles[String(stabilityValues[position])]
+  }
 
-    const dataToProcess = statistics[String(stabilityValues[position])];
+  getDataForRandomPlot():any{
+    //Find position in the statistics object
+    const statistics = this.statisticData["data"];
+    const dataToProcess = this.getProfileDataByStability(statistics);
+    if (dataToProcess.length==0){return []}
+
     //Data in form: [ [value, (len)] for each statistics ]
     //  statistics are ["median","lower_quartile","upper_quartile","percentile_95", "max"]
     //statistics must be processed into simple array from 0 to len
@@ -468,6 +568,7 @@ export class DataVisualizationComponent {
     }
     const len = data[0].length;
     const medianData = [...data[0]];
+    this.medianData = medianData;
     const xValues = Array.from({length: len}, (_, index) => index);
     const xValuesReversed = [...xValues].reverse();
     const upperQuartileData = [...data[2]].reverse();
@@ -537,18 +638,8 @@ export class DataVisualizationComponent {
 
   getDataForProfilePlot(): any{
     let x: number[] = []; let y: number[] = []; let w: number[] = []; let t: string[] = []
-    const profiles = this.profileData["profiles"]
-    //Find position in the profiles object
-    const stabilityValues = Object.keys(profiles)
-    stabilityValues.sort((a, b) => +a - +b)
-    let position = -1
-    this.maxAvailableStability = +stabilityValues[stabilityValues.length-1]
-    for (let i=0; i<stabilityValues.length; i++){
-      if (+stabilityValues[i]>= this.minStability){
-        position = i; break;
-      }
-    }
-    if (position == -1){
+    const profilesByStability = this.getProfileDataByStability(this.profileData["profiles"]);
+    if (profilesByStability.length == 0){
       return {
         'x': x, 'y': y, 'with': w
       }
@@ -557,7 +648,9 @@ export class DataVisualizationComponent {
     x.push(0); y.push(0); w.push(1); t.push("")
     let biggestX = 0;
     let biggestY = 0;
-    profiles[String(stabilityValues[position])].forEach((element: any[]) => {
+    var linearYValues: number[] = [];
+    var lastX = 0;
+    profilesByStability.forEach((element: any[]) => {
       x.push(element[1])
       if (element[1]> biggestX){
         biggestX = element[1]
@@ -568,10 +661,26 @@ export class DataVisualizationComponent {
         w.push(1)
         t.push(element[1])
       } else {
-        w.push(element[2])
-        t.push(String(element[1]-(element[2]-1)/2) + "-" + String(element[1]+(element[2]-1)/2))
+        w.push(element[2]);
+        t.push(String(element[1]-(element[2]-1)/2) + "-" + String(element[1]+(element[2]-1)/2));
+      }
+      //Fill linearYValues;
+      const width = (element.length==2) ? 1 : element[2];
+      const startX = element[1] - ((width-1)/2);
+      if (startX > lastX+1){
+        linearYValues = linearYValues.concat(Array(startX - lastX - 1).fill(0));
+      }
+      if (element.length==2){
+        linearYValues.push(element[0]);
+        lastX = element[1];
+      } else {
+        linearYValues = linearYValues.concat(Array(element[2]).fill(element[0]));
+        lastX = startX + width - 1;
       }
     });
+
+    this.profileLinearY = linearYValues;
+
     const marker = {
       color: x.map((value:any) =>
         this.maxStability[Math.round( value )]

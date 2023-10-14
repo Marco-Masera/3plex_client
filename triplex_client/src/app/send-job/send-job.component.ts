@@ -67,10 +67,11 @@ export class SendJobComponent {
   default_triplex_params: any;
   allowed_species: string[] = [];
   dsDnaTargetSites: { [species: string]: DnaTargetSites[] } = {}
-  randomization_disabled = true
+  n_iterations_possible = []
 
   ssRNAToolTip = "A single ssRNA sequence - either chosen from our transcript's database or provided as a single fasta file or as simple text (max size: " + ssRNAMaxSize + " MB)."
   dsDNAToolTip = "Target DNA sequences, either chosen from our database of target sites or provided as a multi-FASTA file containing dsDNA sequences or a bed file containing the target coordinates (max size: " + dsDNAMaxSize + " MB)."
+  randomizationToolTip = "Run 3plex on randomized versions of the target dsDNA to produce a control track."
 
   transcriptSearchGetQuery: ((query: string) => Promise<LncRnaTranscript[]>) | undefined = undefined
   constructor(private triplexService: TriplexServiceService, private _router: Router, public dialog: MatDialog) {
@@ -92,7 +93,8 @@ export class SendJobComponent {
       filter_repeat : new FormControl(null),//on off
       consecutive_errors: new FormControl(null),
       SSTRAND: new FormControl(null),
-      use_random: new FormControl(false)
+      use_random: new FormControl(true),
+      random_iterations: new FormControl(0)
     }, { validators: sendButtonChecks });
   }
 
@@ -129,8 +131,13 @@ export class SendJobComponent {
         console.log(this.default_triplex_params)
       }
     })
-    this.triplexService.get_allowed_species().then ((response: any) => {
-      if (response.success){ this.allowed_species = response.payload; console.log(this.allowed_species)}
+    this.triplexService.get_allowed_species_and_iterations().then ((response: any) => {
+      if (response.success){ 
+        this.allowed_species = response.payload.species;
+        console.log(this.allowed_species);
+        this.n_iterations_possible = response.payload.iterations;
+        this.formGroup.patchValue({random_iterations: this.n_iterations_possible[0]});
+      }
     })
   }
 
@@ -255,7 +262,7 @@ export class SendJobComponent {
         consecutive_errors: this.formGroup.value.consecutive_errors || undefined,
         SSTRAND: this.formGroup.value.SSTRAND || undefined,
         SPECIES: this.formGroup.value.selected_species || undefined,
-        USE_RANDOM: this.formGroup.value.use_random
+        USE_RANDOM: (this.formGroup.value.use_random ? this.formGroup.value.random_iterations : 0)
       }
       this.triplexService.submitJob(job).then(response => {
         this.sending = false;
