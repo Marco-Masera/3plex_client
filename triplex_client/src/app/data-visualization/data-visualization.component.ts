@@ -34,7 +34,8 @@ export class DataVisualizationComponent {
   oldPlots: any[] = [];
   plotTracesIndexForStatistics: number[] = []
   oldPlotTracesIndexForStatistics: number[] = []
-  medianData: number[] = [];
+  randomizationAverage: number[] = [];
+  randomizationVariance: number[] = [];
   profileLinearY: number[] = [];
   plotsLayout: any = {
     grid: {rows: 1, columns: 1},
@@ -87,7 +88,7 @@ export class DataVisualizationComponent {
     const layout = JSON.parse(JSON.stringify(this.plotsLayout));
     layout.annotations = [layout.annotations[0]];
     layout.grid.rows = 1;
-    layout.height = 360;
+    layout.height = 260;
     this.plotsLayout = layout;
     Plotly.react('uniquePlotDiv', this.plotTraces, layout);
   }
@@ -101,33 +102,6 @@ export class DataVisualizationComponent {
     const start = this.selectedDBDs[index][0];
     const end = this.selectedDBDs[index][1]+0.4;
     this.zoomPlotToDBD(start, end, xAxis);
-    //Add boxplot 
-    await new Promise((r) => setTimeout(r, 100));
-    this.generateTFFBBoxPlotForRandomized();
-  }
-
-  generateTFFBBoxPlotForRandomized(){
-    //If no statisticData or no selected DBD, return
-    if (this.medianData.length == 0 || this.dbdForViewing<0){return;}
-    const dbd:number[] = this.selectedDBDs[this.dbdForViewing]
-    //Get plot for randomized ttf
-    var trace = {
-      y: this.medianData.slice(dbd[0], dbd[1]),
-      type: 'box',
-      name: 'randomized - average'
-    };
-    var trace2 = {
-      y: this.profileLinearY.slice(dbd[0], dbd[1]),
-      type: 'box',
-      name: 'actual'
-    };
-    const l = {
-      title: {
-        text: 'Number of TTF per position'
-      }
-    }
-    var data = [trace, trace2];
-    Plotly.newPlot('boxplotDBD', data, l);
   }
 
   stopViewDBDDetails(){
@@ -141,8 +115,6 @@ export class DataVisualizationComponent {
     this.buildDBDsHightlight(this.plotsLayout.yaxis.range[1], -1)
     Plotly.react('uniquePlotDiv', this.plotTraces, this.plotsLayout);
   }
-
-
 
   addDbdMode(){
     if (!this.isAddingDBD){
@@ -464,9 +436,6 @@ onDBDSelected(index:number){
       Plotly.react('uniquePlotDiv',this.plotTraces, this.plotsLayout).then((x:any) => {
         this.updating = false;
       });
-    if (this.isViewingDBD){
-      this.generateTFFBBoxPlotForRandomized();
-    }
   }
 
 
@@ -568,13 +537,15 @@ onDBDSelected(index:number){
     }
     const len = data[0].length;
     const medianData = [...data[0]];
-    this.medianData = medianData;
     const xValues = Array.from({length: len}, (_, index) => index);
     const xValuesReversed = [...xValues].reverse();
     const upperQuartileData = [...data[2]].reverse();
     const upperQuartileDataNotreversed = data[2];
     const lowerQuartileData = [...data[1]].reverse();
     const ninetyFivePercentData = [...data[3]].reverse();
+    //Save average and variance
+    this.randomizationAverage = data[5];
+    this.randomizationVariance = data[6];
 
     //BASE CONSTANT TO SET
     const LEGEND_FOR_ALL = false;
@@ -697,7 +668,7 @@ onDBDSelected(index:number){
     this.profileMaxX = biggestX + 1;
     x.push(biggestX+1); y.push(0); w.push(1);  t.push(""); marker.color.push(0);
     return {
-      'x': x, 'y': y, 'with': w, type: 'bar',name: "TTS count", marker: marker, text: t, maxY: biggestY,
+      'x': x, 'y': y, 'width': w, type: 'bar',name: "TTS count", marker: marker, text: t, maxY: biggestY,
       hovertemplate: '<b>Pos</b>: %{text}' +
                         '<br><b>TTS Count</b>: %{y}<br>',
                         textposition: "none"

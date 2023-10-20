@@ -1,0 +1,8 @@
+<div *ngIf="dbd==null">
+    <h4>Select a DBD to see details</h4>
+</div>
+<div *ngIf="dbd!=null">
+    <p>Selected DBD: {{dbd[0]}}-{{dbd[1]}}</p>
+    <p>p-value: {{pValue}}</p>
+    <div id="boxplotDBD" style="width:50%"></div>
+</div>

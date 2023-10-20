@@ -22,18 +22,6 @@
         
         <div *ngIf="!loading" id="visualsDiv">
 
-            <p style="margin-bottom: -3px;">Max stability threshold</p>
-            <mat-slider
-                *ngIf="!loading"
-                    id="minStabilitySlider"
-                    [max]="maxAvailableStability"
-                    min="0"
-                    step="0.1"
-                    discrete="false"
-                    [matTooltip]="'Threshold: ' + minStability">
-                    <input  matSliderThumb [(ngModel)]="minStability" (change)="updateProfilePlot()" >
-            </mat-slider>
-
             <div id="addingDBDButtonDiv">
                 <h2>DBDs</h2>
                 <div class="dbdContainer">
@@ -72,20 +60,31 @@
                 </div>
             </div>
 
+            <p style="margin-bottom: -3px;">Max stability threshold</p>
+            <mat-slider
+                *ngIf="!loading"
+                    id="minStabilitySlider"
+                    [max]="maxAvailableStability"
+                    min="0"
+                    step="0.1"
+                    discrete="false"
+                    [matTooltip]="'Threshold: ' + minStability">
+                    <input  matSliderThumb [(ngModel)]="minStability" (change)="updateProfilePlot()" >
+            </mat-slider>
+
             <div *ngIf="isAddingDBD" id="addDBDButtonDiv">
                 <h2>Select an area in the plot to add a DBD</h2>
             </div>
             <div class="containsPlot" [ngClass]="{'withTransparency' : updating}" 
-            id="uniquePlotDiv" [ngStyle]="(isViewingDBD) ? {height: '360px'} :  {height: height + 'px'}"></div>
+            id="uniquePlotDiv" [ngStyle]="(isViewingDBD) ? {height: '260px'} :  {height: height + 'px'}"></div>
 
             <div *ngIf="isViewingDBD" style="width:100%">
-                <div *ngIf="dbdForViewing==-1">
-                    <h4>Select a DBD to see details</h4>
-                </div>
-                <div *ngIf="dbdForViewing>=0">
-                    <p>Selected DBD: {{selectedDBDs[dbdForViewing][0]}}-{{selectedDBDs[dbdForViewing][1]}}</p>
-                    <div id="boxplotDBD" style="width:50%"></div>
-                </div>
+                <app-dbd-details
+                    [setDbd]="dbdForViewing>=0 ? selectedDBDs[dbdForViewing] : null"
+                    [profileLinearY]="profileLinearY"
+                    [randomizationAverage]="randomizationAverage"
+                    [randomizationVariance_]="randomizationVariance"
+                ></app-dbd-details>
             </div>
         </div>
 </mat-card>

@@ -33,6 +33,7 @@ import { DataVisualizationComponent } from './data-visualization/data-visualizat
 import { InfoPopupComponent } from './send-job/generic-searchable-dropdown/info-popup/info-popup.component';
 import { DataVisualizationAltComponent } from './data-visualization-alt/data-visualization-alt.component';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
+import { DbdDetailsComponent } from './dbd-details/dbd-details.component';
 
 @NgModule({
   declarations: [
@@ -46,7 +47,8 @@ import {MatSlideToggleModule} from '@angular/material/slide-toggle';
     GenericSearchableDropdownComponent,
     DataVisualizationComponent,
     InfoPopupComponent,
-    DataVisualizationAltComponent
+    DataVisualizationAltComponent,
+    DbdDetailsComponent
   ],
   imports: [
     BrowserModule,
