@@ -44,6 +44,14 @@
               <div *ngIf="jobData.state=='Submitted'" style="margin-top: 30px;">
                 <h4>This page will be automatically updated until the job is completed</h4>
                 <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+                <div id="mailUpdateSection">
+                  <p *ngIf="!jobData.email_address">Provide an email address to receive a notification once the job is completed</p>
+                  <p *ngIf="jobData.email_address">Update your email address to receive a notification once the job is completed</p>
+                  <div id="mailUpdateSectionInputDiv">
+                    <input style="width: 300px;" [(ngModel)]='email_input' type="email" id="email" name="email">
+                    <button style="margin-left: 8px;" [disabled]="mailInputInvalid() || isUpdatingEmail" (click)="updateEmail()">Set email</button>
+                  </div>
+                </div>
               </div>
 
               <div *ngIf="jobData.triplex_params" style="width: 100%; max-width: 500px; margin-top: 15px; margin-bottom: 30px;">

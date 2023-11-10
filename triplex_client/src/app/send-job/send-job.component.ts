@@ -5,7 +5,7 @@ import { JobToSubmit } from '../model/jobToSubmit';
 import { Router } from '@angular/router';
 import { LncRnaTranscript } from '../model/lnc_rna_transcript';
 import { DnaTargetSites } from '../model/dna_target_sites';
-import { InfoPopupComponent } from './generic-searchable-dropdown/info-popup/info-popup.component';
+import { InfoPopupComponent } from '../generic-searchable-dropdown/info-popup/info-popup.component';
 import { MatDialog } from '@angular/material/dialog';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 
@@ -81,7 +81,7 @@ export class SendJobComponent {
       ssRNA_transcript_id: new FormControl(null),
       ssRNA: new FormControl(null),
       ssRNATextual: new FormControl(null),
-      dsDNA_chosen_type: new FormControl(ssRNA_input_type.sequence),
+      dsDNA_chosen_type: new FormControl(ssRNA_input_type.transcript_id),
       dsDNA: new FormControl(null),
       dsDNATargetSite: new FormControl(null),
       jobName: new FormControl(null),

@@ -69,10 +69,10 @@
 									aria-hidden="false" aria-label="Example home icon" fontIcon="help_outline"></mat-icon>
 								</div>
 								<mat-radio-group style="margin-bottom: 20px;"  formControlName="dsDNA_chosen_type" aria-label="Select an option">
-									<mat-radio-button value="s">Provide your own sequence(s)</mat-radio-button>
 									<mat-radio-button value="t"  [disabled]="!formGroup.get('selected_species')?.value"
 									[matTooltip]="formGroup.get('selected_species')?.value ? '' : 'Please select a species first'"
 									matTooltipPosition="above">Choose a target</mat-radio-button>
+									<mat-radio-button value="s">Provide your own sequence(s)</mat-radio-button>
 								</mat-radio-group>
 								
 								<div class="verticalInputSection" style="margin-left: 15px;">
@@ -226,7 +226,7 @@
 						<mat-list-item  [matTooltip]="get_triplex_params_description('SSTRAND')" matTooltipPosition="above" style="height:50px !important" class="line" role="listitem">
 							<div class="row">
 								<div class="paramNameContainer">
-									<p>SSTRAND</p>
+									<p>ssRNA secondary structure</p>
 									<mat-icon aria-hidden="false" aria-label="Example home icon" fontIcon="help_outline"></mat-icon>
 								</div>
 								<mat-form-field class="smallInput">

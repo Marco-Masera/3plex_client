@@ -180,4 +180,20 @@ export class TriplexServiceService {
   get_allowed_species_and_iterations(): any{
     return this.get_data("system_allowed_species_and_iterations");
   }
+
+  updateJobMail(token: string, email: string): any{
+    const url = "jobs/" + token + "/mail/" + email;
+    return fetch(BASE_URL+API_PATH+url, {
+      method: "POST", 
+      mode: "no-cors", 
+      cache: "no-cache", 
+      credentials: "same-origin", 
+      headers: {
+        "Content-Type": "application/json",
+      },
+      redirect: "follow",
+      referrerPolicy: "no-referrer", 
+      body: null,
+    })
+  }
 }

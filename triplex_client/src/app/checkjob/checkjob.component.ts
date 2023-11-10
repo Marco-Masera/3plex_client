@@ -25,6 +25,8 @@ export class CheckjobComponent {
   errorMessage: string = ""
   files: string[] = []
   pollingTimer: any | null = null
+  email_input: string = ""
+  isUpdatingEmail: boolean = false;
   constructor(private triplexService: TriplexServiceService, private route: ActivatedRoute){}
   
   ngOnInit() {
@@ -39,6 +41,25 @@ export class CheckjobComponent {
         this.pollingTimer = setInterval(()=> { this.load_data() }, 40 * 1000);
       }
    });
+  }
+
+  mailInputInvalid(){
+    return !(this.email_input && new RegExp('^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$').test(this.email_input) )
+  }
+
+  updateEmail(){
+    if (this.isUpdatingEmail){return;}
+    this.isUpdatingEmail = true;
+    this.triplexService.updateJobMail(this.jobData?.token || "", this.email_input).then(
+      (response: any) => {
+        if (this.jobData){
+          this.jobData.email_address = this.email_input;
+        }
+        this.isUpdatingEmail = false;
+      }
+    ).catch(
+      (response: any) => {console.log(response); window.alert("Could not set email address"); this.isUpdatingEmail = false;}
+    );
   }
 
   downloadFile(file: String){
@@ -77,6 +98,7 @@ export class CheckjobComponent {
               species: response.payload.job.species,
               job_name: response.payload.job.job_name,
               email_address: response.payload.job.email_address,
+              //state: "Submitted",// response.payload.job.state,
               state: response.payload.job.state,
               token: response.payload.job.token,
               ssRNA_id: response.payload.job.ssRNA_id,

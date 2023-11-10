@@ -36,3 +36,12 @@ mat-list-item:nth-child(n){
     justify-content: space-between;
     align-items: center;
 }
+#mailUpdateSection{
+    margin-top: 12px;
+}
+#mailUpdateSectionInputDiv{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
