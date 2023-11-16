@@ -81,9 +81,12 @@
             <div *ngIf="isViewingDBD" style="width:100%">
                 <app-dbd-details
                     [setDbd]="dbdForViewing>=0 ? selectedDBDs[dbdForViewing] : null"
+                    [stability]="minStability"
+                    [token]="token"
                     [profileLinearY]="profileLinearY"
                     [randomizationAverage]="randomizationAverage"
                     [randomizationVariance_]="randomizationVariance"
+                    [fullSequence]="fullSequence"
                 ></app-dbd-details>
             </div>
         </div>

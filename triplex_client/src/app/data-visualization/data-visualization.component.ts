@@ -55,6 +55,7 @@ export class DataVisualizationComponent {
 
   ngOnInit() {
     this.token = this.route.snapshot.paramMap.get('token'); 
+    const self = this;
     if (this.token != null) {
       this.triplexService.get_data_for_visualizations(this.token).then( (response:any) => {
         if (!response.success){
@@ -62,9 +63,18 @@ export class DataVisualizationComponent {
         } else {
           this.dataForVisuals = response.payload
           this.fullSequence = response.payload.available.sequence.split("")//.map((value:string, i:number) => i+"\n"+value)
-          this.initializePlots()
+          this.initializePlots().then(() => {
+            this.triplexService.getDBD(self.token || "").then(response => {
+              console.log(response);
+              if (response.success){
+                const dbds = response.payload;
+                this.selectedDBDs = dbds;
+                self.buildDBDsHightlight(this.plotsLayout.yaxis.range[1]); Plotly.react('uniquePlotDiv', self.plotTraces, self.plotsLayout);
+              }
+            });
+          })
         }
-      })
+      });
     }
   }
 
@@ -116,6 +126,10 @@ export class DataVisualizationComponent {
     Plotly.react('uniquePlotDiv', this.plotTraces, this.plotsLayout);
   }
 
+  updateRemoteDBDs(){
+    this.triplexService.setDBD(this.token || "", this.selectedDBDs)
+  }
+
   addDbdMode(){
     if (!this.isAddingDBD){
       this.isAddingDBD = true
@@ -132,6 +146,7 @@ export class DataVisualizationComponent {
       const dragLayer: any = document.getElementsByClassName('nsewdrag')[0];
       dragLayer.style.cursor = 'col-resize';
     } else {
+      this.updateRemoteDBDs();
       this.isAddingDBD = false;
       let myDiv: any = document.getElementById("uniquePlotDiv");
       const targets = (myDiv.firstChild.firstChild.firstChild.querySelector('.cartesianlayer').childNodes);
@@ -171,6 +186,7 @@ export class DataVisualizationComponent {
     this.selectedDBDs.splice(index, 1);
     this.buildDBDsHightlight(this.plotsLayout.yaxis.range[1]);
     Plotly.react('uniquePlotDiv',this.plotTraces, this.plotsLayout);
+    this.updateRemoteDBDs();
   }
 
   mouseHoverDBD(index: number, entering: boolean){
@@ -335,7 +351,7 @@ onDBDSelected(index:number){
       y: number; //position in y domain
       xref: string; yref: string;
     }[] = []
-    Promise.all([profile, secondaryStruct, conservation, randomizationStatistics, repeats]).then(async (data) => {
+    await Promise.all([profile, secondaryStruct, conservation, randomizationStatistics, repeats]).then(async (data) => {
       const repeats = data.pop();
       const statistics = data.pop()
       const plots = data.filter(x => x!=null);
@@ -357,6 +373,10 @@ onDBDSelected(index:number){
             xref: 'paper'
           });
       });
+      let lastYValue = (1+plots.length);
+      if (repeats && repeats.length>0){
+        lastYValue+=1;
+      }
       repeats?.forEach((repeatPlot:any, index:number) => {
         const y = "y"+(1+plots.length);
         repeatPlot.yaxis = y;
@@ -395,10 +415,18 @@ onDBDSelected(index:number){
       this.plotsLayout.annotations = annotations;
 
       if (statistics.length > 0){
+        statistics[statistics.length-1].yaxis = "y"+lastYValue
         statistics.forEach((st:any) => {
           this.plotTracesIndexForStatistics.push(this.plotTraces.length)
           this.plotTraces.push(st);
         });
+        const lastYValueString = "yaxis"+lastYValue
+        console.log(lastYValueString)
+        this.plotsLayout[lastYValueString] = {
+            title: '-log p-Value',
+            overlaying: 'y',
+            side: 'right'
+        }
       }
 
       const config = {
@@ -406,7 +434,7 @@ onDBDSelected(index:number){
       }
       const self = this;
       var last_s:number[] = []
-      Plotly.newPlot('uniquePlotDiv', this.plotTraces, this.plotsLayout, config).then( (x:any) =>{
+      await Plotly.newPlot('uniquePlotDiv', this.plotTraces, this.plotsLayout, config).then( (x:any) =>{
         self.maxXaxisRange = self.plotsLayout.xaxis.range;
         let myDiv: any = document.getElementById("uniquePlotDiv");
         if (myDiv != null){
@@ -515,6 +543,36 @@ onDBDSelected(index:number){
     return profiles[String(stabilityValues[position])]
   }
 
+  computePValue(ttsCount: number[], ttsAverage:number[], ttsVariance:number[]){
+    function standardNormalCDF(x:number) {
+      function erf(x:number) {
+        const t = 1 / (1 + 0.5 * Math.abs(x));
+        const erf = 1 - t * Math.exp(-x * x - 1.26551223 + t * (1.00002368 + t * (0.37409196 + t * (0.09678418 + t * (-0.18628806 + t * (0.27886807 + t * (-1.13520398 + t * (1.48851587 + t * (-0.82215223 + t * 0.17087277)))))))));
+        return x >= 0 ? erf : -erf;
+      }
+      const sqrt2 = Math.sqrt(2);
+      return 0.5 * (1 + erf(x / (sqrt2)));
+    }
+    const pValues: number[] = [];
+    const definedValues: number[] = [];
+    const labels: string[] = [];
+    for (let i=0; i<ttsCount.length; i++){
+      const stdDev = Math.sqrt( ttsVariance[i]);
+      const maxP = 15;
+      if (stdDev>0){
+        var pValue = - Math.log10(1 - standardNormalCDF(Math.abs(ttsCount[i]-ttsAverage[i])/stdDev));
+        if (pValue>maxP) {pValue = maxP; labels.push(">"+maxP)} else {labels.push(""+pValue);}
+        definedValues.push(i);
+        pValues.push(pValue);
+      } else {
+        definedValues.push(i);
+        pValues.push(0);
+        labels.push("Not defined")
+      }
+    }
+    return [definedValues, pValues, labels];
+  }
+
   getDataForRandomPlot():any{
     //Find position in the statistics object
     const statistics = this.statisticData["data"];
@@ -604,7 +662,20 @@ onDBDSelected(index:number){
       type: "scatter", showlegend: LEGEND_FOR_ALL,
       hoverinfo:"skip"
     };
-    return [medianTrace, upperQuartile, lowerQuartile, ninetyFivePercent, maxTrace]
+    const pValueTraces = this.computePValue(this.profileLinearY, this.randomizationAverage, this.randomizationVariance);
+    const pValueTrace = {
+      x: pValueTraces[0],
+      y: pValueTraces[1], 
+      text: pValueTraces[2],
+      hovertemplate: '<b>-log</b>: %{text}',
+      name: "p-value", 
+      type: "lines", showlegend: true,
+      line: {
+        color: 'rgb(128, 0, 128, 0.5)',
+        width: 0.3
+      }
+    }
+    return [medianTrace, upperQuartile, lowerQuartile, ninetyFivePercent, maxTrace, pValueTrace]
   }
 
   getDataForProfilePlot(): any{

@@ -196,4 +196,18 @@ export class TriplexServiceService {
       body: null,
     })
   }
+
+  loadTPXInDBD(token: string, start: number, end: number, stability: number){
+    return this.get_data(`tts_sites/${token}/${start}/${end}/${stability}`)
+  }
+
+  getDBD(token: string){
+    return this.get_data(`dbd/${token}`);
+  }
+  setDBD(token: string, dbds: number[][]){
+    const url = `dbd/${token}`;
+    const formData = new FormData();
+    formData.append('dbds', JSON.stringify(dbds));
+    this.post_data_form(url, formData) 
+  }
 }

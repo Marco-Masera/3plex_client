@@ -1,4 +1,5 @@
 import { Component, Input } from '@angular/core';
+import { TriplexServiceService } from '../services/triplex-service.service';
 declare let Plotly: any;
 
 @Component({
@@ -7,11 +8,13 @@ declare let Plotly: any;
   styleUrls: ['./dbd-details.component.css']
 })
 export class DbdDetailsComponent {
-  dbd: number[] | null = null;
+  @Input() dbd: number[] | null = null;
+  @Input() stability: number | null = null;
+  @Input() token: string | null = null;
   @Input() set setDbd(v: number[] | null){
     this.dbd = v;
     if (v){
-      this.generateTFFBBoxPlotForRandomized();
+      this.initializeDBDPage();
     }
   }
   @Input() profileLinearY: number[] = []
@@ -19,9 +22,12 @@ export class DbdDetailsComponent {
   @Input() randomizationVariance: number[] = []
   @Input() set randomizationVariance_(v: number[]){
     this.randomizationVariance = v;
-    this.generateTFFBBoxPlotForRandomized();
+    this.initializeDBDPage();
   }
+  @Input() fullSequence: string[] = []
   pValue:number = 0;
+
+  constructor(private triplexService: TriplexServiceService){}
 
   standardNormalCDF(x:number) {
     function erf(x:number) {
@@ -72,9 +78,40 @@ export class DbdDetailsComponent {
       hovertemplate: '<b>Average TTF: </b>: %{y}<br><b>St.dev:</b>: %{error_y.array}<br>'
     };
     var data = [trace1, trace2];
-    var layout = {barmode: 'group', height:300};
+    var layout = {barmode: 'group', height:250};
     await new Promise((r) => setTimeout(r, 100));
     Plotly.newPlot('boxplotDBD', data, layout);
+  }
+
+  initializeDBDPage(){
+    console.log("Initializing DBD details page");
+    this.generateTFFBBoxPlotForRandomized();
+    if (this.dbd && this.token){
+      this.triplexService.loadTPXInDBD(this.token, this.dbd[0], this.dbd[1], this.stability || 0).then(
+        response => {
+          console.log(response)
+        }
+      )
+    }
+  }
+
+  toFixed(x:any) {
+    if (isNaN(x)){return "Not defined";}
+    if (Math.abs(x) < 1.0) {
+      var e = parseInt(x.toString().split('e-')[1]);
+      if (e) {
+          x *= Math.pow(10,e-1);
+          return '0.' + (new Array(e)).join('0') + x.toString().substring(2);
+      }
+    } else {
+      var e = parseInt(x.toString().split('+')[1]);
+      if (e > 20) {
+          e -= 20;
+          x /= Math.pow(10,e);
+          x += (new Array(e+1)).join('0');
+      }
+    }
+    return x;
   }
 
 }
