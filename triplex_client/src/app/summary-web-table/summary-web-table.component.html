@@ -1,0 +1,44 @@
+<div>
+    <mat-card id="filtersCard">
+        <div class="singleFilter">
+            dsDNA Id
+            <input [(ngModel)]="dsDNAIdFilter" (ngModelChange)="filtersUpdated()">
+        </div>
+        <div class="singleFilter" *ngIf="bestStabilityMinMax">
+            Best stability
+            <mat-slider [matTooltip]="bestStabilitySelected[0] + '-' + bestStabilitySelected[1]" [min]="bestStabilityMinMax[0]" [max]="bestStabilityMinMax[1]">
+                <input (change)="filtersUpdated()" [(ngModel)]="bestStabilitySelected[0]" [value]="bestStabilitySelected[0]" matSliderStartThumb>
+                <input (change)="filtersUpdated()" [(ngModel)]="bestStabilitySelected[1]" [value]="bestStabilitySelected[1]" matSliderEndThumb>
+            </mat-slider>
+        </div>
+        <div class="singleFilter" *ngIf="stabilityNormMinMax">
+            Stability norm.
+            <mat-slider [matTooltip]="stabilityNormSelected[0] + '-' + stabilityNormSelected[1]" [min]="stabilityNormMinMax[0]" [max]="stabilityNormMinMax[1]">
+                <input (change)="filtersUpdated()" [(ngModel)]="stabilityNormSelected[0]" [value]="stabilityNormSelected[0]" matSliderStartThumb>
+                <input (change)="filtersUpdated()" [(ngModel)]="stabilityNormSelected[1]" [value]="stabilityNormSelected[1]" matSliderEndThumb>
+            </mat-slider>
+        </div>
+        <div class="singleFilter" *ngIf="bestScoreMinMax">
+            Best score
+            <mat-slider [matTooltip]="bestScoreSelected[0] + '-' + bestScoreSelected[1]" [min]="bestScoreMinMax[0]" [max]="bestScoreMinMax[1]">
+                <input (change)="filtersUpdated()" [(ngModel)]="bestScoreSelected[0]" [value]="bestScoreSelected[0]" matSliderStartThumb>
+                <input (change)="filtersUpdated()" [(ngModel)]="bestScoreSelected[1]" [value]="bestScoreSelected[1]" matSliderEndThumb>
+            </mat-slider>
+        </div>
+    </mat-card>
+    <div class="mat-elevation-z8">
+        <table mat-table [dataSource]="webSummaryDataSource">
+            <ng-container *ngFor="let column of tableColumns index as i"  [matColumnDef]="column">
+                <th mat-header-cell *matHeaderCellDef>{{tableColumnsNames[i]}}</th>
+                <td mat-cell *matCellDef="let element"> {{element[column]}} </td>
+            </ng-container>
+    
+            <tr mat-header-row *matHeaderRowDef="tableColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: tableColumns;" (click)="clickedRow(row)"></tr>
+        </table>
+    
+        <mat-paginator [pageSizeOptions]="[5, 10, 20]"
+                    showFirstLastButtons>
+        </mat-paginator>
+    </div>
+</div>

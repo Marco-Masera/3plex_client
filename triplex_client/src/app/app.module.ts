@@ -34,6 +34,9 @@ import { InfoPopupComponent } from './generic-searchable-dropdown/info-popup/inf
 import { DataVisualizationAltComponent } from './data-visualization-alt/data-visualization-alt.component';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import { DbdDetailsComponent } from './dbd-details/dbd-details.component';
+import { SummaryWebTableComponent } from './summary-web-table/summary-web-table.component';
+import {MatPaginator, MatPaginatorModule} from '@angular/material/paginator';
+import {MatTableDataSource, MatTableModule} from '@angular/material/table';
 
 @NgModule({
   declarations: [
@@ -48,7 +51,8 @@ import { DbdDetailsComponent } from './dbd-details/dbd-details.component';
     DataVisualizationComponent,
     InfoPopupComponent,
     DataVisualizationAltComponent,
-    DbdDetailsComponent
+    DbdDetailsComponent,
+    SummaryWebTableComponent
   ],
   imports: [
     BrowserModule,
@@ -73,7 +77,9 @@ import { DbdDetailsComponent } from './dbd-details/dbd-details.component';
     MatProgressBarModule,
     MatTooltipModule,
     MatRadioModule,
-    MatSlideToggleModule
+    MatSlideToggleModule,
+    MatTableModule,
+    MatPaginatorModule
   ],
   providers: [],
   bootstrap: [AppComponent]

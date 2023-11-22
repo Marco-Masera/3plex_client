@@ -210,4 +210,8 @@ export class TriplexServiceService {
     formData.append('dbds', JSON.stringify(dbds));
     this.post_data_form(url, formData) 
   }
+
+  getWebSummary(token: string){
+    return this.get_data(`jobs/${token}/websummary`)
+  }
 }

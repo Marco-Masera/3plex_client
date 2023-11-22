@@ -60,7 +60,7 @@
                 </div>
             </div>
 
-            <p style="margin-bottom: -3px;">Max stability threshold</p>
+            <p style="margin-bottom: -3px;">Min stability threshold</p>
             <mat-slider
                 *ngIf="!loading"
                     id="minStabilitySlider"
@@ -88,6 +88,9 @@
                     [randomizationVariance_]="randomizationVariance"
                     [fullSequence]="fullSequence"
                 ></app-dbd-details>
+            </div>
+            <div *ngIf="!isViewingDBD" style="margin-top: 24px;">
+                <app-summary-web-table [token]="token"></app-summary-web-table>
             </div>
         </div>
 </mat-card>

@@ -65,7 +65,6 @@ export class DataVisualizationComponent {
           this.fullSequence = response.payload.available.sequence.split("")//.map((value:string, i:number) => i+"\n"+value)
           this.initializePlots().then(() => {
             this.triplexService.getDBD(self.token || "").then(response => {
-              console.log(response);
               if (response.success){
                 const dbds = response.payload;
                 this.selectedDBDs = dbds;
