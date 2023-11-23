@@ -23,7 +23,6 @@ export class FullTpxTableComponent {
       tpx.Duplex_ID = id[0] + " - " + id[2];
     })
     this.tpxDataSource.data = tpx;
-    console.log(tpx)
   }
   @Output() onRowClicked: EventEmitter<any> = new EventEmitter();
 

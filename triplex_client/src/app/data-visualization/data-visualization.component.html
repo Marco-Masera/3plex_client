@@ -97,8 +97,8 @@
             <div *ngIf="!isViewingDBD && !dsDNAID" style="margin-top: 24px;">
                 <app-summary-web-table [token]="token"></app-summary-web-table>
             </div>
-            <div *ngIf="!isViewingDBD && dsDNAID && dataForVisuals?.available?.tpx" style="margin-top: 24px;">
-                <app-full-tpx-table (onRowClicked)="highlightRegion($event)" [tpx]="dataForVisuals?.available?.tpx"></app-full-tpx-table>
+            <div *ngIf="!isViewingDBD && dsDNAID && filteredTPX" style="margin-top: 24px;">
+                <app-full-tpx-table (onRowClicked)="highlightRegion($event)" [tpx]="filteredTPX"></app-full-tpx-table>
             </div>
         </div>
 </mat-card>

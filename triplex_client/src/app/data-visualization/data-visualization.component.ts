@@ -38,6 +38,7 @@ export class DataVisualizationComponent {
   randomizationAverage: number[] = [];
   randomizationVariance: number[] = [];
   profileLinearY: number[] = [];
+  filteredTPX: any[] | null = null;
   plotsLayout: any = {
     grid: {rows: 1, columns: 1},
     xaxis: {},
@@ -63,7 +64,8 @@ export class DataVisualizationComponent {
         if (!response.success){
           this._router.navigate(['checkjob/token/', this.token]);
         } else {
-          this.dataForVisuals = response.payload
+          this.dataForVisuals = response.payload;
+          this.filteredTPX = this.dataForVisuals?.available?.tpx;
           this.fullSequence = response.payload.available.sequence.split("")//.map((value:string, i:number) => i+"\n"+value)
           this.initializePlots().then(() => {
             this.triplexService.getDBD(self.token || "").then(response => {
@@ -481,6 +483,13 @@ onDBDSelected(index:number){
     this.updating = true;
     const new_plot: any[] = this.getDataForProfilePlot();
     this.plotTraces[0] = new_plot;
+    if (this.filteredTPX){
+      console.log(this.filteredTPX.length)
+      this.filteredTPX = this.dataForVisuals?.available?.tpx.filter(
+        (tpx:any) => tpx.Stability >= this.minStability
+      );
+      console.log(this.filteredTPX?.length)
+    }
     if (this.statisticData){
       const new_random_plot: any[] = this.getDataForRandomPlot();
       this.plotTracesIndexForStatistics.forEach(index => {
