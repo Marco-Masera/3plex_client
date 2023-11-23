@@ -19,6 +19,7 @@ interface DataForVisuals{
 })
 export class DataVisualizationComponent {
   token: string | null = null
+  dsDNAID: string | null = null;
   dataForVisuals: DataForVisuals | undefined = undefined
   profileData: any | undefined = undefined
   profileMaxX: number = 0
@@ -54,10 +55,11 @@ export class DataVisualizationComponent {
     private _router: Router){}
 
   ngOnInit() {
-    this.token = this.route.snapshot.paramMap.get('token'); 
+    this.token = this.route.snapshot.paramMap.get('token');
+    this.dsDNAID = this.route.snapshot.paramMap.get('dsDNAID');
     const self = this;
     if (this.token != null) {
-      this.triplexService.get_data_for_visualizations(this.token).then( (response:any) => {
+      this.triplexService.get_data_for_visualizations(this.token, this.dsDNAID).then( (response:any) => {
         if (!response.success){
           this._router.navigate(['checkjob/token/', this.token]);
         } else {
@@ -115,7 +117,6 @@ export class DataVisualizationComponent {
 
   stopViewDBDDetails(){
     this.plotsLayout = this.oldPlotsLayout;
-    console.log(this.plotsLayout)
     this.isViewingDBD = false;
     //Restore all plots
     this.plotTraces = this.oldPlots;
@@ -163,6 +164,7 @@ export class DataVisualizationComponent {
     }
   }
 
+  selectedRegion: number[] | null = null;
   buildDBDsHightlight(barHeight:number, hoverOn=-1){
     //Add highlight to plot
     this.plotsLayout.shapes = this.selectedDBDs.map( (dbd, index) => {
@@ -179,6 +181,32 @@ export class DataVisualizationComponent {
         line: {width: (index==hoverOn) ? 0.2 : 0},
         layer:'below'}
     });
+    if (this.selectedRegion){
+      this.plotsLayout.shapes.push(
+         {
+            type: 'rect',
+            xref: 'x',
+            x0: this.selectedRegion[0]-0.5,
+            x1: this.selectedRegion[1]+0.5,
+            y0: 0, 
+            y1: barHeight + 20,
+            fillcolor: '#C9FF24',
+            opacity: 0.5,
+            line: {width: 0.2},
+            layer:'below'}
+      );
+    }
+  }
+
+  highlightRegion(event:any){
+    //Add highlight to plot
+    this.selectedRegion = event;
+    this.buildDBDsHightlight(this.plotsLayout.yaxis.range[1]);
+    Plotly.react('uniquePlotDiv',this.plotTraces, this.plotsLayout);
+    const xAxis = this.plotsLayout.xaxis.range
+    if (xAxis[0] <= 0) {xAxis[0] = 1;}
+    this.zoomPlotToDBD(event[0], event[1], xAxis);
+    document.getElementById('uniquePlotDiv')?.scrollIntoView({behavior: 'smooth'});
   }
 
   removeDBD(index: number){
@@ -340,7 +368,9 @@ onDBDSelected(index:number){
 
   //This function is called once dataForVisuals has been retrieved
   async initializePlots(){
-    const profile = this.initializeProfilePlot(this.dataForVisuals?.available?.tfo_profile);
+    var profileURLPrefix = this.dataForVisuals?.available?.profile_dynamic ? 
+      this.triplexService.getBaseUrl() + this.triplexService.getAPIUrl() : this.triplexService.getBaseUrl().slice(0,-1)
+    const profile = this.initializeProfilePlot(profileURLPrefix + this.dataForVisuals?.available?.tfo_profile);
     const secondaryStruct = this.initializeSecondaryStructurePlot(this.dataForVisuals?.available?.secondary_structure);
     const conservation = this.initializeConservationPlot();
     const repeats = this.initializeRepeatsPlot();
@@ -420,7 +450,6 @@ onDBDSelected(index:number){
           this.plotTraces.push(st);
         });
         const lastYValueString = "yaxis"+lastYValue
-        console.log(lastYValueString)
         this.plotsLayout[lastYValueString] = {
             title: '-log p-Value',
             overlaying: 'y',
@@ -503,7 +532,7 @@ onDBDSelected(index:number){
   }
 
   async initializeProfilePlot(urlToProfiles: string){
-    return this.triplexService.get_mspack_data(urlToProfiles).then((data:any) => {
+    return this.triplexService.get_mspack_data_no_url(urlToProfiles).then((data:any) => {
       this.profileData = data
       this.maxStability = this.profileData["best_stability"]
       return this.getDataForProfilePlot()
@@ -588,7 +617,6 @@ onDBDSelected(index:number){
         data[i] = data[i-1];
       }
       if (data[i].length != data[i-1].length){
-        console.log("Data for randomization broken")
         return [];
       }
     }

@@ -1,0 +1,23 @@
+.mat-mdc-row .mat-mdc-cell {
+    border-bottom: 1px solid transparent;
+    border-top: 1px solid transparent;
+    cursor: pointer;
+  }
+  
+.mat-mdc-row:hover .mat-mdc-cell {
+border-color: currentColor;
+}
+
+.mat-column-Representation{
+  min-width: 200px !important;
+  font-family: "Lucida Console", "Menlo", "Monaco", "Courier", monospace;
+}
+.mat-column-Orientation{
+  max-width: 100px !important;
+}
+.mat-column-Stability{
+  max-width: 80px !important;
+}
+.mat-column-Strand{
+  max-width: 80px !important;
+}

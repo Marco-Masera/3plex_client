@@ -25,7 +25,12 @@ export class DbdDetailsComponent {
     this.initializeDBDPage();
   }
   @Input() fullSequence: string[] = []
+  @Input() dsDNAID: string | null = null
   pValue:number = 0;
+  tpx: any[] = [];
+  loading = false;
+  controller = new AbortController();
+  signal = this.controller.signal;
 
   constructor(private triplexService: TriplexServiceService){}
 
@@ -46,6 +51,7 @@ export class DbdDetailsComponent {
     const dbd = this.dbd;
     //Get mean of TTF in profile
     const TTFs = this.profileLinearY.slice(dbd[0], dbd[1]+1);
+    if (TTFs.length==0){return;}
     const mean = TTFs.reduce((a,b)=>a+b) / TTFs.length;
     //Get mean and standard deviation of TTFs in the randomizations
     const randomTTFMean = this.randomizationAverage.slice(dbd[0], dbd[1]+1).reduce((a,b)=>a+b) / (dbd[1]-dbd[0]+1);
@@ -86,10 +92,17 @@ export class DbdDetailsComponent {
   initializeDBDPage(){
     console.log("Initializing DBD details page");
     this.generateTFFBBoxPlotForRandomized();
+    const self = this;
     if (this.dbd && this.token){
-      this.triplexService.loadTPXInDBD(this.token, this.dbd[0], this.dbd[1], this.stability || 0).then(
+      this.loading = true;
+      this.tpx = [];
+      this.controller.abort();
+      this.triplexService.loadTPXInDBD(this.token, this.dbd[0], this.dbd[1], this.stability || 0, this.dsDNAID).then(
         response => {
-          console.log(response)
+          self.loading = false;
+          if (response.success){
+            self.tpx = response.payload.data;
+          }
         }
       )
     }

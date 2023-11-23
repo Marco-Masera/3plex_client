@@ -37,6 +37,7 @@ import { DbdDetailsComponent } from './dbd-details/dbd-details.component';
 import { SummaryWebTableComponent } from './summary-web-table/summary-web-table.component';
 import {MatPaginator, MatPaginatorModule} from '@angular/material/paginator';
 import {MatTableDataSource, MatTableModule} from '@angular/material/table';
+import { FullTpxTableComponent } from './full-tpx-table/full-tpx-table.component';
 
 @NgModule({
   declarations: [
@@ -52,7 +53,8 @@ import {MatTableDataSource, MatTableModule} from '@angular/material/table';
     InfoPopupComponent,
     DataVisualizationAltComponent,
     DbdDetailsComponent,
-    SummaryWebTableComponent
+    SummaryWebTableComponent,
+    FullTpxTableComponent
   ],
   imports: [
     BrowserModule,

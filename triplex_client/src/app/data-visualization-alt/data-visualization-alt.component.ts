@@ -50,7 +50,7 @@ export class DataVisualizationAltComponent {
   ngOnInit() {
     this.token = this.route.snapshot.paramMap.get('token'); 
     if (this.token != null) {
-      this.triplexService.get_data_for_visualizations(this.token).then( (response:any) => {
+      this.triplexService.get_data_for_visualizations(this.token, null).then( (response:any) => {
         if (!response.success){
           this._router.navigate(['checkjob/token/', this.token]);
         } else {

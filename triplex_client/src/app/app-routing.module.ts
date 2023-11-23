@@ -16,7 +16,8 @@ const routes: Routes = [
   { path: 'checkjob/token/:token', component: CheckjobComponent },
   { path: 'checkjobs/email/:email', component: CheckByEmailComponent },
   { path: 'data_visualization_alt/:token', component: DataVisualizationAltComponent },
-  { path: 'data_visualization/:token', component: DataVisualizationComponent }
+  { path: 'data_visualization/:token', component: DataVisualizationComponent },
+  { path: 'data_visualization/:token/:dsDNAID', component: DataVisualizationComponent }
 ];
 
 @NgModule({

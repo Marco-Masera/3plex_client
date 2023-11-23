@@ -6,12 +6,16 @@
                 <mat-icon aria-hidden="false" aria-label="Example home icon" fontIcon="arrow_back_ios"></mat-icon>
             </button>
         </div>
-        <div *ngIf="dataForVisuals?.job" style="margin-bottom: 24px;">
+        <div *ngIf="dataForVisuals?.job" style="margin-bottom: 24px; max-width: 90%;">
             <h2 style=" margin-bottom: 10px;">Job info</h2>
             <div id="jobInfoCont">
                 <span><b>Job name:</b> {{ dataForVisuals?.job?.job_name  || 'NA' }}</span>
                 <span><b>Submitted at:</b> {{ dataForVisuals?.job?.date || 'NA' }}</span>
                 <span><b>Transcript id:</b> {{ dataForVisuals?.job?.ssRNA_id  || 'NA' }}</span>
+            </div>
+            <div *ngIf="dsDNAID" style="margin-top: 14px;">
+                <span><b>Visualizing results for:</b> {{dsDNAID}}</span>
+                <a target="_blank" [href]="'data_visualization/'+ token" style="margin-left: 12px;">Back to full results</a>
             </div>
             <hr style="margin-top: 20px; margin-bottom: 24px;"/>
         </div>
@@ -87,10 +91,14 @@
                     [randomizationAverage]="randomizationAverage"
                     [randomizationVariance_]="randomizationVariance"
                     [fullSequence]="fullSequence"
+                    [dsDNAID]="dsDNAID"
                 ></app-dbd-details>
             </div>
-            <div *ngIf="!isViewingDBD" style="margin-top: 24px;">
+            <div *ngIf="!isViewingDBD && !dsDNAID" style="margin-top: 24px;">
                 <app-summary-web-table [token]="token"></app-summary-web-table>
+            </div>
+            <div *ngIf="!isViewingDBD && dsDNAID && dataForVisuals?.available?.tpx" style="margin-top: 24px;">
+                <app-full-tpx-table (onRowClicked)="highlightRegion($event)" [tpx]="dataForVisuals?.available?.tpx"></app-full-tpx-table>
             </div>
         </div>
 </mat-card>

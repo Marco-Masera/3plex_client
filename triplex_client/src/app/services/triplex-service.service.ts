@@ -20,8 +20,8 @@ if (isDevMode()){
 export class TriplexServiceService {
   constructor() { }
   //Generic method to fetch some data
-  get_data(url: String){
-    return fetch(BASE_URL+API_PATH+url).then(
+  get_data(url: String, signal:any = null){
+    return fetch(BASE_URL+API_PATH+url, { signal }).then(
       async (response:any) => {
         response = await response.json()
         response = await JSON.parse(response)
@@ -138,6 +138,9 @@ export class TriplexServiceService {
   getBaseUrl(){
     return BASE_URL
   }
+  getAPIUrl(){
+    return API_PATH
+  }
 
   //Retrieve LncRnaTranscript objects by query
   get_lncrna_transcripts_from_query(query: string, species:string, max_elems: number): Promise<LncRnaTranscript[]>{
@@ -166,13 +169,19 @@ export class TriplexServiceService {
     })
   }
 
-  get_data_for_visualizations(token: string): any{
-    return this.get_data("data_for_visuals/"+token)
+  get_data_for_visualizations(token: string, dsDNAID: string | null): any{
+    if (dsDNAID){
+      return this.get_data("data_for_visuals/"+token+ "?dsDNAID="+dsDNAID);
+    } else {
+      return this.get_data("data_for_visuals/"+token);
+      }
   }
 
   get_mspack_data(url: string): any{
-    const filePath = this.getBaseUrl().slice(0,-1) + url
-    return fetch(filePath)
+    return this.get_mspack_data_no_url(BASE_URL.slice(0,-1) + url);
+  }
+  get_mspack_data_no_url(url: string): any{
+    return fetch(url)
     .then(response => response.arrayBuffer())
     .then(buffer => decode(buffer));
   }
@@ -197,8 +206,9 @@ export class TriplexServiceService {
     })
   }
 
-  loadTPXInDBD(token: string, start: number, end: number, stability: number){
-    return this.get_data(`tts_sites/${token}/${start}/${end}/${stability}`)
+  loadTPXInDBD(token: string, start: number, end: number, stability: number, dsDNAID: string | null, signal:any=null){
+    const queryParam = dsDNAID ? `?dsdnaid=${dsDNAID}` : ""
+    return this.get_data(`tts_sites/${token}/${start}/${end}/${stability}`+queryParam, signal)
   }
 
   getDBD(token: string){

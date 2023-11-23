@@ -2,7 +2,7 @@ import { Component, ViewChild, AfterViewInit, Input } from '@angular/core';
 import {MatPaginator, MatPaginatorModule} from '@angular/material/paginator';
 import {MatTableDataSource, MatTableModule} from '@angular/material/table';
 import { TriplexServiceService } from '../services/triplex-service.service';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 
 
 @Component({
