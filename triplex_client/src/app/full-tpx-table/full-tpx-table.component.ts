@@ -20,7 +20,8 @@ export class FullTpxTableComponent {
       const v = tpx.Representation.replaceAll(" ", ".")
       tpx.Representation = v
       const id = tpx.Duplex_ID.split(":")
-      tpx.Duplex_ID = id[0] + " - " + id[2];
+      if (id[2])
+        tpx.Duplex_ID = id[0] + " - " + id[2];
     })
     this.tpxDataSource.data = tpx;
   }
