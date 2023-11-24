@@ -15,7 +15,7 @@ export class SummaryWebTableComponent {
   tableColumns: string[] = ['ssRNA_id', 'dsDNA_id', 'dsDNA_chr', 'dsDNA_b', 'dsDNA_e', 'stability_best', 'stability_norm', 'score_best']
   tableColumnsNames: string[] = ['ssRNA Id', 'dsDNA Id', 'Chr', 'Begin', 'End', 'Best stability', 'Stability norm', 'Best score'];
   webSummaryDataSource = new MatTableDataSource<any>([]);
-  tableData: any[] = [];
+  tableData: any[] | null = [];
   dsDNAIdFilter: string = "";
   bestStabilityMinMax: number[]| null = null;
   stabilityNormMinMax: number[]| null = null;
@@ -36,14 +36,12 @@ export class SummaryWebTableComponent {
       if (results.success){
         this.webSummaryDataSource.data = results.payload;
         this.tableData = results.payload;
-        this.buildMinMaxValues(results.payload);
+        this.buildMinMaxValues(this.tableData);
       }
     })
   }
 
   clickedRow(row:any){
-    console.log(row);
-    console.log(this.router.url)
     window.open(this.router.url + "/" + row.dsDNA_id, "_blank");
   }
 
@@ -61,15 +59,16 @@ export class SummaryWebTableComponent {
   }
 
   updateTableWithFilters(){
-    this.webSummaryDataSource.data = this.tableData.filter( (element:any) => {
+    this.webSummaryDataSource.data = this.tableData?.filter( (element:any) => {
       return element.dsDNA_id.includes(this.dsDNAIdFilter) && 
       element.stability_best >= this.bestStabilitySelected[0] && element.stability_best <= this.bestStabilitySelected[1] &&
       element.stability_norm >= this.stabilityNormSelected[0] && element.stability_norm <= this.stabilityNormSelected[1] &&
       element.score_best >= this.bestScoreSelected[0] && element.score_best <= this.bestScoreSelected[1]
-    });
+    }) || [];
   }
 
-  buildMinMaxValues(results: any){
+  buildMinMaxValues(results: any | null){
+    if (results == null){return;}
     results.forEach((element:any) => {
       if (this.bestScoreMinMax == null){
         this.bestScoreMinMax = [element.score_best, element.score_best]
