@@ -7,6 +7,15 @@
     align-items: center;
     background-color: rgb(250, 250, 250);
 }
+#openUCSCContainer{
+    width: 100%;
+    display:flex; 
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 12px;
+    margin-bottom: 12px;
+}
 #backContainer{
     overflow: visible;
     height: 0px;

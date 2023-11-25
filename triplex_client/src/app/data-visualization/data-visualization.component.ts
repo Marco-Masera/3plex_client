@@ -580,6 +580,21 @@ onDBDSelected(index:number){
     return profiles[String(stabilityValues[position])]
   }
 
+  loadingUCSC = false
+
+  openUCSC(){
+    this.loadingUCSC = true;
+    this.triplexService.getUCSCLink(this.token || "", this.dsDNAID || "", String(this.minStability)).then(
+      (result:any) => {
+        this.loadingUCSC = false;
+        if (result.success){
+          console.log(result);
+          window.open(result.payload, '_blank');
+        }
+      }
+    ).catch( (e:any) => {this.loadingUCSC=false;})
+  }
+
   computePValue(ttsCount: number[], ttsAverage:number[], ttsVariance:number[]){
     function standardNormalCDF(x:number) {
       function erf(x:number) {

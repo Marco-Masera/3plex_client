@@ -97,8 +97,16 @@
             <div *ngIf="!isViewingDBD && !dsDNAID" style="margin-top: 24px;">
                 <app-summary-web-table [token]="token"></app-summary-web-table>
             </div>
-            <div *ngIf="!isViewingDBD && dsDNAID && filteredTPX" style="margin-top: 24px;">
-                <app-full-tpx-table (onRowClicked)="highlightRegion($event)" [tpx]="filteredTPX"></app-full-tpx-table>
+            <div *ngIf="!isViewingDBD && dsDNAID" style="margin-top: 24px;">
+                <div id="openUCSCContainer">
+                    <div *ngIf="loadingUCSC" class="spinnerDiv">
+                        <mat-spinner></mat-spinner>
+                    </div>
+                    <button [disabled]="loadingUCSC" (click)="openUCSC()" type="button" mat-stroked-button style="height: 32px; width: 300px; margin-left: 14px;">
+                        Open in genome browser
+                    </button>
+                </div>
+                <app-full-tpx-table *ngIf="filteredTPX" (onRowClicked)="highlightRegion($event)" [tpx]="filteredTPX"></app-full-tpx-table>
             </div>
         </div>
 </mat-card>

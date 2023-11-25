@@ -224,4 +224,9 @@ export class TriplexServiceService {
   getWebSummary(token: string){
     return this.get_data(`jobs/${token}/websummary`)
   }
+
+  getUCSCLink(token: string, dsDNA_id: string, stability: string){
+    return this.get_data(`jobs/${token}/${dsDNA_id}/${stability}/profile_ucsc`)
+  }
+
 }
