@@ -368,6 +368,7 @@ onDBDSelected(index:number){
     });
 };
 
+  lastYAxisValue = 0;
   //This function is called once dataForVisuals has been retrieved
   async initializePlots(){
     var profileURLPrefix = this.dataForVisuals?.available?.profile_dynamic ? 
@@ -408,6 +409,7 @@ onDBDSelected(index:number){
       if (repeats && repeats.length>0){
         lastYValue+=1;
       }
+      this.lastYAxisValue = lastYValue;
       repeats?.forEach((repeatPlot:any, index:number) => {
         const y = "y"+(1+plots.length);
         repeatPlot.yaxis = y;
@@ -484,18 +486,23 @@ onDBDSelected(index:number){
     const new_plot: any[] = this.getDataForProfilePlot();
     this.plotTraces[0] = new_plot;
     if (this.filteredTPX){
-      console.log(this.filteredTPX.length)
       this.filteredTPX = this.dataForVisuals?.available?.tpx.filter(
         (tpx:any) => tpx.Stability >= this.minStability
       );
-      console.log(this.filteredTPX?.length)
     }
     if (this.statisticData){
       const new_random_plot: any[] = this.getDataForRandomPlot();
+      new_random_plot[new_random_plot.length-1].yaxis = "y"+this.lastYAxisValue;
       this.plotTracesIndexForStatistics.forEach(index => {
         this.plotTraces[index] = new_random_plot.pop();
       });
       this.buildDBDsHightlight(this.plotTraces[0].maxY);
+      /*const lastYValueString = "yaxis"+this.lastYAxisValue
+      this.plotsLayout[lastYValueString] = {
+          title: '-log p-Value',
+          overlaying: 'y',
+          side: 'right'
+      }*/
     }
     await new Promise((r) => setTimeout(r, 100))
       Plotly.react('uniquePlotDiv',this.plotTraces, this.plotsLayout).then((x:any) => {
