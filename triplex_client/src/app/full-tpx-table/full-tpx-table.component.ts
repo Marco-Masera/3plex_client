@@ -39,7 +39,6 @@ export class FullTpxTableComponent {
   }
 
   clickedRow(row:any){
-    console.log(row);
     this.onRowClicked.emit([row.tfo_start, row.tfo_end]);
   }
 }

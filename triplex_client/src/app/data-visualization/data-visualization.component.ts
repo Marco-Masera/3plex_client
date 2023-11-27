@@ -595,7 +595,6 @@ onDBDSelected(index:number){
       (result:any) => {
         this.loadingUCSC = false;
         if (result.success){
-          console.log(result);
           window.open(result.payload, '_blank');
         }
       }
