@@ -12,7 +12,7 @@ import { Router } from '@angular/router';
 })
 export class SummaryWebTableComponent {
   @Input() token: string | null = "";
-  tableColumns: string[] = ['ssRNA_id', 'dsDNA_id', 'dsDNA_chr', 'dsDNA_b', 'dsDNA_e', 'stability_best', 'stability_norm', 'score_best']
+  tableColumns: string[] = ['ssRNA_id', 'dsDNA_id_short', 'dsDNA_chr', 'dsDNA_b', 'dsDNA_e', 'stability_best', 'stability_norm', 'score_best']
   tableColumnsNames: string[] = ['ssRNA Id', 'dsDNA Id', 'Chr', 'Begin', 'End', 'Best stability', 'Stability norm', 'Best score'];
   webSummaryDataSource = new MatTableDataSource<any>([]);
   tableData: any[] | null = [];
@@ -34,9 +34,9 @@ export class SummaryWebTableComponent {
   ngOnInit(){
     this.triplexService.getWebSummary(this.token || "").then( results => {
       if (results.success){
+        this.buildMinMaxValuesAnddsDNAID(results.payload);
         this.webSummaryDataSource.data = results.payload;
         this.tableData = results.payload;
-        this.buildMinMaxValues(this.tableData);
       }
     })
   }
@@ -67,9 +67,10 @@ export class SummaryWebTableComponent {
     }) || [];
   }
 
-  buildMinMaxValues(results: any | null){
+  buildMinMaxValuesAnddsDNAID(results: any | null){
     if (results == null){return;}
     results.forEach((element:any) => {
+      element.dsDNA_id_short = element.dsDNA_id.split(":")[0];
       if (this.bestScoreMinMax == null){
         this.bestScoreMinMax = [element.score_best, element.score_best]
       } else {

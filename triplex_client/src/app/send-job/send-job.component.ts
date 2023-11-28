@@ -77,7 +77,7 @@ export class SendJobComponent {
   constructor(private triplexService: TriplexServiceService, private _router: Router, public dialog: MatDialog) {
     this.formGroup = new FormGroup({
       selected_species: new FormControl('hsapiens'),
-      ssRNA_chosen_type: new FormControl(ssRNA_input_type.sequence),
+      ssRNA_chosen_type: new FormControl(ssRNA_input_type.transcript_id),
       ssRNA_transcript_id: new FormControl(null),
       ssRNA: new FormControl(null),
       ssRNATextual: new FormControl(null),

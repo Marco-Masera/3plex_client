@@ -28,10 +28,10 @@
 									aria-hidden="false" aria-label="Example home icon" fontIcon="help_outline"></mat-icon>
 								</div>
 								<mat-radio-group formControlName="ssRNA_chosen_type" aria-label="Select an option" style="margin-bottom: 15px;">
-									<mat-radio-button value="s">Provide your own sequence</mat-radio-button>
 									<mat-radio-button value="t" [disabled]="!formGroup.get('selected_species')?.value"
 									[matTooltip]="formGroup.get('selected_species')?.value ? '' : 'Please select a species first'"
 									matTooltipPosition="above">Choose a transcript</mat-radio-button>
+									<mat-radio-button value="s">Provide your own sequence</mat-radio-button>
 								</mat-radio-group>
 								
 								<!--If transcript is chosen-->
