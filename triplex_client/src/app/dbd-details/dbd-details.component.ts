@@ -69,7 +69,7 @@ export class DbdDetailsComponent {
       y: [mean],
       name: 'Actual dsDNA',
       type: 'bar',
-      hovertemplate: '<b>Average TTF: </b>: %{y}'
+      hovertemplate: '<b>Average TTS: </b>: %{y}'
     };
     var trace2 = {
       x: [''],
@@ -81,7 +81,7 @@ export class DbdDetailsComponent {
         visible: true
       },
       type: 'bar',
-      hovertemplate: '<b>Average TTF: </b>: %{y}<br><b>St.dev:</b>: %{error_y.array}<br>'
+      hovertemplate: '<b>Average TTS: </b>: %{y}<br><b>St.dev:</b>: %{error_y.array}<br>'
     };
     var data = [trace1, trace2];
     var layout = {barmode: 'group', height:250};

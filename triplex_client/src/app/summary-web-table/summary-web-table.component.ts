@@ -3,6 +3,7 @@ import {MatPaginator, MatPaginatorModule} from '@angular/material/paginator';
 import {MatTableDataSource, MatTableModule} from '@angular/material/table';
 import { TriplexServiceService } from '../services/triplex-service.service';
 import { Router } from '@angular/router';
+import { MatSort } from '@angular/material/sort';
 
 
 @Component({
@@ -25,10 +26,12 @@ export class SummaryWebTableComponent {
   bestScoreSelected: number[] = [0,0];
 
   @ViewChild(MatPaginator) paginator: MatPaginator | null = null;
+  @ViewChild(MatSort) sort: MatSort | null = null;
 
   constructor(private triplexService: TriplexServiceService, private router: Router){}
   ngAfterViewInit() {
     this.webSummaryDataSource.paginator = this.paginator;
+    this.webSummaryDataSource.sort = this.sort;
   }
 
   ngOnInit(){

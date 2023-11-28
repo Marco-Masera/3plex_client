@@ -3,6 +3,7 @@ import {MatPaginator, MatPaginatorModule} from '@angular/material/paginator';
 import {MatTableDataSource, MatTableModule} from '@angular/material/table';
 import { TriplexServiceService } from '../services/triplex-service.service';
 import { Router } from '@angular/router';
+import {MatSort, MatSortModule} from '@angular/material/sort';
 
 
 @Component({
@@ -17,8 +18,8 @@ export class FullTpxTableComponent {
   tpxDataSource = new MatTableDataSource<any>([]);
   @Input() set tpx(tpx: any[]){
     tpx.forEach((tpx:any) =>{ 
-      const v = tpx.Representation.replaceAll(" ", ".")
-      tpx.Representation = v
+      /*const v = tpx.Representation.replaceAll(" ", ".")
+      tpx.Representation = v*/
       const id = tpx.Duplex_ID.split(":")
       if (id[2])
         tpx.Duplex_ID = id[0] + " - " + id[2];
@@ -29,10 +30,12 @@ export class FullTpxTableComponent {
 
 
   @ViewChild(MatPaginator) paginator: MatPaginator | null = null;
+  @ViewChild(MatSort) sort: MatSort | null = null;
 
   constructor(private triplexService: TriplexServiceService, private router: Router){}
   ngAfterViewInit() {
     this.tpxDataSource.paginator = this.paginator;
+    this.tpxDataSource.sort = this.sort;
   }
 
   ngOnInit(){

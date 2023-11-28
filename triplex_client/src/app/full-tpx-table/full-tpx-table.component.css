@@ -21,3 +21,6 @@ border-color: currentColor;
 .mat-column-Strand{
   max-width: 80px !important;
 }
+th.mat-sort-header-sorted {
+  color: black;
+}

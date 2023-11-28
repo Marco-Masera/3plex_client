@@ -35,8 +35,9 @@ import { DataVisualizationAltComponent } from './data-visualization-alt/data-vis
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import { DbdDetailsComponent } from './dbd-details/dbd-details.component';
 import { SummaryWebTableComponent } from './summary-web-table/summary-web-table.component';
-import {MatPaginator, MatPaginatorModule} from '@angular/material/paginator';
-import {MatTableDataSource, MatTableModule} from '@angular/material/table';
+import {MatPaginatorModule} from '@angular/material/paginator';
+import {MatTableModule} from '@angular/material/table';
+import {MatSortModule} from '@angular/material/sort';
 import { FullTpxTableComponent } from './full-tpx-table/full-tpx-table.component';
 
 @NgModule({
@@ -81,7 +82,8 @@ import { FullTpxTableComponent } from './full-tpx-table/full-tpx-table.component
     MatRadioModule,
     MatSlideToggleModule,
     MatTableModule,
-    MatPaginatorModule
+    MatPaginatorModule,
+    MatSortModule
   ],
   providers: [],
   bootstrap: [AppComponent]
