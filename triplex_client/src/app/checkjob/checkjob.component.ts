@@ -104,7 +104,10 @@ export class CheckjobComponent {
               ssRNA_id: response.payload.job.ssRNA_id,
               results: response.payload.results,
               date: response.payload.job.date,
-              triplex_params: response.payload.params
+              triplex_params: response.payload.params.map((param: string[]) => {
+                if (param[0]=="SSTRAND "){param[0] = "ssRNA secondary structure";}
+                return param;
+              })
             }
             this.files = Object.keys(this.jobData.results)
             let BASE_URL = this.triplexService.getBaseUrl()

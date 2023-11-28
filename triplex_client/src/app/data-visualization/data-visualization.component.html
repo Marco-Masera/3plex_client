@@ -13,10 +13,6 @@
                 <span><b>Submitted at:</b> {{ dataForVisuals?.job?.date || 'NA' }}</span>
                 <span><b>Transcript id:</b> {{ dataForVisuals?.job?.ssRNA_id  || 'NA' }}</span>
             </div>
-            <div *ngIf="dsDNAID" style="margin-top: 14px;">
-                <span><b>Visualizing results for:</b> {{dsDNAID}}</span>
-                <a target="_blank" [href]="'data_visualization/'+ token" style="margin-left: 12px;">Back to full results</a>
-            </div>
             <hr style="margin-top: 20px; margin-bottom: 24px;"/>
         </div>
 
@@ -75,6 +71,11 @@
                     [matTooltip]="'Threshold: ' + minStability">
                     <input  matSliderThumb [(ngModel)]="minStability" (change)="updateProfilePlot()" >
             </mat-slider>
+
+            <div *ngIf="dsDNAID" style="margin-top: 14px;">
+                <span><b>Visualizing results for:</b> {{dsDNAID}}</span>
+                <a target="_blank" [href]="'data_visualization/'+ token" style="margin-left: 12px;">Back to full results</a>
+            </div>
 
             <div *ngIf="isAddingDBD" id="addDBDButtonDiv">
                 <h2>Select an area in the plot to add a DBD</h2>
