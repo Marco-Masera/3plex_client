@@ -81,6 +81,13 @@ export class DataVisualizationComponent {
     }
   }
 
+  export_tpx(){
+    if (this.token)
+      this.triplexService.downloadTPXInExcel(
+        this.token, this.dsDNAID, this.minStability, null, null
+      );
+  }
+
   isAddingDBD: boolean = false;
   selectedDBDs: number[][] = []
   isViewingDBD: boolean = false;

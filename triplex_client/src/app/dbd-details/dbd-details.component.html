@@ -17,8 +17,15 @@
         <div *ngIf="loading" class="spinnerDiv">
             <mat-spinner></mat-spinner>
         </div>
-        <h4>All tpx</h4>
-        <app-full-tpx-table [tpx]="tpx"></app-full-tpx-table>
+        <div id="allTPXContainer">
+            <h2>All tpx</h2>
+            <button (click)="export_tpx()" type="button" mat-stroked-button style="height: 32px; width: 300px; margin-left: 14px;">
+                Export in excel
+            </button>
+        </div>
+        <div style="width: 100%; overflow: scroll;">
+            <app-full-tpx-table [tpx]="filtered_tpx"></app-full-tpx-table>
+        </div>
 
     </div>
 </div>

@@ -9,7 +9,11 @@ declare let Plotly: any;
 })
 export class DbdDetailsComponent {
   @Input() dbd: number[] | null = null;
-  @Input() stability: number | null = null;
+  stability_: number | null = null;
+  @Input() set stability(v: number | null){
+    this.stability_ = v;
+    this.filtered_tpx = this.tpx.filter(elem => elem.Stability >= (v || 0));
+  }
   @Input() token: string | null = null;
   @Input() set setDbd(v: number[] | null){
     this.dbd = v;
@@ -28,6 +32,7 @@ export class DbdDetailsComponent {
   @Input() dsDNAID: string | null = null
   pValue:number = 0;
   tpx: any[] = [];
+  filtered_tpx: any[] = [];
   loading = false;
   controller = new AbortController();
   signal = this.controller.signal;
@@ -89,6 +94,13 @@ export class DbdDetailsComponent {
     Plotly.newPlot('boxplotDBD', data, layout);
   }
 
+  export_tpx(){
+    if (this.token)
+      this.triplexService.downloadTPXInExcel(
+        this.token, this.dsDNAID, this.stability_, this.dbd?.[0] || null, this.dbd?.[1] || null
+      );
+  }
+
   initializeDBDPage(){
     console.log("Initializing DBD details page");
     this.generateTFFBBoxPlotForRandomized();
@@ -97,11 +109,12 @@ export class DbdDetailsComponent {
       this.loading = true;
       this.tpx = [];
       this.controller.abort();
-      this.triplexService.loadTPXInDBD(this.token, this.dbd[0], this.dbd[1], this.stability || 0, this.dsDNAID).then(
+      this.triplexService.loadTPXInDBD(this.token, this.dbd[0], this.dbd[1], this.stability_ || 0, this.dsDNAID).then(
         response => {
           self.loading = false;
           if (response.success){
             self.tpx = response.payload.data;
+            self.filtered_tpx = self.tpx.filter(elem => elem.Stability >= (self.stability || 0));
           }
         }
       )

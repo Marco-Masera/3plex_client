@@ -143,3 +143,12 @@ h4{
     background-size: 10.101% 2px !important;
     transform: translateZ(0px) translateX(5.05051%);
   }
+
+
+  #allTPXContainer{
+    margin-top: 12px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding-left: 64px; padding-right: 64px;
+}
