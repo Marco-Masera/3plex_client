@@ -64,11 +64,10 @@ export class SendJobComponent {
   ssRNAFile: File | undefined;
   dsDNAFile: File | undefined;
   sending: boolean = false;
-  default_triplex_params: any;
   allowed_species: string[] = [];
   dsDnaTargetSites: { [species: string]: DnaTargetSites[] } = {}
   n_iterations_possible = []
-
+  default_triplex_params: any 
   ssRNAToolTip = "A single ssRNA sequence - either chosen from our transcript's database or provided as a single fasta file or as simple text (max size: " + ssRNAMaxSize + " MB)."
   dsDNAToolTip = "Target DNA sequences, either chosen from our database of target sites or provided as a multi-FASTA file containing dsDNA sequences or a bed file containing the target coordinates (max size: " + dsDNAMaxSize + " MB)."
   randomizationToolTip = "Run 3plex on randomized versions of the target dsDNA to produce a control track."
@@ -139,27 +138,6 @@ export class SendJobComponent {
         this.formGroup.patchValue({random_iterations: this.n_iterations_possible[0]});
       }
     })
-  }
-
-  get_triplex_params_default_value(param: string): string{
-    let to_ret: any | undefined;
-    if (this.default_triplex_params)
-      to_ret = this.default_triplex_params[param]?.default
-    if (to_ret !== undefined){
-      return to_ret
-    }
-    return ""
-  }
-  get_triplex_param_l_b(param: string): string{
-    return this.default_triplex_params?.[param]?.bounds?.[0] ?? -9999999
-  }
-  get_triplex_param_h_b(param: string): string{
-    return this.default_triplex_params?.[param]?.bounds?.[1] ?? 9999999
-  }
-  get_triplex_params_description(param: string): string{
-    if (this.default_triplex_params)
-      return this.default_triplex_params[param]?.description || ""
-    return ""
   }
 
   reset_selected_ssRNA(){
@@ -279,17 +257,6 @@ export class SendJobComponent {
     if (!path) return "";
     var filename = path.replace(/^.*[\\\/]/, '')
     return filename.split("\\").pop();
-  }
-
-  reset_triplex_params(){
-    this.formGroup.patchValue({
-      min_len: null,
-      max_len: null,
-      error_rate: null,
-      guanine_rate: null,
-      filter_repeat: this.default_triplex_params?.filter_repeat.default,
-      consecutive_errors: null
-    });
   }
 
   

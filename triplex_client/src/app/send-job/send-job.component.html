@@ -139,126 +139,17 @@
 		</section>
 		
 		<!-- Section 2: Job info -->
-		<section style="margin-top: 0px;">
-			<h4>Job Info</h4>
-			<p class="notTooBig">
-				You can write your email to receive a notification once the job is completed and to retrieve your previous jobs; you can also name your job to easily identify it.
-			</p>
-			<mat-form-field class="smallInput">
-				<mat-label>Job Name</mat-label>
-				<input matInput formControlName="jobName">
-			</mat-form-field>
-			<mat-form-field class="smallInput">
-				<mat-label>Email</mat-label>
-				<input matInput formControlName="email">
-			</mat-form-field>
-		</section>
+		<app-job-info-form
+			[formGroup]="formGroup"
+			[sending]="sending"
+		></app-job-info-form>
 		
-		<!-- Section 3: 3plex parameters -->
-		<section>
-			<mat-accordion>
-				<mat-expansion-panel style="max-width: 650px;" class="mat-elevation-z0">
-					<mat-expansion-panel-header>
-						<mat-panel-title>
-							<span class="right">Additional 3plex parameters</span>
-						</mat-panel-title>
-					</mat-expansion-panel-header>
-					
-					<mat-list role="list">
-						<mat-list-item [matTooltip]="get_triplex_params_description('min_len')" matTooltipPosition="above" style="height:50px !important" class="line" role="listitem">
-							<div class="row">
-								<div class="paramNameContainer">
-									<p>Min len</p>
-									<mat-icon aria-hidden="false" aria-label="Example home icon" fontIcon="help_outline"></mat-icon>
-								</div>
-								<mat-form-field class="smallInput">
-									<input matInput [min]="get_triplex_param_l_b('min_len')" [max]="get_triplex_param_h_b('min_len')" type="number" formControlName="min_len" [placeholder]="'default ' + get_triplex_params_default_value('min_len')">
-								</mat-form-field>
-							</div>
-						</mat-list-item>
-						<mat-list-item [matTooltip]="get_triplex_params_description('max_len')" matTooltipPosition="above" style="height:50px !important" class="line" role="listitem">
-							<div class="row">
-								<div class="paramNameContainer">
-									<p>Max len</p>
-									<mat-icon aria-hidden="false" aria-label="Example home icon" fontIcon="help_outline"></mat-icon>
-								</div>
-								
-								<mat-form-field class="smallInput">
-									<input matInput type="number" [placeholder]="'default ' + get_triplex_params_default_value('max_len')" [min]="get_triplex_param_l_b('max_len')" [max]="get_triplex_param_h_b('max_len')"  formControlName="max_len">
-								</mat-form-field>
-							</div>
-						</mat-list-item>
-						<mat-list-item [matTooltip]="get_triplex_params_description('error_rate')" matTooltipPosition="above" style="height:50px !important" class="line" role="listitem">
-							<div class="row">
-								<div class="paramNameContainer">
-									<p >Error rate</p>
-									<mat-icon aria-hidden="false" aria-label="Example home icon" fontIcon="help_outline"></mat-icon>
-								</div>
-								
-								<mat-form-field class="smallInput">
-									<input matInput type="number" [placeholder]="'default ' + get_triplex_params_default_value('error_rate')" [min]="get_triplex_param_l_b('error_rate')" [max]="get_triplex_param_h_b('error_rate')"  formControlName="error_rate">
-								</mat-form-field>
-							</div>
-						</mat-list-item>
-						<mat-list-item  [matTooltip]="get_triplex_params_description('guanine_rate')" matTooltipPosition="above" style="height:50px !important" class="line" role="listitem">
-							<div class="row">
-								<div class="paramNameContainer">
-									<p>Guanine rate</p>
-									<mat-icon aria-hidden="false" aria-label="Example home icon" fontIcon="help_outline"></mat-icon>
-								</div>
-								
-								<mat-form-field class="smallInput">
-									<input matInput type="number" [placeholder]="'default ' + get_triplex_params_default_value('guanine_rate')" [min]="get_triplex_param_l_b('guanine_rate')" [max]="get_triplex_param_h_b('guanine_rate')"  formControlName="guanine_rate">
-								</mat-form-field>
-							</div>
-						</mat-list-item>
-						<mat-list-item [matTooltip]="get_triplex_params_description('consecutive_errors')" matTooltipPosition="above" style="height:50px !important" class="line" role="listitem">
-							<div class="row">
-								<div class="paramNameContainer">
-									<p>Consecutive errors</p>
-									<mat-icon aria-hidden="false" aria-label="Example home icon" fontIcon="help_outline"></mat-icon>
-								</div>
-								<mat-form-field class="smallInput">
-									<input matInput type="number" [placeholder]="'default ' + get_triplex_params_default_value('consecutive_errors')" [min]="get_triplex_param_l_b('consecutive_errors')" [max]="get_triplex_param_h_b('consecutive_errors')"  formControlName="consecutive_errors">
-								</mat-form-field>
-							</div>
-						</mat-list-item>
-						<mat-list-item  [matTooltip]="get_triplex_params_description('SSTRAND')" matTooltipPosition="above" style="height:50px !important" class="line" role="listitem">
-							<div class="row">
-								<div class="paramNameContainer">
-									<p>ssRNA secondary structure</p>
-									<mat-icon aria-hidden="false" aria-label="Example home icon" fontIcon="help_outline"></mat-icon>
-								</div>
-								<mat-form-field class="smallInput">
-									<input matInput type="number" [placeholder]="'default ' + get_triplex_params_default_value('SSTRAND')" [min]="get_triplex_param_l_b('SSTRAND')" [max]="get_triplex_param_h_b('SSTRAND')"  formControlName="SSTRAND">
-								</mat-form-field>
-							</div>
-						</mat-list-item>
-						<!--Filter repeat on off-->
-						<mat-list-item  [matTooltip]="get_triplex_params_description('filter_repeat')" matTooltipPosition="above" style="height:50px !important" class="line" role="listitem">
-							<div class="row">
-								<div class="paramNameContainer">
-									<p>Filter repeat</p>
-									<mat-icon aria-hidden="false" aria-label="Example home icon" fontIcon="help_outline"></mat-icon>
-								</div>
-								<mat-button-toggle-group formControlName="filter_repeat" name="fontStyle" aria-label="Font Style" style="margin-right: 20px;">
-									<mat-button-toggle value="on">On</mat-button-toggle>
-									<mat-button-toggle value="off">Off</mat-button-toggle>
-								</mat-button-toggle-group>
-							</div>
-						</mat-list-item>
-						<mat-list-item style="height:50px !important" class="line" role="listitem">
-							<div class="row">
-								<p style="font-weight: 50;">Reset all to default</p>
-								<button type="button" mat-stroked-button (click)="reset_triplex_params()">Reset</button>
-							</div>
-						</mat-list-item>
-					</mat-list>
-					
-					
-				</mat-expansion-panel>
-			</mat-accordion>
-		</section>
+		<!-- Section 3: 3plex params-->
+		<app-triplex-params-form
+			[default_triplex_params]="default_triplex_params"
+			[formGroup]="formGroup"
+			[sending]="sending"
+		></app-triplex-params-form>
 		
 		<div style="margin-top: 15px; width:100%; display:flex; justify-content: end;">
 			<button [disabled]="!formGroup.valid" mat-raised-button type="submit" style="margin-right: 15px;">Submit job</button>

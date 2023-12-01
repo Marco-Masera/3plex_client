@@ -81,7 +81,9 @@ export class TriplexServiceService {
 
   submitJob(jobToSubmit: JobToSubmit){
     const formData = new FormData();
-    
+    console.log(jobToSubmit);
+    window.alert("Cannot send job right now");
+    return this.get_data("nope");/*
     // Append files to the form data object
     if (jobToSubmit.SSRNA_FASTA){
       formData.append('SSRNA_FASTA', jobToSubmit.SSRNA_FASTA);
@@ -132,7 +134,7 @@ export class TriplexServiceService {
       formData.append('USE_RAND', String(jobToSubmit.USE_RANDOM));
     }
     console.log(formData)
-    return this.post_data_form("submitjob/", formData) 
+    return this.post_data_form("submitjob/", formData) */
   }
 
   getBaseUrl(){

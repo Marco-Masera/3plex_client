@@ -1,0 +1,16 @@
+<form  [formGroup]="formGroup" novalidate [ngClass]="{'transparentForm' : sending}">
+<section style="margin-top: 0px;">
+    <h4>Job Info</h4>
+    <p class="notTooBig">
+        You can write your email to receive a notification once the job is completed and to retrieve your previous jobs; you can also name your job to easily identify it.
+    </p>
+    <mat-form-field class="smallInput">
+        <mat-label>Job Name</mat-label>
+        <input matInput formControlName="jobName">
+    </mat-form-field>
+    <mat-form-field class="smallInput">
+        <mat-label>Email</mat-label>
+        <input matInput formControlName="email">
+    </mat-form-field>
+</section>
+</form>

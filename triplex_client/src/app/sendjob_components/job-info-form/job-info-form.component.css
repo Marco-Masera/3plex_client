@@ -1,0 +1,11 @@
+.transparentForm{
+    opacity: 0.5;
+}
+.notTooBig{
+    max-width: 600px;
+}
+.smallInput{
+    height:70px !important;
+    padding: 10px;
+    margin-right: 15px;
+}

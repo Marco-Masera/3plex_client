@@ -39,6 +39,8 @@ import {MatPaginatorModule} from '@angular/material/paginator';
 import {MatTableModule} from '@angular/material/table';
 import {MatSortModule} from '@angular/material/sort';
 import { FullTpxTableComponent } from './full-tpx-table/full-tpx-table.component';
+import { TriplexParamsFormComponent } from './sendjob_components/triplex-params-form/triplex-params-form.component';
+import { JobInfoFormComponent } from './sendjob_components/job-info-form/job-info-form.component';
 
 @NgModule({
   declarations: [
@@ -55,7 +57,9 @@ import { FullTpxTableComponent } from './full-tpx-table/full-tpx-table.component
     DataVisualizationAltComponent,
     DbdDetailsComponent,
     SummaryWebTableComponent,
-    FullTpxTableComponent
+    FullTpxTableComponent,
+    TriplexParamsFormComponent,
+    JobInfoFormComponent
   ],
   imports: [
     BrowserModule,
