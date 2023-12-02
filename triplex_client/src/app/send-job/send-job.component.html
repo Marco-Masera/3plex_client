@@ -3,6 +3,12 @@
 		<div *ngIf="sending" class="spinnerDiv">
 			<mat-spinner></mat-spinner>
 		</div>
+		<div id="jobDescription">
+			<h3>Triplex prediction</h3>
+			<p>Run 3plex with a given ssRNA sequence and a set of dsDNA sequences</p>
+			<p>The tool outputs triplex formations. Data can be downloaded raw or be explored interactively</p>
+			
+		</div>
 		<form  [formGroup]="formGroup" (ngSubmit)="submitForm()" novalidate [ngClass]="{'transparentForm' : sending}">
 			<fieldset [disabled]="sending" style="border: 0ch;">
 				<!-- Section 1: Input data -->
@@ -10,14 +16,11 @@
 					<h4>Input Data</h4>
 					<div class="verticalInputSection">
 						<!--Species selection-->
-						<div style="margin-bottom: 15px;">
-							<h3>Choosen species</h3>
-							<mat-radio-group formControlName="selected_species" aria-label="Select an option">
-								<mat-radio-button *ngFor="let specie of allowed_species" 
-								[value]="specie">{{specie}}</mat-radio-button>
-								<mat-radio-button [value]="null">Other/None</mat-radio-button>
-							</mat-radio-group>
-						</div>  
+						<app-job-species-field
+							[allowed_species]="allowed_species"
+							[formGroup]="formGroup"
+							[sending]="sending"
+						></app-job-species-field>
 						
 						<div class="horizontalInputSection">
 							<div class="verticalInputSection" style="margin-right: 60px;">

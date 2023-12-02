@@ -23,6 +23,12 @@ mat-list-item:nth-child(n){
     max-width: 600px;
 }
 
+#jobDescription{
+    margin-bottom: 14px;
+    margin-left: 12px;
+    margin-top: 6px;
+}
+
 
 .smallInput{
     height:70px !important;

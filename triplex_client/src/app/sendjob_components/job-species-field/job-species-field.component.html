@@ -1,0 +1,11 @@
+<form  [formGroup]="formGroup" novalidate [ngClass]="{'transparentForm' : sending}">
+<section style="margin-top: 0px;">
+<div style="margin-bottom: 15px;">
+    <h3>Choosen species</h3>
+    <mat-radio-group formControlName="selected_species" aria-label="Select an option">
+        <mat-radio-button *ngFor="let specie of allowed_species" 
+        [value]="specie">{{specie}}</mat-radio-button>
+        <mat-radio-button [value]="null">Other/None</mat-radio-button>
+    </mat-radio-group>
+</div>  
+</section></form>

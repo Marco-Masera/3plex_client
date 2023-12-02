@@ -41,6 +41,8 @@ import {MatSortModule} from '@angular/material/sort';
 import { FullTpxTableComponent } from './full-tpx-table/full-tpx-table.component';
 import { TriplexParamsFormComponent } from './sendjob_components/triplex-params-form/triplex-params-form.component';
 import { JobInfoFormComponent } from './sendjob_components/job-info-form/job-info-form.component';
+import { JobSpeciesFieldComponent } from './sendjob_components/job-species-field/job-species-field.component';
+import { SendjobPromoterTestComponent } from './sendjob-promoter-test/sendjob-promoter-test.component';
 
 @NgModule({
   declarations: [
@@ -59,7 +61,9 @@ import { JobInfoFormComponent } from './sendjob_components/job-info-form/job-inf
     SummaryWebTableComponent,
     FullTpxTableComponent,
     TriplexParamsFormComponent,
-    JobInfoFormComponent
+    JobInfoFormComponent,
+    JobSpeciesFieldComponent,
+    SendjobPromoterTestComponent
   ],
   imports: [
     BrowserModule,
