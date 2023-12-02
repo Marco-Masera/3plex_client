@@ -2,3 +2,115 @@
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+.submitJobCard{
+    width: 100%; margin-left: 90px; margin-right: 90px; margin-top: 25px; margin-bottom: 30px;
+    padding:20px;
+    background-color: rgb(250, 250, 250);
+}
+.submitJobContainer{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+mat-list-item:nth-child(n){
+    height: 50px;
+}
+
+.fileButton{
+    margin-left: 15px; margin-right: 15px;
+    height: 100%;
+}
+
+.notTooBig{
+    max-width: 600px;
+}
+
+#jobDescription{
+    margin-bottom: 14px;
+    margin-left: 12px;
+    margin-top: 6px;
+}
+
+
+.smallInput{
+    height:70px !important;
+    padding: 10px;
+    margin-right: 15px;
+}
+
+.row{
+    max-width: 500px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content:space-between
+}
+.paramNameContainer{
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items:flex-start;
+    justify-content:flex-start
+}
+.paramNameContainer mat-icon{
+    transform: scale(0.7);
+    margin-top: 1px;
+    margin-left: 10px;
+}
+
+.spinnerDiv{
+    width: 100%; height: 100%;
+    display: flex; align-items: center; justify-content: center;
+    position: absolute;
+}
+.transparentForm{
+    opacity: 0.5;
+}
+
+.fileInputSection{
+    
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: flex-start;
+}
+.verticalInputSection{
+    /*min-height: 45px;*/
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    margin-bottom: 12px;
+}
+.horizontalInputSection{
+    margin-top: 8px;
+    display: flex;
+    flex-direction: row;
+    justify-content:space-between;
+    align-items: flex-start;
+}
+@media (max-width: 900px) {
+    .horizontalInputSection{
+        margin-top: 12px;
+        display: flex;
+        flex-direction: column;
+        justify-content:space-between;
+        align-items: flex-start;
+    }
+  }
+mat-list-item:hover{
+    padding-bottom: 1.2px;
+}
+mat-list-item:hover > :not(mat-list-item) {
+    padding-bottom: 0px;
+  }
+
+.marginLeft{
+    margin-left: 30px;  min-width: 300px;
+}
+
+.LongSearchable{
+    margin-top: 150px; width: 300px;
+}

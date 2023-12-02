@@ -9,8 +9,6 @@ import { InfoPopupComponent } from '../generic-searchable-dropdown/info-popup/in
 import { MatDialog } from '@angular/material/dialog';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 
-const ssRNAMaxSize = 1;
-const dsDNAMaxSize = 300;
 
 //Checks for the Send button
 function sendButtonChecks(control: AbstractControl): { [key: string]: boolean } | null {
@@ -60,19 +58,20 @@ class ssRNA_input_type{
   styleUrls: ['./send-job.component.css']
 })
 export class SendJobComponent {
+  ssRNAMaxSize = 1;
+  dsDNAMaxSize = 300;
+
   formGroup: FormGroup;
-  ssRNAFile: File | undefined;
   dsDNAFile: File | undefined;
+  ssRNAFile: File | undefined;
   sending: boolean = false;
   allowed_species: string[] = [];
   dsDnaTargetSites: { [species: string]: DnaTargetSites[] } = {}
   n_iterations_possible = []
   default_triplex_params: any 
-  ssRNAToolTip = "A single ssRNA sequence - either chosen from our transcript's database or provided as a single fasta file or as simple text (max size: " + ssRNAMaxSize + " MB)."
-  dsDNAToolTip = "Target DNA sequences, either chosen from our database of target sites or provided as a multi-FASTA file containing dsDNA sequences or a bed file containing the target coordinates (max size: " + dsDNAMaxSize + " MB)."
+  dsDNAToolTip = "Target DNA sequences, either chosen from our database of target sites or provided as a multi-FASTA file containing dsDNA sequences or a bed file containing the target coordinates (max size: " + this.dsDNAMaxSize + " MB)."
   randomizationToolTip = "Run 3plex on randomized versions of the target dsDNA to produce a control track."
 
-  transcriptSearchGetQuery: ((query: string) => Promise<LncRnaTranscript[]>) | undefined = undefined
   
   constructor(private triplexService: TriplexServiceService, private _router: Router, public dialog: MatDialog) {
     this.formGroup = new FormGroup({
@@ -98,6 +97,10 @@ export class SendJobComponent {
     }, { validators: sendButtonChecks });
   }
 
+  setssRNA_file(file: File){
+    this.ssRNAFile = file;
+  }
+
   ngOnInit(){
     this.formGroup
     .controls["selected_species"]
@@ -115,12 +118,6 @@ export class SendJobComponent {
             dsDNATargetSite: null
           })
     });
-
-    const s = this.triplexService
-    var self = this;
-    this.transcriptSearchGetQuery = function(query: string){
-      return s.get_lncrna_transcripts_from_query(query, self.formGroup.value.selected_species, 30)
-    }
 
     this.triplexService.get_dna_targets().then(response => this.dsDnaTargetSites = response);
 
@@ -141,10 +138,6 @@ export class SendJobComponent {
     })
   }
 
-  reset_selected_ssRNA(){
-    this.formGroup.patchValue({ssRNA: null});
-    this.ssRNAFile = undefined;
-  }
   reset_selected_dsDNA(){
     this.formGroup.patchValue({dsDNA: null});
     this.dsDNAFile = undefined;
@@ -164,36 +157,11 @@ export class SendJobComponent {
     return regex.test(fileName);
   }
 
-  onRnaChange(event: Event){
-    const input = event.target as HTMLInputElement;
-    if (input.files && input.files.length) {
-      if (input.files[0].size > ssRNAMaxSize*1000000 ){
-        window.alert("Your input file exceed maximum file size of " + ssRNAMaxSize + " MB")
-        this.formGroup.patchValue({ssRNA: null});
-      } else {
-        if (!this.checkFileFastaFormat(input.files[0])){
-          window.alert("Please provide a file in FASTA format (.fa)")
-          this.formGroup.patchValue({ssRNA: null});
-        }else if (!this.validateFileName(input.files[0].name)){
-          window.alert("Invalid file name: allowed characters are a-z, A-Z, 0-9, and - _ . symbols")
-          this.formGroup.patchValue({ssRNA: null});
-        } else {
-          const oldName = this.ssRNAFile?.name
-          this.formGroup.patchValue({ssRNATextual: null});
-          this.ssRNAFile = input.files[0];
-          //If no job name specified, add the filename
-          if (!this.formGroup.value.jobName || this.formGroup.value.jobName == oldName){
-            this.formGroup.patchValue({jobName: this.ssRNAFile.name});
-          }
-        }
-      }
-    }
-  }
   onDnaChange(event: Event){
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length) {
-      if (input.files[0].size > dsDNAMaxSize*1000000){
-        window.alert("Your input file exceed maximum file size of " + dsDNAMaxSize + " MB")
+      if (input.files[0].size > this.dsDNAMaxSize*1000000){
+        window.alert("Your input file exceed maximum file size of " + this.dsDNAMaxSize + " MB")
         this.formGroup.patchValue({dsDNA: null});
       } else {
         if (!this.checkFileFastaFormat(input.files[0]) && !this.checkFileBedFormat(input.files[0])){
@@ -258,15 +226,6 @@ export class SendJobComponent {
     if (!path) return "";
     var filename = path.replace(/^.*[\\\/]/, '')
     return filename.split("\\").pop();
-  }
-
-  
-  transcriptSearchSelectOption(selected: LncRnaTranscript){
-    this.formGroup.patchValue({ssRNA_transcript_id: selected.id});
-    //If no job name specified, add the filename
-    if (!this.formGroup.value.jobName){
-      this.formGroup.patchValue({jobName: selected.toString()});
-    }
   }
 
   dnaTargetSearchSelectOption(selected: DnaTargetSites){

@@ -9,6 +9,9 @@ import { MatDialog } from '@angular/material/dialog';
 function formValidator(control: AbstractControl): { [key: string]: boolean } | null {
   return null;
 }
+class ssRNA_input_type{
+  static sequence = "s"; static transcript_id = "t"
+}
 
 @Component({
   selector: 'app-sendjob-promoter-test',
@@ -21,9 +24,20 @@ export class SendjobPromoterTestComponent {
   allowed_species: string[] = [];
   sending: boolean = false;
 
+  //ssRNA: like in the triplex prediction case
+  ssRNAFile: File | undefined = undefined;
+  ssRNAMaxSize = 1;
+
   constructor(private triplexService: TriplexServiceService, private _router: Router, public dialog: MatDialog) {
+
     this.formGroup = new FormGroup({
       selected_species: new FormControl('hsapiens'),
+      ssRNA_chosen_type: new FormControl(ssRNA_input_type.transcript_id),
+      ssRNA_transcript_id: new FormControl(null),
+      ssRNA: new FormControl(null),
+      ssRNATextual: new FormControl(null),
+      putativeGenes: new FormControl(null),
+      backgroundGenes: new FormControl(null),
       jobName: new FormControl(null),
       email: new FormControl(null),
       min_len: new FormControl(null),
@@ -37,13 +51,24 @@ export class SendjobPromoterTestComponent {
       random_iterations: new FormControl(0)
     }, { validators: formValidator });
   }
+  setssRNA_file(file: File){
+    this.ssRNAFile = file;
+  }
+
 
   ngOnInit(){
     this.formGroup
     .controls["selected_species"]
     .valueChanges
     .subscribe(selectedValue => {
-          //Do something when selected species changes
+      if (!selectedValue){
+        this.formGroup.patchValue({
+          ssRNA_chosen_type: ssRNA_input_type.sequence
+        });
+      }
+      this.formGroup.patchValue({
+        ssRNA_transcript_id: null
+      })
     });
 
     this.triplexService.get_triplex_default_params().then( response => {
@@ -62,6 +87,7 @@ export class SendjobPromoterTestComponent {
 
   submitForm(){
     if (this.sending){return;}
-    window.alert("Ehhh ti piacerebbe!")
+    console.log(this.formGroup)
+    window.alert("Ehhh ti piacerebbe!!")
   }
 }

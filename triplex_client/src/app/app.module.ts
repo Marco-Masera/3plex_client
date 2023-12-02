@@ -43,6 +43,8 @@ import { TriplexParamsFormComponent } from './sendjob_components/triplex-params-
 import { JobInfoFormComponent } from './sendjob_components/job-info-form/job-info-form.component';
 import { JobSpeciesFieldComponent } from './sendjob_components/job-species-field/job-species-field.component';
 import { SendjobPromoterTestComponent } from './sendjob-promoter-test/sendjob-promoter-test.component';
+import { JssRNAFieldComponent } from './sendjob_components/jss-rna-field/jss-rna-field.component';
+import { GenesListComponent } from './sendjob_components/genes-list/genes-list.component';
 
 @NgModule({
   declarations: [
@@ -63,7 +65,9 @@ import { SendjobPromoterTestComponent } from './sendjob-promoter-test/sendjob-pr
     TriplexParamsFormComponent,
     JobInfoFormComponent,
     JobSpeciesFieldComponent,
-    SendjobPromoterTestComponent
+    SendjobPromoterTestComponent,
+    JssRNAFieldComponent,
+    GenesListComponent
   ],
   imports: [
     BrowserModule,

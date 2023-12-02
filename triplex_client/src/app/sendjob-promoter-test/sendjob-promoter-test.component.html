@@ -6,7 +6,7 @@
 		<div id="jobDescription">
 			<h3>Promoter stability test</h3>
 			<p>This test does something</p>
-			<p>Only god and chiara cicconetti know what it does</p>
+			<p>Only god and chiara cicconetti know what this really does</p>
 		</div>
 		<form  [formGroup]="formGroup" (ngSubmit)="submitForm()" novalidate [ngClass]="{'transparentForm' : sending}">
 			<fieldset [disabled]="sending" style="border: 0ch;">
@@ -22,7 +22,30 @@
 						></app-job-species-field>
 						
 						<div class="horizontalInputSection">
+							<!--ssRNA section-->
+							<app-jss-rna-field
+								(ssRNAFile_emitter)="setssRNA_file($event)"
+								[formGroup]="formGroup"
+								[sending]="sending"
+								[ssRNAMaxSize]="ssRNAMaxSize"
+  							></app-jss-rna-field>
 
+							<!--Putative genes-->
+							<app-genes-list
+								[formGroup]="formGroup"
+								[sending]="sending"
+								[title]="'Putative genes'"
+								[toolTip]="'List of putative genes'"
+								[formControlName]="'putativeGenes'"
+							></app-genes-list>
+							<!--Target genes-->
+							<app-genes-list
+								[formGroup]="formGroup"
+								[sending]="sending"
+								[title]="'Background genes'"
+								[toolTip]="'List of background genes'"
+								[formControlName]="'backgroundGenes'"
+							></app-genes-list>
 						</div>
                     </div>
 		        </section>

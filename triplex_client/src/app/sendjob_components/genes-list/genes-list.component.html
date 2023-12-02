@@ -1,0 +1,14 @@
+<form  [formGroup]="formGroup" novalidate [ngClass]="{'transparentForm' : sending}">
+<section style="margin-top: 0px;">
+    <div class="verticalInputSection" style="margin-right: 60px;">
+        <div class="paramNameContainer">
+            <h3>{{title}}*</h3>
+            <mat-icon [matTooltip]="toolTip" matTooltipPosition="above"
+        aria-hidden="false" aria-label="Example home icon" fontIcon="help_outline"></mat-icon>
+        </div>
+        <textarea style="min-width: 300px; min-height: 100px; max-height: 300px; margin-top: 6px;" 
+            id="genesTextArea" [formControlName]="formControlName"></textarea> <!--formControlName="ssRNATextual"-->
+            <button id="ssRNAFileInput" style="margin-top: 12px;"
+                type="button" mat-stroked-button (click)="getExample()">Generate example</button>
+    </div>
+</section></form>
