@@ -1,1 +1,49 @@
-<p>sendjob-promoter-test works!</p>
+<div class="submitJobContainer">
+	<mat-card class="submitJobCard">
+		<div *ngIf="sending" class="spinnerDiv">
+			<mat-spinner></mat-spinner>
+		</div>
+		<div id="jobDescription">
+			<h3>Promoter stability test</h3>
+			<p>This test does something</p>
+			<p>Only god and chiara cicconetti know what it does</p>
+		</div>
+		<form  [formGroup]="formGroup" (ngSubmit)="submitForm()" novalidate [ngClass]="{'transparentForm' : sending}">
+			<fieldset [disabled]="sending" style="border: 0ch;">
+				<!-- Section 1: Input data -->
+				<section>
+					<h4>Input Data</h4>
+					<div class="verticalInputSection">
+						<!--Species selection-->
+						<app-job-species-field
+							[allowed_species]="allowed_species"
+							[formGroup]="formGroup"
+							[sending]="sending"
+						></app-job-species-field>
+						
+						<div class="horizontalInputSection">
+
+						</div>
+                    </div>
+		        </section>
+		
+		<!-- Section 2: Job info -->
+		<app-job-info-form
+			[formGroup]="formGroup"
+			[sending]="sending"
+		></app-job-info-form>
+		
+		<!-- Section 3: 3plex params-->
+		<app-triplex-params-form
+			[default_triplex_params]="default_triplex_params"
+			[formGroup]="formGroup"
+			[sending]="sending"
+		></app-triplex-params-form>
+		
+		<div style="margin-top: 15px; width:100%; display:flex; justify-content: end;">
+			<button [disabled]="!formGroup.valid" mat-raised-button type="submit" style="margin-right: 15px;">Submit job</button>
+		</div>
+	</fieldset>
+</form>
+</mat-card>
+</div>

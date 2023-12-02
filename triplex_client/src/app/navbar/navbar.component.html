@@ -5,7 +5,12 @@
     </p>
     <div class="navbar-links">
         <a routerLink="/home"><button mat-button>Home</button></a>
-        <a routerLink="/submit"><button mat-button>Send Job</button></a>
+        <!--<a routerLink="/submit"><button mat-button>Send Job</button></a>-->
+        <button mat-button [matMenuTriggerFor]="sendJob">Run 3plex</button>
+        <mat-menu #sendJob="matMenu">
+            <button mat-menu-item routerLink="/submit">Triplex prediction</button>
+            <button mat-menu-item routerLink="/submit_promoter_stability_test">Promoter stability test</button>
+        </mat-menu>
         <button mat-button [matMenuTriggerFor]="checkJob">Check job</button>
         <mat-menu #checkJob="matMenu">
             <button mat-menu-item (click)="openDialog('token')">Check by token</button>

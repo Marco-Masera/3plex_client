@@ -73,6 +73,7 @@ export class SendJobComponent {
   randomizationToolTip = "Run 3plex on randomized versions of the target dsDNA to produce a control track."
 
   transcriptSearchGetQuery: ((query: string) => Promise<LncRnaTranscript[]>) | undefined = undefined
+  
   constructor(private triplexService: TriplexServiceService, private _router: Router, public dialog: MatDialog) {
     this.formGroup = new FormGroup({
       selected_species: new FormControl('hsapiens'),
