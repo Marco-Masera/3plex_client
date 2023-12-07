@@ -5,8 +5,12 @@
 		</div>
 		<div id="jobDescription">
 			<h3>Promoter stability test</h3>
-			<p>This test does something</p>
-			<p>Only god and chiara cicconetti know what this really does</p>
+			<p>This workflow allows the integration of gene expression data to characterise the triplex-forming potential of the investigated ssRNA.</p>
+			<p>Starting from a list of the "universe of genes" (e.g., all the expressed genes in the system) and a list of genes of interest (e.g., differentially expressed genes identified upon a lncRNA KD):</p>
+			<p>1. retrieve the promoters associated with the genes as annotated in MANE</p>
+			<p>2. run 3plex with a given ssRNA and the set of promoters</p>
+			<p>3. compare the stability of the putative triplexes formed with promoters of genes of interest and all the remaining genes with a Mann-Whitney test</p>
+			<p>4. perform a gene set enrichment analysis ranking the universe of genes according to their triplex stability score thus computing the significance of the enrichment in promoters with a high or a low stability score</p>
 		</div>
 		<form  [formGroup]="formGroup" (ngSubmit)="submitForm()" novalidate [ngClass]="{'transparentForm' : sending}">
 			<fieldset [disabled]="sending" style="border: 0ch;">
@@ -43,7 +47,7 @@
 								[formGroup]="formGroup"
 								[sending]="sending"
 								[title]="'Background genes'"
-								[toolTip]="'List of background genes'"
+								[toolTip]="'List of background genes. Must be subset of putative genes'"
 								[formControlName]="'backgroundGenes'"
 							></app-genes-list>
 						</div>

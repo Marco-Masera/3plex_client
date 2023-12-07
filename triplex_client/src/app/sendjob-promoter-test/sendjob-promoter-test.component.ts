@@ -3,6 +3,7 @@ import { AbstractControl, FormControl, FormGroup } from '@angular/forms';
 import { TriplexServiceService } from '../services/triplex-service.service';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
+import { ErrorPopupComponent } from './error-popup/error-popup.component';
 
 
 //Checks for the Send button
@@ -36,8 +37,8 @@ export class SendjobPromoterTestComponent {
       ssRNA_transcript_id: new FormControl(null),
       ssRNA: new FormControl(null),
       ssRNATextual: new FormControl(null),
-      putativeGenes: new FormControl(null),
-      backgroundGenes: new FormControl(null),
+      putativeGenes: new FormControl(""),
+      backgroundGenes: new FormControl(""),
       jobName: new FormControl(null),
       email: new FormControl(null),
       min_len: new FormControl(null),
@@ -53,6 +54,43 @@ export class SendjobPromoterTestComponent {
   }
   setssRNA_file(file: File){
     this.ssRNAFile = file;
+  }
+
+  parseAndValidateGenesList(){
+    function parseSingleList(list: string){
+      //Input: string containing genes
+      //Output: array of genes - separation can be \n whitespace \t and ,
+      return list.replaceAll(" ", "\n").replaceAll("\t", "\n").replaceAll(",", "\n")
+        .split("\n").filter(elem => elem.length > 0)
+    }
+    const putativeGenesFormatted = parseSingleList(this.formGroup.value.putativeGenes);
+    const backgroundGenesFormatted = parseSingleList(this.formGroup.value.backgroundGenes);
+    putativeGenesFormatted.sort(); backgroundGenesFormatted.sort();
+    //Error if one list is empty
+    if (putativeGenesFormatted.length == 0){
+      return {error: true, type:0, putativeGenesFormatted: putativeGenesFormatted, backgroundGenesFormatted:backgroundGenesFormatted}
+    } else if (backgroundGenesFormatted.length == 0){
+      return {error: true, type:1, putativeGenesFormatted: putativeGenesFormatted, backgroundGenesFormatted:backgroundGenesFormatted}
+    } 
+    //Error if background genes is not subset of putative
+    //!! This function works only if the 2 arrays are sorted
+    let i = 0; let j = 0;
+    const notIncluded = [];
+    while(j < backgroundGenesFormatted.length){
+      if (putativeGenesFormatted[i] == backgroundGenesFormatted[j]){
+        j++;
+      } else if (i < (putativeGenesFormatted.length-1) && putativeGenesFormatted[i] < backgroundGenesFormatted[j]){
+        i++;
+      } else {
+        notIncluded.push(backgroundGenesFormatted[j]);
+        j++;
+      }
+    }
+    if (notIncluded.length > 0){
+      return {error: true, type:2, notIncluded: notIncluded, putativeGenesFormatted: putativeGenesFormatted, backgroundGenesFormatted:backgroundGenesFormatted}
+    } else {
+      return {error: false, putativeGenesFormatted: putativeGenesFormatted, backgroundGenesFormatted:backgroundGenesFormatted}
+    }
   }
 
 
@@ -75,7 +113,6 @@ export class SendjobPromoterTestComponent {
       if (response.success){
         this.default_triplex_params = response.payload
         this.formGroup.patchValue({filter_repeat: this.default_triplex_params?.filter_repeat.default});
-        console.log(this.default_triplex_params)
       }
     })
     this.triplexService.get_allowed_species_and_iterations().then ((response: any) => {
@@ -85,9 +122,106 @@ export class SendjobPromoterTestComponent {
     })
   }
 
+  openPopupForError(error: any){
+    var data = {}
+    switch(error.type){
+      case 0:
+        //One list is empty
+        data = {type:0, message: "Putative genes list is empty"};
+        this.formGroup.patchValue({"putativeGenes": ""}); break;
+      case 1:
+        //One list is empty
+        data = {type:0, message: "Background genes list is empty"};
+        this.formGroup.patchValue({"backgroundGenes": ""}); break;
+      case 2:
+        //Background genes not included
+        data = {type:1, message: "Some background genes are not included in putative genes",
+          list: error.notIncluded}; break;
+    }
+    const dialogRef = this.dialog.open(ErrorPopupComponent, {
+      data: data,
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result && result.state) {
+        switch (result.state){
+          case 1: //Add genes to putative
+            const newPutativeGenes = error.putativeGenesFormatted.concat(error.notIncluded);
+            this.formGroup.patchValue({"putativeGenes": newPutativeGenes.join("\n")});
+          break;
+          case 2: //Remove genes from background
+          const newBackgroundGenes = error.backgroundGenesFormatted.filter((elem:string) => !error.notIncluded.includes(elem));
+          this.formGroup.patchValue({"backgroundGenes": newBackgroundGenes.join("\n")});
+          break;
+        }
+      }
+    });
+  }
+
+  onFailure(response: any, parsedAndValidatedGenes: any){
+    if (response.notIncludedInMANE){
+      var data = {type: 2, message: "Some genes specified are not included in MANE", list: response.notIncludedInMANE}
+      const dialogRef = this.dialog.open(ErrorPopupComponent, {
+        data: data,
+      });
+      dialogRef.afterClosed().subscribe(result => {
+        if (result && result.state && result.state == 1) {
+          const newPutativeGenes = parsedAndValidatedGenes.putativeGenesFormatted.filter(
+            (elem:string) => !response.notIncludedInMANE.includes(elem)
+          );
+          const newBackgroundGenes = parsedAndValidatedGenes.backgroundGenesFormatted.filter(
+            (elem:string) => !response.notIncludedInMANE.includes(elem)
+          )
+          this.formGroup.patchValue({"putativeGenes": newPutativeGenes.join("\n")});
+          this.formGroup.patchValue({"backgroundGenes": newBackgroundGenes.join("\n")});
+        }
+      });
+    } else {
+      window.alert("Cannot submit job: " + response.error);
+    }
+  }
+  onSuccess(response: any){
+    this._router.navigate(['checkjob/token/', response.payload.token.token]);
+  }
+
   submitForm(){
     if (this.sending){return;}
-    console.log(this.formGroup)
-    window.alert("Ehhh ti piacerebbe!!")
+    const error = this.parseAndValidateGenesList();
+    if (error.error){
+      this.openPopupForError(error);
+      return;
+    }
+
+    const isUsingSequence = this.formGroup.value.ssRNA_chosen_type==ssRNA_input_type.sequence;
+    const toSubmit = {
+      BACKGROUND_GENES: error.backgroundGenesFormatted,
+      PUTATIVE_GENES: error.putativeGenesFormatted,
+
+      SSRNA_FASTA: isUsingSequence ? this.ssRNAFile : undefined,
+      SSRNA_STRING: isUsingSequence ? this.formGroup.value.ssRNATextual : undefined,
+      SSRNA_TRANSCRIPT_ID: !isUsingSequence ? this.formGroup.value.ssRNA_transcript_id : undefined,
+      JOBNAME: this.formGroup.value.jobName || undefined,
+      EMAIL: this.formGroup.value.email || undefined,
+      min_len: this.formGroup.value.min_len || undefined,
+      max_len: this.formGroup.value.max_len || undefined,
+      error_rate: this.formGroup.value.error_rate || undefined,
+      guanine_rate: this.formGroup.value.guanine_rate || undefined,
+      filter_repeat: this.formGroup.value.filter_repeat || undefined,
+      consecutive_errors: this.formGroup.value.consecutive_errors || undefined,
+      SSTRAND: this.formGroup.value.SSTRAND || undefined,
+      SPECIES: this.formGroup.value.selected_species || undefined
+    }
+
+    this.triplexService.submitJobPromoterTest(toSubmit).then(response => {
+      this.sending = false;
+      if (response["success"]){
+        this.onSuccess(response);
+      } else {
+        this.onFailure(response, error);
+      }
+    }).catch(exception => {
+      this.sending = false; 
+      this.onFailure(exception, error);
+    });
   }
 }

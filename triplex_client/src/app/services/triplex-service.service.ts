@@ -79,6 +79,54 @@ export class TriplexServiceService {
     return this.get_data("3plex_default_params");
   }
 
+  submitJobPromoterTest(jobToSubmit: any){
+    const formData = new FormData();
+    //ssRNA input:
+    if (jobToSubmit.SSRNA_FASTA){
+      formData.append('SSRNA_FASTA', jobToSubmit.SSRNA_FASTA);
+    } else if (jobToSubmit.SSRNA_STRING){
+      formData.append('SSRNA_STRING', jobToSubmit.SSRNA_STRING);
+    } else if (jobToSubmit.SSRNA_TRANSCRIPT_ID){
+      formData.append('SSRNA_ID', jobToSubmit.SSRNA_TRANSCRIPT_ID);
+    }
+    //Genes
+    formData.append('putative_genes', jobToSubmit.PUTATIVE_GENES);
+    formData.append('background_genes', jobToSubmit.BACKGROUND_GENES);
+    //Generic job info
+    if (jobToSubmit.SPECIES){
+      formData.append('SPECIES', jobToSubmit.SPECIES);
+    }
+    if (jobToSubmit.JOBNAME !== undefined) {
+      formData.append('JOBNAME', String(jobToSubmit.JOBNAME));
+    }
+    if (jobToSubmit.EMAIL !== undefined) {
+      formData.append('EMAIL', String(jobToSubmit.EMAIL));
+    }
+    //3plex params
+    if (jobToSubmit.min_len !== undefined) {
+      formData.append('min_len', String(jobToSubmit.min_len));
+    }
+    if (jobToSubmit.max_len !== undefined) {
+      formData.append('max_len', String(jobToSubmit.max_len));
+    }
+    if (jobToSubmit.error_rate !== undefined) {
+      formData.append('error_rate', String(jobToSubmit.error_rate));
+    }
+    if (jobToSubmit.guanine_rate !== undefined) {
+      formData.append('guanine_rate', String(jobToSubmit.guanine_rate));
+    }
+    if (jobToSubmit.filter_repeat !== undefined) {
+      formData.append('filter_repeat', String(jobToSubmit.filter_repeat));
+    }
+    if (jobToSubmit.consecutive_errors !== undefined) {
+      formData.append('consecutive_errors', String(jobToSubmit.consecutive_errors));
+    }
+    if (jobToSubmit.SSTRAND !== undefined) {
+      formData.append('SSTRAND', String(jobToSubmit.SSTRAND));
+    }
+    return this.post_data_form("submit_promoter_test/", formData) 
+  }
+
   submitJob(jobToSubmit: JobToSubmit){
     const formData = new FormData();
     // Append files to the form data object

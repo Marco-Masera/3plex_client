@@ -9,12 +9,9 @@ ENPP4
 SEMA3F
 CYP51A1
 MYH16`,
-  "backgroundGenes": `ACSM3
-ADIPOR2
-AGK
-AK2
-ALS2
-ANKIB1`
+  "backgroundGenes": `CFH
+FUCA2
+ENPP4`
 }
 
 @Component({
