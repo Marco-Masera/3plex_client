@@ -1,11 +1,11 @@
 <div mat-dialog-content class="dialogContainer">
     <p>{{state.message}}</p>
-    <div *ngIf="state.type==1" id="asList">
+    <div *ngIf="state.type==1 || state.type==2" id="asList">
         <p *ngFor="let gene of state.list">{{gene}}</p>
     </div>
 </div>
   <div mat-dialog-actions class="mat-dialog-actions">
-    <button *ngIf="state.type==1" mat-button disabled="true">
+    <button *ngIf="state.type==1 || state.type==2" mat-button disabled="true">
         
     </button>
     <button *ngIf="state.type==1" mat-button [mat-dialog-close]="{'state': 1}">
@@ -13,6 +13,9 @@
     </button>
     <button *ngIf="state.type==1" mat-button [mat-dialog-close]="{'state': 2}">
         Remove additional genes from background
+    </button>
+    <button *ngIf="state.type==2" mat-button [mat-dialog-close]="{'state': 1}">
+        Remove remove genes not in MANE from lists
     </button>
     <button mat-button (click)="onNoClick()">Return</button>
 </div>

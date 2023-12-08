@@ -213,6 +213,7 @@ export class SendjobPromoterTestComponent {
     }
 
     this.triplexService.submitJobPromoterTest(toSubmit).then(response => {
+      console.log(response)
       this.sending = false;
       if (response["success"]){
         this.onSuccess(response);
@@ -220,6 +221,7 @@ export class SendjobPromoterTestComponent {
         this.onFailure(response, error);
       }
     }).catch(exception => {
+      console.log(exception)
       this.sending = false; 
       this.onFailure(exception, error);
     });

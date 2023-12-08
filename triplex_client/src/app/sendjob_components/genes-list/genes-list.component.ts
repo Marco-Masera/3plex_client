@@ -8,7 +8,7 @@ FUCA2
 ENPP4
 SEMA3F
 CYP51A1
-MYH16`,
+MYH15`,
   "backgroundGenes": `CFH
 FUCA2
 ENPP4`
