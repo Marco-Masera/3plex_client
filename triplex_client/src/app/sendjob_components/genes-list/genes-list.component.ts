@@ -2,14 +2,14 @@ import { Component, Input } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 
 const examples: any = {
-  "putativeGenes": `TSPAN6
+  "allGenes": `TSPAN6
 CFH
 FUCA2
 ENPP4
 SEMA3F
 CYP51A1
 MYH15`,
-  "backgroundGenes": `CFH
+  "interestGenes": `CFH
 FUCA2
 ENPP4`
 }

@@ -37,8 +37,8 @@ export class SendjobPromoterTestComponent {
       ssRNA_transcript_id: new FormControl(null),
       ssRNA: new FormControl(null),
       ssRNATextual: new FormControl(null),
-      putativeGenes: new FormControl(""),
-      backgroundGenes: new FormControl(""),
+      allGenes: new FormControl(""),
+      interestGenes: new FormControl(""),
       jobName: new FormControl(null),
       email: new FormControl(null),
       min_len: new FormControl(null),
@@ -63,33 +63,33 @@ export class SendjobPromoterTestComponent {
       return list.replaceAll(" ", "\n").replaceAll("\t", "\n").replaceAll(",", "\n")
         .split("\n").filter(elem => elem.length > 0)
     }
-    const putativeGenesFormatted = parseSingleList(this.formGroup.value.putativeGenes);
-    const backgroundGenesFormatted = parseSingleList(this.formGroup.value.backgroundGenes);
-    putativeGenesFormatted.sort(); backgroundGenesFormatted.sort();
+    const allGenesFormatted = parseSingleList(this.formGroup.value.allGenes);
+    const interestGenesFormatted = parseSingleList(this.formGroup.value.interestGenes);
+    allGenesFormatted.sort(); interestGenesFormatted.sort();
     //Error if one list is empty
-    if (putativeGenesFormatted.length == 0){
-      return {error: true, type:0, putativeGenesFormatted: putativeGenesFormatted, backgroundGenesFormatted:backgroundGenesFormatted}
-    } else if (backgroundGenesFormatted.length == 0){
-      return {error: true, type:1, putativeGenesFormatted: putativeGenesFormatted, backgroundGenesFormatted:backgroundGenesFormatted}
+    if (allGenesFormatted.length == 0){
+      return {error: true, type:0, allGenesFormatted: allGenesFormatted, interestGenesFormatted:interestGenesFormatted}
+    } else if (interestGenesFormatted.length == 0){
+      return {error: true, type:1, allGenesFormatted: allGenesFormatted, interestGenesFormatted:interestGenesFormatted}
     } 
     //Error if background genes is not subset of putative
     //!! This function works only if the 2 arrays are sorted
     let i = 0; let j = 0;
     const notIncluded = [];
-    while(j < backgroundGenesFormatted.length){
-      if (putativeGenesFormatted[i] == backgroundGenesFormatted[j]){
+    while(j < interestGenesFormatted.length){
+      if (allGenesFormatted[i] == interestGenesFormatted[j]){
         j++;
-      } else if (i < (putativeGenesFormatted.length-1) && putativeGenesFormatted[i] < backgroundGenesFormatted[j]){
+      } else if (i < (allGenesFormatted.length-1) && allGenesFormatted[i] < interestGenesFormatted[j]){
         i++;
       } else {
-        notIncluded.push(backgroundGenesFormatted[j]);
+        notIncluded.push(interestGenesFormatted[j]);
         j++;
       }
     }
     if (notIncluded.length > 0){
-      return {error: true, type:2, notIncluded: notIncluded, putativeGenesFormatted: putativeGenesFormatted, backgroundGenesFormatted:backgroundGenesFormatted}
+      return {error: true, type:2, notIncluded: notIncluded, allGenesFormatted: allGenesFormatted, interestGenesFormatted:interestGenesFormatted}
     } else {
-      return {error: false, putativeGenesFormatted: putativeGenesFormatted, backgroundGenesFormatted:backgroundGenesFormatted}
+      return {error: false, allGenesFormatted: allGenesFormatted, interestGenesFormatted:interestGenesFormatted}
     }
   }
 
@@ -128,11 +128,11 @@ export class SendjobPromoterTestComponent {
       case 0:
         //One list is empty
         data = {type:0, message: "Putative genes list is empty"};
-        this.formGroup.patchValue({"putativeGenes": ""}); break;
+        this.formGroup.patchValue({"allGenes": ""}); break;
       case 1:
         //One list is empty
         data = {type:0, message: "Background genes list is empty"};
-        this.formGroup.patchValue({"backgroundGenes": ""}); break;
+        this.formGroup.patchValue({"interestGenes": ""}); break;
       case 2:
         //Background genes not included
         data = {type:1, message: "Some background genes are not included in putative genes",
@@ -146,12 +146,12 @@ export class SendjobPromoterTestComponent {
       if (result && result.state) {
         switch (result.state){
           case 1: //Add genes to putative
-            const newPutativeGenes = error.putativeGenesFormatted.concat(error.notIncluded);
-            this.formGroup.patchValue({"putativeGenes": newPutativeGenes.join("\n")});
+            const newAllGenes = error.allGenesFormatted.concat(error.notIncluded);
+            this.formGroup.patchValue({"allGenes": newAllGenes.join("\n")});
           break;
           case 2: //Remove genes from background
-          const newBackgroundGenes = error.backgroundGenesFormatted.filter((elem:string) => !error.notIncluded.includes(elem));
-          this.formGroup.patchValue({"backgroundGenes": newBackgroundGenes.join("\n")});
+          const newInterestGenes = error.interestGenesFormatted.filter((elem:string) => !error.notIncluded.includes(elem));
+          this.formGroup.patchValue({"interestGenes": newInterestGenes.join("\n")});
           break;
         }
       }
@@ -166,14 +166,14 @@ export class SendjobPromoterTestComponent {
       });
       dialogRef.afterClosed().subscribe(result => {
         if (result && result.state && result.state == 1) {
-          const newPutativeGenes = parsedAndValidatedGenes.putativeGenesFormatted.filter(
+          const newAllGenes = parsedAndValidatedGenes.allGenesFormatted.filter(
             (elem:string) => !response.notIncludedInMANE.includes(elem)
           );
-          const newBackgroundGenes = parsedAndValidatedGenes.backgroundGenesFormatted.filter(
+          const newInterestGenes = parsedAndValidatedGenes.interestGenesFormatted.filter(
             (elem:string) => !response.notIncludedInMANE.includes(elem)
           )
-          this.formGroup.patchValue({"putativeGenes": newPutativeGenes.join("\n")});
-          this.formGroup.patchValue({"backgroundGenes": newBackgroundGenes.join("\n")});
+          this.formGroup.patchValue({"allGenes": newAllGenes.join("\n")});
+          this.formGroup.patchValue({"interestGenes": newInterestGenes.join("\n")});
         }
       });
     } else {
@@ -194,8 +194,8 @@ export class SendjobPromoterTestComponent {
 
     const isUsingSequence = this.formGroup.value.ssRNA_chosen_type==ssRNA_input_type.sequence;
     const toSubmit = {
-      BACKGROUND_GENES: error.backgroundGenesFormatted,
-      PUTATIVE_GENES: error.putativeGenesFormatted,
+      INTEREST_GENES: error.interestGenesFormatted,
+      ALL_GENES: error.allGenesFormatted,
 
       SSRNA_FASTA: isUsingSequence ? this.ssRNAFile : undefined,
       SSRNA_STRING: isUsingSequence ? this.formGroup.value.ssRNATextual : undefined,
@@ -213,7 +213,6 @@ export class SendjobPromoterTestComponent {
     }
 
     this.triplexService.submitJobPromoterTest(toSubmit).then(response => {
-      console.log(response)
       this.sending = false;
       if (response["success"]){
         this.onSuccess(response);

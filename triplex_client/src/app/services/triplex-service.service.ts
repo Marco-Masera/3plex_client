@@ -90,8 +90,8 @@ export class TriplexServiceService {
       formData.append('SSRNA_ID', jobToSubmit.SSRNA_TRANSCRIPT_ID);
     }
     //Genes
-    formData.append('putative_genes', jobToSubmit.PUTATIVE_GENES);
-    formData.append('background_genes', jobToSubmit.BACKGROUND_GENES);
+    formData.append('interest_genes', jobToSubmit.INTEREST_GENES);
+    formData.append('all_genes', jobToSubmit.ALL_GENES);
     //Generic job info
     if (jobToSubmit.SPECIES){
       formData.append('SPECIES', jobToSubmit.SPECIES);

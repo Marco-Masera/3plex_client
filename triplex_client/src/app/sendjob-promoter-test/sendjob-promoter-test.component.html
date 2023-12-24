@@ -38,17 +38,17 @@
 							<app-genes-list
 								[formGroup]="formGroup"
 								[sending]="sending"
-								[title]="'Putative genes'"
-								[toolTip]="'List of putative genes'"
-								[formControlName]="'putativeGenes'"
+								[title]="'Background genes'"
+								[toolTip]="'List of background genes'"
+								[formControlName]="'allGenes'"
 							></app-genes-list>
 							<!--Target genes-->
 							<app-genes-list
 								[formGroup]="formGroup"
 								[sending]="sending"
-								[title]="'Background genes'"
-								[toolTip]="'List of background genes. Must be subset of putative genes'"
-								[formControlName]="'backgroundGenes'"
+								[title]="'Genes of interest'"
+								[toolTip]="'List of genes. Must be subset of background genes.'"
+								[formControlName]="'interestGenes'"
 							></app-genes-list>
 						</div>
                     </div>
