@@ -21,7 +21,6 @@
         </div>
         
         <div *ngIf="!loading" id="visualsDiv">
-
             <div id="addingDBDButtonDiv">
                 <h2>DBDs</h2>
                 <div class="dbdContainer">
@@ -59,22 +58,26 @@
                     </button>
                 </div>
             </div>
+            <div id="stickyTop">
+            <p style="margin-top: 10px; margin-bottom: -3px; font-size: large;">Min stability threshold</p>
+            <div style="display:flex; flex-direction: row; min-width: 400px; align-items: center; justify-content: space-between;">
+                <mat-slider
+                    *ngIf="!loading"
+                        id="minStabilitySlider"
+                        [max]="maxAvailableStability"
+                        min="0"
+                        step="0.1"
+                        discrete="false"
+                        [matTooltip]="'Threshold: ' + minStability">
+                        <input  matSliderThumb [(ngModel)]="minStability" (change)="updateProfilePlot()" >
+                </mat-slider>
+                <input [(ngModel)]="minStability" style="width: 36px; height: 20px;"/>
+            </div>
 
-            <p style="margin-bottom: -3px;">Min stability threshold</p>
-            <mat-slider
-                *ngIf="!loading"
-                    id="minStabilitySlider"
-                    [max]="maxAvailableStability"
-                    min="0"
-                    step="0.1"
-                    discrete="false"
-                    [matTooltip]="'Threshold: ' + minStability">
-                    <input  matSliderThumb [(ngModel)]="minStability" (change)="updateProfilePlot()" >
-            </mat-slider>
-
-            <div *ngIf="dsDNAID" style="margin-top: 14px;">
-                <span><b>Visualizing results for:</b> {{dsDNAID}}</span>
-                <a target="_blank" [href]="'data_visualization/'+ token" style="margin-left: 12px;">Back to full results</a>
+            <div *ngIf="dsDNAID" style="margin-top: 14px; margin-bottom: 16px;">
+                <span style="font-size: large; font-weight: 450;">Results restricted to: {{dsDNAID}}</span>
+                <a target="_blank" [href]="'data_visualization/'+ token" style="margin-left: 12px; font-size: large;">Back to full results</a>
+            </div>
             </div>
 
             <div *ngIf="isAddingDBD" id="addDBDButtonDiv">
@@ -107,11 +110,14 @@
                         Open in genome browser
                     </button>
                 </div>
-                <div id="allTPXContainer">
-                    <h2>All tpx</h2>
-                    <button (click)="export_tpx()" type="button" mat-stroked-button style="height: 32px; width: 300px; margin-left: 14px;">
+                <hr style="width: 80%;">
+                <div id="allTPXExportContainer">
+                    <button (click)="export_tpx()" type="button" mat-stroked-button style="height: 32px; width: 300px; margin-left: 14px; margin-top: 20px;">
                         Export in excel
                     </button>
+                </div>
+                <div id="allTPXContainer">
+                    <h2>All TPX table</h2>
                 </div>
                 <app-full-tpx-table *ngIf="filteredTPX" (onRowClicked)="highlightRegion($event)" [tpx]="filteredTPX"></app-full-tpx-table>
             </div>

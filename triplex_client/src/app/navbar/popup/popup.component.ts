@@ -16,4 +16,12 @@ export class PopupComponent {
   onNoClick(): void {
     this.dialogRef.close();
   }
+
+  validateInput(){
+    if (this.state.state == "token"){
+      return this.userInput.length > 0;
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return this.userInput.length > 0 && emailRegex.test(this.userInput);
+  }
 }

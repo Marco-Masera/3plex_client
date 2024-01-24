@@ -18,8 +18,17 @@
 
 #allTPXContainer{
     margin-top: 12px;
+    margin-bottom: 12px;
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
-    padding-left: 14px; padding-right: 14px;
+    justify-content: center;
+    padding-left: 64px; padding-right: 64px;
+}
+#allTPXExportContainer{
+    height: 0px;
+    overflow: visible;
+    display: flex;
+    flex-direction: row;
+    justify-content: end;
+    padding-left: 64px; padding-right: 64px;
 }

@@ -11,10 +11,6 @@
             <button mat-menu-item routerLink="/submit">Triplex prediction</button>
             <button mat-menu-item routerLink="/submit_promoter_stability_test">Promoter stability test</button>
         </mat-menu>
-        <button mat-button [matMenuTriggerFor]="checkJob">Check job</button>
-        <mat-menu #checkJob="matMenu">
-            <button mat-menu-item (click)="openDialog('token')">Check by token</button>
-            <button mat-menu-item (click)="openDialog('email')">Check by email</button>
-        </mat-menu>
+        <button mat-button (click)="openDialog('token')">Check job</button>
     </div>
 </div>

@@ -34,7 +34,7 @@
                     <span matListItemTitle><b>Species:</b> {{ jobData.species  || 'NA' }}</span>
                   </mat-list-item>
                   <mat-list-item>
-                    <span *ngIf="jobData.email_address" matListItemTitle><b>Job email:  </b> <a target="_blank" [href]="'checkjobs/email/'+ jobData.email_address">{{ jobData.email_address || 'NA'  }} </a>
+                    <span *ngIf="jobData.email_address" matListItemTitle><b>Job email:  </b>{{ jobData.email_address || 'NA'  }}
                     </span>
                     <span *ngIf="!jobData.email_address" matListItemTitle><b>Job email:  </b> NA
                     </span>
@@ -76,7 +76,7 @@
                 </mat-accordion>
               </div>
 
-              <div *ngIf="jobData.state == 'Ready'" style="margin-bottom: 30px;">
+              <div *ngIf="jobData.state == 'Ready' && jobData.have_visualization" style="margin-bottom: 30px;">
                 <button type="button" mat-raised-button [routerLink]="'../../../data_visualization/' + token" style=" min-width: 340px;">
                   Visualize data
                 </button>

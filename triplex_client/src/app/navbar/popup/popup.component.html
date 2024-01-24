@@ -1,13 +1,18 @@
 <div mat-dialog-content class="dialogContainer">
   <p *ngIf="state.state=='token'">Insert your job's token here</p>
   <p *ngIf="state.state=='email'">Insert your email here</p>
-  <mat-form-field style="margin-top: 10px; width: 240px;">
+  <p id="okmessage" *ngIf="state.state=='ok'">You will receive an email with all your jobs</p>
+  <mat-form-field *ngIf="state.state!='ok'" style="margin-top: 10px; width: 240px;">
     <mat-label *ngIf="state.state=='token'">Token</mat-label>
     <mat-label *ngIf="state.state=='email'">Email</mat-label>
     <input matInput [(ngModel)]="userInput">
   </mat-form-field>
+
 </div>
 <div mat-dialog-actions>
   <button mat-button (click)="onNoClick()">Return</button>
-  <button mat-button [mat-dialog-close]="{'response': userInput, 'state': state.state}" cdkFocusInitial>Search</button>
+  <button [disabled]="!validateInput()" *ngIf="state.state!='ok'" mat-button [mat-dialog-close]="{'response': userInput, 'state': state.state}" cdkFocusInitial>Search</button>
+  <div *ngIf="state.state=='token'" id="getbymailbutton">
+    <button mat-button [mat-dialog-close]="{'response': '.', 'state': 'getmail'}">Get by email</button>
+  </div>
 </div>

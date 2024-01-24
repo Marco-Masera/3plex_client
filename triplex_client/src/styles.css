@@ -9,6 +9,7 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 }
 .submitJobContainer{
     width: 100%;
+    min-width: 750px;
     display: flex;
     justify-content: center;
     align-items: center;

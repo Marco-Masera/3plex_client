@@ -1,5 +1,11 @@
 .dialogContainer{
     min-width: 300px;
-    height: 140px;
     overflow: hidden;
+}
+#okmessage{
+    font-size: large;
+    margin-left: 10px; margin-right: 10px;
+}
+#getbymailbutton{
+    margin-left: 30px;
 }

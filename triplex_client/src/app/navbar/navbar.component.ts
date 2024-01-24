@@ -3,6 +3,7 @@ import {MatDialog} from '@angular/material/dialog';
 import { PopupComponent } from './popup/popup.component';
 import { Router } from '@angular/router';
 import { isDevMode } from '@angular/core';
+import { TriplexServiceService } from '../services/triplex-service.service';
 
 @Component({
   selector: 'app-navbar',
@@ -10,7 +11,7 @@ import { isDevMode } from '@angular/core';
   styleUrls: ['./navbar.component.css']
 })
 export class NavbarComponent {
-  constructor(public dialog: MatDialog, private _router: Router) {}
+  constructor(public dialog: MatDialog, private _router: Router, private service: TriplexServiceService) {}
 
   openDialog(state: string): void {
     const dialogRef = this.dialog.open(PopupComponent, {
@@ -19,10 +20,20 @@ export class NavbarComponent {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result && result.state && result.response && result.response.length > 0) {
-        if (state == "token") {
+        if (result.state == 'getmail'){
+          const dialogRef = this.dialog.open(PopupComponent, {
+            data: {state: "email"},
+          });
+          dialogRef.afterClosed().subscribe(result => {
+            if (result && result.state && result.state == "email") {
+              this.service.checkJobsMyEmail(result.response);
+              const dialogRef = this.dialog.open(PopupComponent, {
+                data: {state: "ok"},
+              });
+            }
+          });
+        } else if (result.state == "token") {
           this._router.navigate(['checkjob/token/', result.response]);
-        } else if (state == "email") {
-          this._router.navigate(['checkjobs/email/' + result.response]);
         }
       }
     });

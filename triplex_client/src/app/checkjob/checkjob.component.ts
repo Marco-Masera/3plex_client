@@ -10,7 +10,8 @@ interface JobData{
   date: string | undefined
   triplex_params: any | undefined,
   ssRNA_id: string | undefined,
-  species: string | undefined
+  species: string | undefined,
+  have_visualization: boolean | undefined
 }
 
 @Component({
@@ -94,6 +95,7 @@ export class CheckjobComponent {
         (response: any) => {
           console.log(response);
           if (response.success){
+            console.log(response);
             this.jobData = {
               species: response.payload.job.species,
               job_name: response.payload.job.job_name,
@@ -104,7 +106,8 @@ export class CheckjobComponent {
               ssRNA_id: response.payload.job.ssRNA_id,
               results: response.payload.results,
               date: response.payload.job.date,
-              triplex_params: response.payload.params
+              triplex_params: response.payload.params,
+              have_visualization: response.payload.job.have_visualization
             }
             this.files = Object.keys(this.jobData.results)
             let BASE_URL = this.triplexService.getBaseUrl()
