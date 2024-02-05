@@ -286,4 +286,8 @@ export class TriplexServiceService {
     window.open(BASE_URL+API_PATH+`jobs/${token}/tpx.xlsx?${queryString}`);
   }
 
+  fetchExportJobUrl(token: string){
+    return this.get_data(`jobs/${token}/export_data`);
+  }
+
 }

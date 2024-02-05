@@ -20,7 +20,7 @@ interface JobData{
   styleUrls: ['./checkjob.component.css']
 })
 export class CheckjobComponent {
-  token: String | null = null
+  token: string | null = null
   jobData: JobData | undefined = undefined;
   onError: boolean = false
   errorMessage: string = ""
@@ -28,6 +28,7 @@ export class CheckjobComponent {
   pollingTimer: any | null = null
   email_input: string = ""
   isUpdatingEmail: boolean = false;
+  isLoadingExport: boolean = false;
   constructor(private triplexService: TriplexServiceService, private route: ActivatedRoute){}
   
   ngOnInit() {
@@ -42,6 +43,18 @@ export class CheckjobComponent {
         this.pollingTimer = setInterval(()=> { this.load_data() }, 40 * 1000);
       }
    });
+  }
+
+  exportButton(){
+    this.isLoadingExport = true;
+    this.triplexService.fetchExportJobUrl(this.token || "").then( (response:any) => {
+      this.isLoadingExport = false;
+      if (response.success){
+        const url = this.triplexService.getBaseUrl().slice(0, -1) + response.payload.url
+        console.log(url)
+        window.open(url,  '_blank');
+      }
+    })
   }
 
   mailInputInvalid(){

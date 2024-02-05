@@ -102,6 +102,16 @@
                 </mat-accordion>
               </div>
 
+              <div *ngIf="jobData.state == 'Ready'" style="margin-bottom: 30px; margin-top: 30px;">
+                <div  *ngIf="isLoadingExport" mode="indeterminate" 
+                  style="width: 100%; display: flex; justify-content: center; align-items: center;">
+                    <mat-spinner></mat-spinner>
+                </div>
+                <button [disabled]="isLoadingExport" (click)="exportButton()" type="button" mat-raised-button style=" min-width: 340px;">
+                  Export job data
+                </button>
+              </div>
+
         </div>
     </mat-card>
 </div>
