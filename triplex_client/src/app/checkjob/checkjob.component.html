@@ -112,6 +112,18 @@
                 </button>
               </div>
 
+              <div *ngIf="jobData.state == 'Expired'" style="margin-bottom: 30px; margin-top: 30px; display: flex; flex-direction: column;">
+                <div  *ngIf="isLoadingImport" mode="indeterminate" 
+                  style="width: 100%; display: flex; justify-content: center; align-items: center;">
+                    <mat-spinner></mat-spinner>
+                </div>
+                <p>The job data is expired. If you created an export of the job, you can upload it to restore your data.</p>
+                <button [disabled]="isLoadingImport" (click)="importButton()" type="button" mat-raised-button style=" min-width: 340px;">
+                  Import job data
+                </button>
+                <input type="file" id="uploadFileInput" style="display: none;">
+              </div>
+
         </div>
     </mat-card>
 </div>

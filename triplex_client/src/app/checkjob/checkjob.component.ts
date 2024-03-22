@@ -29,6 +29,7 @@ export class CheckjobComponent {
   email_input: string = ""
   isUpdatingEmail: boolean = false;
   isLoadingExport: boolean = false;
+  isLoadingImport:boolean = false;
   constructor(private triplexService: TriplexServiceService, private route: ActivatedRoute){}
   
   ngOnInit() {
@@ -43,6 +44,37 @@ export class CheckjobComponent {
         this.pollingTimer = setInterval(()=> { this.load_data() }, 40 * 1000);
       }
    });
+  }
+
+  importButton(){
+    const self = this;
+    var fileInput = document.getElementById('uploadFileInput') as HTMLInputElement;
+    function handleFileUpload(event: Event) {
+        const fileList = (event.target as HTMLInputElement).files;
+        if (fileList && fileList.length > 0) {
+            self.isLoadingImport = true;
+            const selectedFile = fileList[0];
+            console.log('Selected file:', selectedFile);
+            self.triplexService.importJob(self.token || "", selectedFile).then(
+              result => {
+                self.isLoadingImport = false;
+                console.log(result)
+                if (result.success){
+                  window.location.reload();
+                } else {
+                  window.alert(result.error)
+                }
+              }
+            ).catch( e => {
+              window.alert("Upload did not succeed")
+              self.isLoadingImport = false;
+            })
+        }
+    }
+    var new_element = fileInput.cloneNode(true);
+    fileInput.parentNode?.replaceChild(new_element, fileInput);
+    fileInput.addEventListener('change', handleFileUpload);
+    fileInput.click();
   }
 
   exportButton(){

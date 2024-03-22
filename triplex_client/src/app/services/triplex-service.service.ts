@@ -290,4 +290,11 @@ export class TriplexServiceService {
     return this.get_data(`jobs/${token}/export_data`);
   }
 
+  importJob(token:string, file: File){
+    const url = `jobs/${token}/export_data`
+    const formData = new FormData();
+    formData.append('TARBALL', file);
+    return this.post_data_form(url, formData) 
+  }
+
 }
