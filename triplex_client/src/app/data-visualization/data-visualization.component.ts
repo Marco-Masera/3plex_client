@@ -525,7 +525,7 @@ onDBDSelected(index:number){
     return this.triplexService.get_mspack_data(path).then((data:number[]) => {
       const plotlyData = {
         'x': Array.from({length: data.length}, (_, index) => index),
-        'y': data, type: 'line', name: "Secondary structure",
+        'y': data, type: 'line', name: "Secondary structure (z-score)",
         line: {
           color: "green"
         }
@@ -538,7 +538,7 @@ onDBDSelected(index:number){
     if (this.dataForVisuals?.available.conservation){
       const data = {
         'x': Array.from({length: this.dataForVisuals?.available.conservation.length}, (_, index) => index),
-        'y': this.dataForVisuals?.available.conservation, type: 'line',  name: "Conservation",
+        'y': this.dataForVisuals?.available.conservation, type: 'line',  name: "Conservation (phastCons)",
       }
       return data;
     } else {
@@ -678,7 +678,7 @@ onDBDSelected(index:number){
       y: medianData, 
       line: {color: `rgb(43, 66, 46)`, width: 1}, 
       mode: "lines", 
-      name: "Randomization", 
+      name: "TTS count, randomized", 
       type: "scatter",
       legendgroup:"randomization",
       hoverinfo:"text+y", text:"Randomization - Median"
