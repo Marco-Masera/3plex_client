@@ -220,7 +220,6 @@ export class SendjobPromoterTestComponent {
         this.onFailure(response, error);
       }
     }).catch(exception => {
-      console.log(exception)
       this.sending = false; 
       this.onFailure(exception, error);
     });

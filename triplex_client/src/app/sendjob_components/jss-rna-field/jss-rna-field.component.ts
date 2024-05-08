@@ -78,7 +78,6 @@ export class JssRNAFieldComponent {
     return file?.name.split(".").pop()=="fa" ?? false
   }
   validateFileName(fileName: string): boolean{
-    console.log(fileName)
     const regex = /^[a-zA-Z0-9_.-]+$/;
     return regex.test(fileName);
   }

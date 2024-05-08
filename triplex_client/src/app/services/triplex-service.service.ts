@@ -59,7 +59,6 @@ export class TriplexServiceService {
       body: body,
     }).then(
       async (response:any) => {
-        console.log(response)
         response = await response.json()
         response = await JSON.parse(response)
         return response
@@ -178,7 +177,6 @@ export class TriplexServiceService {
     if (jobToSubmit.USE_RANDOM && jobToSubmit.USE_RANDOM > 0){
       formData.append('USE_RAND', String(jobToSubmit.USE_RANDOM));
     }
-    console.log(formData)
     return this.post_data_form("submitjob/", formData) 
   }
 

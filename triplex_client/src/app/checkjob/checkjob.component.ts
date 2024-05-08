@@ -54,11 +54,9 @@ export class CheckjobComponent {
         if (fileList && fileList.length > 0) {
             self.isLoadingImport = true;
             const selectedFile = fileList[0];
-            console.log('Selected file:', selectedFile);
             self.triplexService.importJob(self.token || "", selectedFile).then(
               result => {
                 self.isLoadingImport = false;
-                console.log(result)
                 if (result.success){
                   window.location.reload();
                 } else {
@@ -83,7 +81,6 @@ export class CheckjobComponent {
       this.isLoadingExport = false;
       if (response.success){
         const url = this.triplexService.getBaseUrl().slice(0, -1) + response.payload.url
-        console.log(url)
         window.open(url,  '_blank');
       }
     })
@@ -134,13 +131,10 @@ export class CheckjobComponent {
       this.stopPolling();
       return;
     }
-    console.log("Loading data")
     if (this.token != null){
       this.triplexService.checkJob(this.token).then(
         (response: any) => {
-          console.log(response);
           if (response.success){
-            console.log(response);
             this.jobData = {
               species: response.payload.job.species,
               job_name: response.payload.job.job_name,

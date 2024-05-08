@@ -43,6 +43,7 @@
                         No DBD specified
                     </p>
                 </div>
+                <p *ngIf="isViewingDBD" style="font-size: medium; color: green; font-weight: 500;">Select a DBD to view the details<p>
                 <div class="dbdContainer">
                     <button *ngIf="!isAddingDBD && !isViewingDBD" type="button" mat-stroked-button (click)="addDbdMode()" style="height: 28px;">
                         Specify DBDs

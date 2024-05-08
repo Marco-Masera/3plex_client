@@ -106,7 +106,6 @@ export class SendJobComponent {
     .controls["selected_species"]
     .valueChanges
     .subscribe(selectedValue => {
-          console.log(selectedValue);
           if (!selectedValue){
             this.formGroup.patchValue({
               ssRNA_chosen_type: ssRNA_input_type.sequence,
@@ -125,13 +124,11 @@ export class SendJobComponent {
       if (response.success){
         this.default_triplex_params = response.payload
         this.formGroup.patchValue({filter_repeat: this.default_triplex_params?.filter_repeat.default});
-        console.log(this.default_triplex_params)
       }
     })
     this.triplexService.get_allowed_species_and_iterations().then ((response: any) => {
       if (response.success){ 
         this.allowed_species = response.payload.species;
-        console.log(this.allowed_species);
         this.n_iterations_possible = response.payload.iterations;
         this.formGroup.patchValue({random_iterations: this.n_iterations_possible[0]});
       }
@@ -152,7 +149,6 @@ export class SendJobComponent {
   }
 
   validateFileName(fileName: string): boolean{
-    console.log(fileName)
     const regex = /^[a-zA-Z0-9_.-]+$/;
     return regex.test(fileName);
   }
@@ -188,7 +184,6 @@ export class SendJobComponent {
 
   submitForm() {if (this.sending){return;}
     if (this.formGroup.valid) {
-      console.log("Submit job...")
       this.sending = true;
       const isUsingSequence = this.formGroup.value.ssRNA_chosen_type==ssRNA_input_type.sequence;
       const isUsingdsDNATarget = this.formGroup.value.dsDNA_chosen_type!=ssRNA_input_type.sequence

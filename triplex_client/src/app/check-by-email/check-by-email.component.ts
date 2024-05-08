@@ -44,7 +44,6 @@ export class CheckByEmailComponent {
     if (this.email != null){
       this.triplexService.checkJobsMyEmail(this.email).then(
         (response: any) => {
-          console.log(response);
           if (response.success){
             this.jobsData = response.payload;
             for(let job of this.jobsData || []){
