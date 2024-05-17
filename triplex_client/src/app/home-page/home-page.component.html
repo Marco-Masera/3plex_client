@@ -8,21 +8,32 @@
             <br><br>
             3plex integrates the state-of-the-art algorithm for triplex identification with relevant biophysical knowledge on triplex structures: thermal stability derived from triplex denaturation experiments and RNA secondary structure prediction.
             <br><br>
-            The PATO algorithm (Amatria-Barral et al., 2023) scans a couple of nucleotide sequences and returns all the triplexes that satisfy a set of user-defined constraints.
-            <br><br>
-            3plex enables the exclusion of ssRNA nucleotides from the search based on the secondary structure prediction performed with RNAplfold from the ViennaRNA package (Lorentz et al., 2011). Theoretically, a triplex interaction requires a stretch of nucleotides on the ssRNA transcript not to be involved in any further hydrogen bond.
-            <br><br>
-            The identified putative triplexes are evaluated according to their thermal stability derived from the LongTarget collection of triplex denaturation experiments (He et al., 2015).
-            <br><br>
-            Extensive description of the tool can be found in our paper:
-            <div id="paper_ref">
-                3plex enables deep computational investigation of triplex forming lncRNAs.
-                Cicconetti C, Lauria A, Proserpio V, Masera M, Tamburrini A, Maldotti M, Oliviero S, Molineris I.
-                Comput Struct Biotechnol J. 2023 May 17;21:3091-3102. doi: <a href="https://www.sciencedirect.com/science/article/pii/S2001037023001988">10.1016/j.csbj.2023.05.016</a>. PMID: <a href="https://pubmed.ncbi.nlm.nih.gov/37273849/">37273849</a>; PMCID: PMC10236371.
-            </div>
+            <mat-accordion>
+                <mat-expansion-panel style="width: 100%;" class="mat-elevation-z0">
+                    <mat-expansion-panel-header>
+                        <mat-panel-title>
+                            <span class="right">See more about 3plex</span>
+                        </mat-panel-title>
+                    </mat-expansion-panel-header>
+                    
+                        
+                    The PATO algorithm <a href="https://academic.oup.com/bioinformatics/article/39/3/btad134/7078802" target="_blank">(Amatria-Barral et al., 2023)</a> scans a couple of nucleotide sequences and returns all the triplexes that satisfy a set of user-defined constraints.
+                    <br><br>
+                    3plex enables the exclusion of ssRNA nucleotides from the search based on the secondary structure prediction performed with RNAplfold from the ViennaRNA package <a href="https://almob.biomedcentral.com/articles/10.1186/1748-7188-6-26" target="_blank">(Lorentz et al., 2011)</a>. Theoretically, a triplex interaction requires a stretch of nucleotides on the ssRNA transcript not to be involved in any further hydrogen bond.
+                    <br><br>
+                    The identified putative triplexes are evaluated according to their thermal stability derived from the LongTarget collection of triplex denaturation experiments <a href="https://www.researchgate.net/publication/266249301_LongTarget_A_tool_to_predict_lncRNA_DNA-binding_motifs_binding_sites_via_Hoogsteen_base-pairing_analysis" target="_blank">(He et al., 2015)</a>.
+                    <br><br>
+                    Extensive description of the tool can be found in our paper:
+                    <div id="paper_ref">
+                        3plex enables deep computational investigation of triplex forming lncRNAs.
+                        Cicconetti C, Lauria A, Proserpio V, Masera M, Tamburrini A, Maldotti M, Oliviero S, Molineris I.
+                        Comput Struct Biotechnol J. 2023 May 17;21:3091-3102. doi: <a href="https://www.sciencedirect.com/science/article/pii/S2001037023001988">10.1016/j.csbj.2023.05.016</a>. PMID: <a href="https://pubmed.ncbi.nlm.nih.gov/37273849/">37273849</a>; PMCID: PMC10236371.
+                    </div>
+                </mat-expansion-panel>
+            </mat-accordion>
         </section>
 
-        <h1>Usage</h1>
+        <h1 style="margin-top: 10px;">Usage</h1>
         <hr>
         <section>
             3plex Web provides users with a platfor for easily submitting jobs to 3plex and navigating the results.
@@ -38,7 +49,7 @@
                 </li>
                 <img class="small_pic" src="../../assets/choose_species.png"/>
                 <li>
-                    <strong>Specify a ssRNA sequence.</strong>
+                    <strong>Specify the ssRNA sequence.</strong>
                 </li>
                 <div class="underLI">
                     The sequence can be provided manually in FASTA format
@@ -48,7 +59,7 @@
                     <img class="small_pic" src="../../assets/ssRNA_search.png"/>
                 </div>
                 <li>
-                    <strong>Specify a set of dsDNA sequences.</strong>
+                    <strong>Specify the set of dsDNA sequences.</strong>
                 </li>
                 <div class="underLI">
                     The target dsDNA sequences can be specified in MULTI-FASTA format, or a pre-computed target can be chosen.
@@ -73,7 +84,7 @@
 
             <h2>Retrieve your job data</h2>
             After a job is submitted, the page refresh automatically until the data is ready.
-            There are two ways for retrieving old jobs data:
+            There are two ways for retrieving old jobs data once the page is closed:
             <ul>
                 <li>
                     <strong>Retrieve via token</strong>: save your job token; use the button <i>Check job</i> to retrieve the data.
