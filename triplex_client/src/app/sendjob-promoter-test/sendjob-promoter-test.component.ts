@@ -88,6 +88,8 @@ export class SendjobPromoterTestComponent {
     }
     if (notIncluded.length > 0){
       return {error: true, type:2, notIncluded: notIncluded, allGenesFormatted: allGenesFormatted, interestGenesFormatted:interestGenesFormatted}
+    } else if (allGenesFormatted.length==interestGenesFormatted.length){
+      return {error: true, type:3, allGenesFormatted: allGenesFormatted, interestGenesFormatted:interestGenesFormatted}
     } else {
       return {error: false, allGenesFormatted: allGenesFormatted, interestGenesFormatted:interestGenesFormatted}
     }
@@ -137,6 +139,10 @@ export class SendjobPromoterTestComponent {
         //Background genes not included
         data = {type:1, message: "Some background genes are not included in putative genes",
           list: error.notIncluded}; break;
+        case 3:
+          //Number of genes is the same
+          data = {type:0, message: "Background genes and putative genes cannot be equal",
+            list: error.notIncluded}; break;
     }
     const dialogRef = this.dialog.open(ErrorPopupComponent, {
       data: data,
