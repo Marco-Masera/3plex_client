@@ -274,12 +274,13 @@ export class TriplexServiceService {
     return this.get_data(`jobs/${token}/${dsDNA_id}/${stability}/profile_ucsc`)
   }
 
-  downloadTPXInExcel(token: string, dsDNA_id: string | null, stability: number | null, start: number | null, end: number | null){
+  downloadTPXInExcel(token: string, dsDNA_id: string | null, stability: number, start: number | null, end: number | null){
+    console.log(stability)
     const queries: string[] = []
     if (dsDNA_id){ queries.push(`dsDNAID=${dsDNA_id}`);}
-    if (stability){ queries.push(`stability=${stability}`);}
-    if (start){ queries.push(`start=${start}`);}
-    if (end){ queries.push(`end=${end}`);}
+    if (stability != null){ queries.push(`stability=${stability}`);}
+    if (start != null){ queries.push(`start=${start}`);}
+    if (end != null){ queries.push(`end=${end}`);}
     var queryString = queries.join("&");
     window.open(BASE_URL+API_PATH+`jobs/${token}/tpx.xlsx?${queryString}`);
   }

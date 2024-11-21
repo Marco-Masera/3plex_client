@@ -97,7 +97,7 @@ export class DbdDetailsComponent {
   export_tpx(){
     if (this.token)
       this.triplexService.downloadTPXInExcel(
-        this.token, this.dsDNAID, this.stability_, this.dbd?.[0] || null, this.dbd?.[1] || null
+        this.token, this.dsDNAID, this.stability_ || 0, this.dbd?.[0] || null, this.dbd?.[1] || null
       );
   }
 
