@@ -14,7 +14,7 @@ import {MatSort, MatSortModule} from '@angular/material/sort';
 export class FullTpxTableComponent {
   tableColumns: string[] = ['Duplex_ID', 'tfo_start', 'tfo_end', 'TTS_start', 'TTS_end', 'Error_rate', 'Errors','Guanine_rate','Motif','Orientation',
     'Score', 'Stability', 'Strand', 'Representation']
-  tableColumnsNames: string[] = this.tableColumns.map( value => value.replaceAll("_", " "))
+  tableColumnsNames: string[] = this.tableColumns.map( value => value.replaceAll("_", " "));
   tpxDataSource = new MatTableDataSource<any>([]);
   @Input() set tpx(tpx: any[]){
     tpx.forEach((tpx:any) =>{ 
@@ -39,6 +39,7 @@ export class FullTpxTableComponent {
   }
 
   ngOnInit(){
+    this.tableColumnsNames[1] = "TFO start"; this.tableColumnsNames[2] = "TFO end";
   }
 
   clickedRow(row:any){

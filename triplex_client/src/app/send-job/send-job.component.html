@@ -38,7 +38,7 @@
 									aria-hidden="false" aria-label="Example home icon" fontIcon="help_outline"></mat-icon>
 								</div>
 								<mat-radio-group style="margin-bottom: 20px;"  formControlName="dsDNA_chosen_type" aria-label="Select an option">
-									<mat-radio-button value="t"  [disabled]="!formGroup.get('selected_species')?.value"
+									<mat-radio-button value="t"  [disabled]="formGroup.get('selected_species')?.value!='hsapiens'"
 									[matTooltip]="formGroup.get('selected_species')?.value ? '' : 'Please select a species first'"
 									matTooltipPosition="above">Choose a target</mat-radio-button>
 									<mat-radio-button value="s">Provide your own sequence(s)</mat-radio-button>
@@ -46,7 +46,8 @@
 								
 								<div class="verticalInputSection" style="margin-left: 15px;">
 									<!--Section to Choose a target site-->
-									<p *ngIf="formGroup.get('dsDNA_chosen_type')?.value=='s'">Upload a multi-fasta file or a .bed file</p>
+									<p *ngIf="formGroup.get('dsDNA_chosen_type')?.value=='s' && formGroup.get('selected_species')?.value">Upload a multi-fasta file or a .bed file</p>
+									<p *ngIf="formGroup.get('dsDNA_chosen_type')?.value=='s' && !formGroup.get('selected_species')?.value">Upload a multi-fasta file (.bed format is supported if a species is selected)</p>
 									<div class="fileInputSection" *ngIf="formGroup.get('dsDNA_chosen_type')?.value=='s'">
 										<button class="fileButton" type="button" mat-stroked-button (click)="fileInput2.click()">Choose File</button>
 										<input hidden #fileInput2 type="file" (change)="onDnaChange($event)">

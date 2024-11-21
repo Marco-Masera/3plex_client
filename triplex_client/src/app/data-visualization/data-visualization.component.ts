@@ -639,6 +639,7 @@ onDBDSelected(index:number){
   }
 
   getDataForRandomPlot():any{
+    console.log(this.statisticData)
     //Find position in the statistics object
     const statistics = this.statisticData["data"];
     const dataToProcess = this.getProfileDataByStability(statistics);

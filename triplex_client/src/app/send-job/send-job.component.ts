@@ -111,6 +111,10 @@ export class SendJobComponent {
               ssRNA_chosen_type: ssRNA_input_type.sequence,
               dsDNA_chosen_type: ssRNA_input_type.sequence
             });
+          } else if (selectedValue != "hsapiens"){
+            this.formGroup.patchValue({
+              dsDNA_chosen_type: ssRNA_input_type.sequence
+            });
           }
           this.formGroup.patchValue({
             ssRNA_transcript_id: null,
@@ -141,11 +145,11 @@ export class SendJobComponent {
   }
 
   checkFileFastaFormat(file: File | undefined): boolean{
-    return file?.name.split(".").pop()=="fa" ?? false
+    return file?.name.split(".").pop()=="fa" 
   }
 
   checkFileBedFormat(file: File | undefined): boolean{
-    return file?.name.split(".").pop()=="bed" ?? false
+    return file?.name.split(".").pop()=="bed" 
   }
 
   validateFileName(fileName: string): boolean{
