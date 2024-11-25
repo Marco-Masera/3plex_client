@@ -1,7 +1,7 @@
 <div class="homepageContainer">
     <mat-card class="homePageCard">
         <h1>About 3plex</h1>
-        <img style="width: 700px; margin-bottom: 10px;" src="../../assets/3plex_presentation.svg"/>
+        <img style="width: 600px; margin-bottom: 10px;" src="../../assets/3plex_presentation.svg"/>
         <hr/>
         <section>
             3plex is a software that predict the interaction between a single strand RNA with a double strand DNA region through triple helix formation.
@@ -32,144 +32,70 @@
                 </mat-expansion-panel>
             </mat-accordion>
         </section>
-
-        <h1 style="margin-top: 10px;">3plex web server - usage</h1>
-        <hr/>
         <section>
-            3plex Web provides users with a platfor for easily submitting jobs to 3plex and navigating the results.
-            <br>
+            <h2>Remote job execution</h2>
+            3plex platform allows the user to access the 3plex tool remotely, submitting jobs to our server, and to access the results.
         </section>
-
         <section>
-            <h2>Submit a 3plex prediction job</h2>
-            
-            <ul>
-                <li>
-                    <strong>Optionally, specify the species of interest. This allows to access pre-computed transcripts and promoters.</strong>
-                </li>
-                <img class="small_pic" src="../../assets/choose_species.png"/>
-                <li>
-                    <strong>Specify the ssRNA sequence.</strong>
-                </li>
-                <div class="underLI">
-                    The sequence can be provided manually in FASTA format
-                    <img class="small_pic" src="../../assets/ssRNA_specify.png"/>
+            <h2>Data visualization</h2>
+            Once your job is completed, results can be interactively visualized on the platform.
+            <br>
+            <img style="max-width: 100%;" src="../../assets/plots.png"/>
+
+            <p class="subtitle">TTS count<p></p>
+            <div class="subsection">
+                    The TTS count plot shows the number of triplexes found in each position of the ssRNA sequence.
                     <br>
-                    or it can be selected from the list isoforms annotated in GENCODE v37.
-                    <img class="small_pic" src="../../assets/ssRNA_search.png"/>
-                </div>
-                <li>
-                    <strong>Specify the set of dsDNA sequences.</strong>
-                </li>
-                <div class="underLI">
-                    The target dsDNA sequences can be specified in MULTI-FASTA format, or a pre-computed target can be chosen.
-                    <img class="small_pic" src="../../assets/dsDNA_mane.png"/>
-                </div>
-                <li>
-                    <strong>Other parameters:</strong>
-                    <ul>
-                        <li><strong>Randomized dsDNA</strong>: compare predictions on the target dsDNA to predictions on a randomized version of it. This functionality computes a p-value for the number of TTS found.</li>
-                        <li><strong>Job name and Email</strong>: optional information about the Job. <strong>It is recommended to specify an email address</strong> to be able to retrieve your job data after you close your browser.</li>
-                        <li><strong>Additional 3plex parameters</strong>: allow to specify the parameters under which 3plex runs.</li>
-                        <img class="small_pic" style="max-width: 90%; margin-left: 0px; margin-top: 20px;" src="../../assets/additional_opt.png"/>
-                    </ul>
-                </li>
-            </ul>
-
-            <h2>Submit a promoter stability test</h2>
-            In the promoter stability test, the <strong>species and ssRNA</strong> parameters are the same as in the 3plex prediction section, as well as the <strong>additional parameters.</strong>
-            <br>
-            Instead of the <strong>dsDNA</strong> sequences here the user specifies two lists of genes.
-            <img class="small_pic" style="max-width: 90%;" src="../../assets/lists_of_genes.png"/>
-
-            <h2>Retrieve your job data</h2>
-            After a job is submitted, the page refresh automatically until the data is ready.
-            There are two ways for retrieving old jobs data once the page is closed:
-            <ul>
-                <li>
-                    <strong>Retrieve via token</strong>: save your job token; use the button <i>Check job</i> to retrieve the data.
-                </li>
-                <li>
-                    <strong>Retrieve via email</strong>: if you specified an email address when submitting the job, use the button <i>Check job</i> and then <i>Get by email</i>.
-                </li>
-            </ul>
-            Additionally, you'll receive an email upon job completion, which will contain a link to your job data.
-            <br>
-            <strong>It is strongly recommended to provide an email address or to safely store your tokens, otherwise your job data will be lost.</strong>
-        
-        
-        <h2>Data visualization</h2>
-        Once your job is completed, it's possible to visualize the data on the platform.
-        <br>
-        <img style="max-width: 100%;" src="../../assets/plots.png"/>
-        All plots shows the ssRNA sequence or transcript as the X axis.
-        <ul>
-            <li>
-                <strong>TTS count</strong>: number of tpx formed by each point of the sequence.
+                    The color indicates the <strong>maximum stability</strong> between the TPX formed at each point.
+                    The <strong>Min Stability Threshold</strong> slider allows to filter out TPXs with stability lower than the value specified.
+                    <br>
+                    Optionally, if <strong>randomization</strong> of the dsDNA track is enabled, the <strong>average</strong> and the <strong>quartiles</strong> of the 
+                    number of TPXs on randomized sequences are shown on top of the TTS count plot, as well as a <strong>p-value</strong> track. 
+                    The p-value is calculated as the probability of obtaining the same or higher number of TPXs on randomized sequences.
+            </div>
+            
+            <p class="subtitle">Secondary structure<p></p>
+            <div class="subsection">
+                The secondary structure plot shows the secondary structure prediction performed with RNAplfold from the ViennaRNA package <a href="https://almob.biomedcentral.com/articles/10.1186/1748-7188-6-26" target="_blank">(Lorentz et al., 2011)</a>
+                defined as the probability, for each nucleotide, that a window of length 8 centred on that position is single stranded.
+            </div>
+            <p class="subtitle">Conservation and repeats<p></p>
+            <div class="subsection">
+                If ssRNA was specified as a transcript, a phylogenetic conservation score and eventual repeats are shown <a href="https://pubmed.ncbi.nlm.nih.gov/19858363/" target="_blank">(Pollard et al., 2011)</a>.
+            </div>
+            
+            <p class="subtitle">dsDNA sequences table<p>
+            <div class="subsection">
+                If <strong>the target dsDNA was specified in bed format</strong>, a table is provided, allowing to view, search and filter sequences.
+                <br>
+                <img style="max-width: 95%;" src="../../assets/chrtable.png"/>
+                <br><br>
+                By clicking selecting a sequence on the table, the results are restricted to this specific sequence. 
+                On the restricted results, additional options are available:
                 <ul>
                     <li>
-                        If randomization was ON, <strong>the same measure on the randomized dsDNA track</strong> is shown, as well a the p-value.
+                        <strong>Open in genome browser</strong>: allows to view the TTS count on the dsDNA sequence instead of the ssRNA sequence, on the genome browser.
                     </li>
+                    <img style="max-width: 85%;" src="../../assets/genome_browser.png"/>
                     <li>
-                        The color indicates the <strong>maximum stability</strong> between the TPX formed by each point.
-                    </li>
-                    <li>
-                        The <strong>Min Stability Threshold</strong> allows to filter out TPXs with stability lower than the value specified.
+                        <strong>All TPX table</strong>: a table with all TPXs is provided.
                     </li>
                 </ul>
-            </li>
-            <li>
-                <strong>Secondary structure</strong>.
-            </li>
-            <li>
-                If ssRNA was specified as a transcript, <strong>conservation</strong> and <strong>repeats</strong> are shown below.
-            </li>
-        </ul>
+            </div>
 
-
-        <p class="subtitle">Specifying DBD<p>
-        The system allows to select regions of interest. By using the button <i>Specify DBDs</i> it is possible to select the regions on the plot.
-        <div style = "display: flex; flex-direction: row; align-items: center; justify-content: center; width: 100%;">
-            <img style="max-width: 50%;" src="../../assets/dbd_specify.png"/>
-            <img style="max-width: 50%;" src="../../assets/dbd_specifying.png"/>
-        </div>
-        <br><br>
-        To view the details of a DBD, use the <i>View DBD details</i> button and select the DBD.
-        <div style = "display: flex; flex-direction: row; align-items: center; justify-content: center; width: 100%;">
-            <img style="max-width: 50%;" src="../../assets/dbd_viewing.png"/>
-        </div>
-        <br>
-        In the DBD view, it is shows the table with all TPXs, with the possibility of exporting it in xls, as well as the p-value if randomization was ON.
-
-        <br><br>
-        <p class="subtitle">dsDNA sequences table<p>
-        If <strong>the dsDNA was chosen from the pre-computed ones</strong>, a table with each sequence is shown at the bottom.
-        <br>
-        <img style="max-width: 95%;" src="../../assets/chrtable.png"/>
-        <br><br>The table is searchable and filterable;
-        <br><br>
-        By clicking on a line of the table, it is possible to restrict the plots to this dsDNA sequence. The sequence specific page is similar to the normal data visualization mode, but offers additional options:
-        <ul>
-            <li>
-                <strong>Open in genome browser</strong>: allows to view the TTS count on the dsDNA sequence instead of the ssRNA sequence, on the genome browser.
-            </li>
-            <img style="max-width: 85%;" src="../../assets/genome_browser.png"/>
-            <li>
-                <strong>All TPX table</strong>: a table with all TPXs is provided, as in the DBD view.
-            </li>
-        </ul>
-
-        <h2>Data export and expiration</h2>
-            Your job data is stored on our server for as long as the job doesn't expire. Currently the jobs are set to expire when not opened for a consecutive week. After that, all data is removed from our servers.
-            <br>
-            It is possible to export your jobs' data and eventually re-import it on our platform to restore the job.
-            <br>
-            <ul>
-                <li>To export your data, go to your job's page and use the button <i>Export data</i>.</li>
-                <li>To import your data, go to your expired job's page and use the button <i>Import data</i>.</li>
-            </ul>
-            <strong>The exported data must not be modified in any way, otherwise the system will reject it when trying to re-import it.</strong>
-        </section>
-        
+            <p class="subtitle">DBD specification and visualization<p>
+            <div class="subsection">
+                The system allows to select regions of interest on the ssRNA sequence.
+                <div style = "display: flex; flex-direction: row; align-items: center; justify-content: center; width: 100%;">
+                    <img style="max-width: 50%;" src="../../assets/dbd_specify.png"/>
+                    <img style="max-width: 50%;" src="../../assets/dbd_specifying.png"/>
+                </div>
+                In the DBD view, the table with all TPXs is shown, with the possibility of exporting it in xls, as well as the p-value for the specific region, if randomization was ON.
+                <div style = "display: flex; flex-direction: row; align-items: center; justify-content: center; width: 100%;">
+                    <img style="max-width: 50%;" src="../../assets/dbd_pvalue.png"/>
+                    <img style="max-width: 50%;" src="../../assets/dbd_alltpx.png"/>
+                </div>
+            </div>
+            </section>
     </mat-card>
 </div>

@@ -1,0 +1,162 @@
+<div class="homepageContainer">
+    <mat-card class="homePageCard">
+        <h1 style="margin-top: 10px;">Usage</h1>
+        <section>
+            <p>Content</p>
+            <ul>
+                <li><a [routerLink]="[]" fragment="submit">Submit a triplex prediction job</a></li>
+                <li><a [routerLink]="[]" fragment="promoter_stability">Submit a promoter stability test</a></li>
+                <li><a [routerLink]="[]" fragment="retrieve">Retrieve your job data</a></li>
+                <li><a [routerLink]="[]" fragment="visualize">Data visualization</a></li>
+                <li><a [routerLink]="[]" fragment="export">Data export and expiration</a></li>
+            </ul>
+
+            <p class="subtitle" id="submit">Submit a triplex prediction job<p>
+            <hr/>
+            A standard prediction job runs 3plex on the specified ssRNA and dsDNA sequences, with the specified parameters.
+            <br>
+            It produces a table with the predicted TPXs and allows to navigate the results.
+            <br><br>
+            <p class="subtitle">Specify input data<p></p>
+            <ul>
+                <li>
+                    <strong>(Optional), specify the species of interest.</strong> This allows the specification of pre-computed transcripts and promoters.
+                </li>
+                <img class="small_pic" src="../../assets/choose_species.png"/>
+                <li>
+                    <strong>Specify the ssRNA sequence.</strong>
+                </li>
+                <div class="underLI">
+                    The sequence can be provided manually in FASTA format by updating a <i>.fa</i> file or by pasting the sequence. Alternatively, it can be selected from the list of transcripts annotated in GENCODE v37.
+                    <div style = "display: flex; flex-direction: row; align-items: center; justify-content: center; width: 100%;">
+                        <img class="small_pic" src="../../assets/ssRNA_specify.png"/>
+                    <img class="small_pic" src="../../assets/ssRNA_search.png"/>
+                    </div>
+                </div>
+                <li>
+                    <strong>Specify the set of dsDNA sequences.</strong>
+                </li>
+                <div class="underLI">
+                    The target dsDNA sequences can be provided by uploading a multifasta or a bed file. 
+                    Alternatively, for the human species, it is possible to select a pre-computed set of promoters, defined as –1500/+500 bp from the transcription start sites annotated Matched Annotation from NCBI and EMBL-EBI.
+                </div>
+                <li>
+                    <strong>Randomized dsDNA.</strong>
+                </li>
+                <div class="underLI">
+                    If the box <i>Randomized dsDNA</i> is checked, the system will compare the predictions on the target dsDNA to predictions on a randomized version of it. This functionality computes a p-value for the number of TTS found.
+                    The allowed number of repetitions is 10, 100, 500 and 1000.
+                </div>
+                <li>
+                    <strong>Other parameters:</strong>
+                    <ul>
+                        <li><strong>Job name and Email</strong>: optional information about the Job. <strong>It is recommended to specify an email address</strong> to be able to retrieve your job data after you close your browser.</li>
+                        <li><strong>Additional 3plex parameters</strong>: allow to specify the parameters under which 3plex runs.</li>
+                        <img class="small_pic" style="max-width: 90%; margin-left: 0px; margin-top: 20px;" src="../../assets/additional_opt.png"/>
+                    </ul>
+                </li>
+            </ul>
+
+            <p class="subtitle" id="promoter_stability">Submit a promoter stability test<p>
+            <hr/>
+            In the promoter stability test, the <strong>species and ssRNA</strong> parameters are the same as in the 3plex prediction section, as well as the <strong>additional parameters.</strong>
+            <br>
+            Instead of the <strong>dsDNA</strong> sequences, here the user specifies two lists of genes; the <i>Genes of Interest</i> must be a subset of the <i>Background Genes</i>.
+            <img class="small_pic" style="max-width: 90%;" src="../../assets/lists_of_genes.png"/>
+
+            
+
+            <p class="subtitle" id="retrieve">Retrieve your job data<p></p>
+            <hr/>
+            After a job is submitted, the page refreshes automatically until the data is ready.
+            There are two ways to retrieve old job data once the page is closed:
+            <ul>
+                <li>
+                    <strong>Retrieve via token</strong>: save your job token; use the button <i>Check job</i> to retrieve the data.
+                </li>
+                <li>
+                    <strong>Retrieve via link</strong>: if an email address was specified when submitting the job, the user will receive a mail upon completion with a link to the job page.
+                </li>
+            </ul>
+            Additionally, it is possible to retrieve links to all jobs linked to a specific email address by selecting <i>Check Job</i> and then <i>Get by email</i>.
+            <br>
+            <strong>It is strongly recommended to provide an email address or to safely store your tokens, otherwise your job data will be lost.</strong>
+        
+        
+        <p class="subtitle" id="visualize">Data visualization<p>
+        <hr/>
+        Once your job is completed, it's possible to visualize the data on the platform.
+        <br>
+        <img style="max-width: 100%;" src="../../assets/plots.png"/>
+        All plots show the ssRNA sequence or transcript as the X-axis.
+        <ul>
+            <li>
+                <strong>TTS count</strong>: number of tpx formed by each point of the sequence.
+                <ul>
+                    <li>
+                        If randomization was ON, <strong>the same measure on the randomized dsDNA track</strong> is shown, as well as the p-value.
+                    </li>
+                    <li>
+                        The color indicates the <strong>maximum stability</strong> between the TPX formed by each point.
+                    </li>
+                    <li>
+                        The <strong>Min Stability Threshold</strong> allows to filter out TPXs with stability lower than the value specified.
+                    </li>
+                </ul>
+            </li>
+            <li>
+                <strong>Secondary structure</strong>.
+            </li>
+            <li>
+                If ssRNA was specified as a transcript, <strong>conservation</strong> and <strong>repeats</strong> are shown below.
+            </li>
+        </ul>
+
+
+        <p class="subtitle">Specifying DBD<p>
+        The system allows to select regions of interest. By using the button <i>Specify DBDs</i> it is possible to select the regions on the plot.
+        <div style = "display: flex; flex-direction: row; align-items: center; justify-content: center; width: 100%;">
+            <img style="max-width: 50%;" src="../../assets/dbd_specify.png"/>
+            <img style="max-width: 50%;" src="../../assets/dbd_specifying.png"/>
+        </div>
+        <br><br>
+        To view the details of a DBD, use the <i>View DBD details</i> button and select the DBD.
+        <div style = "display: flex; flex-direction: row; align-items: center; justify-content: center; width: 100%;">
+            <img style="max-width: 50%;" src="../../assets/dbd_viewing.png"/>
+        </div>
+        <br>
+        In the DBD view, the table with all TPXs is shown, with the possibility of exporting it in xls, as well as the p-value if randomization was ON.
+
+        <br><br>
+        <p class="subtitle">dsDNA sequences table<p>
+        If <strong>the dsDNA was chosen from the pre-computed ones</strong>, a table with each sequence is shown at the bottom.
+        <br>
+        <img style="max-width: 95%;" src="../../assets/chrtable.png"/>
+        <br><br>The table is searchable and filterable;
+        <br><br>
+        By clicking on a line in the table, it is possible to restrict the plots to this dsDNA sequence. The sequence-specific page is similar to the normal data visualization mode, but offers additional options:
+        <ul>
+            <li>
+                <strong>Open in genome browser</strong>: allows to view the TTS count on the dsDNA sequence instead of the ssRNA sequence, on the genome browser.
+            </li>
+            <img style="max-width: 85%;" src="../../assets/genome_browser.png"/>
+            <li>
+                <strong>All TPX table</strong>: a table with all TPXs is provided, as in the DBD view.
+            </li>
+        </ul>
+
+        <p class="subtitle" id="export">Data export and expiration<p>
+        <hr/>
+            Your job data is stored on our server for as long as the job doesn't expire. Currently, the jobs are set to expire when not opened for a consecutive week. After that, all data is removed from our servers.
+            <br>
+            It is possible to export your jobs' data and eventually re-import it on our platform to restore the job.
+            <br>
+            <ul>
+                <li>To export your data, go to your job's page and use the button <i>Export data</i>.</li>
+                <li>To import your data, go to your expired job's page and use the button <i>Import data</i>.</li>
+            </ul>
+            <strong>The exported data must not be modified in any way, otherwise the system will reject it when trying to re-import it.</strong>
+        </section>
+        
+    </mat-card>
+</div>

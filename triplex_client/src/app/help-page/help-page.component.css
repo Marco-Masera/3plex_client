@@ -17,11 +17,6 @@ section{
     margin-bottom: 16px;
 }
 
-.subsection{
-    font-size: 18px; color: rgb(38, 38, 38);
-    margin-bottom: 16px; margin-left: 16px;
-}
-
 #paper_ref{
     margin-left: 14px;
     margin-top: 12px;
@@ -35,6 +30,7 @@ section{
     border-radius: 10%;
     border: 1px solid #ddd;
     border-radius: 4px;
+    max-width: 280px;
 }
 .underLI{
     margin-left: 12px;
@@ -45,9 +41,14 @@ strong{
 }
 h2{
     margin-top: 20px;
+    margin-bottom: 0px;
 }
 .subtitle{
     font-weight: 450;
     font-size: large;
-    margin-top: 16px;
+    margin-top: 14px;
+}
+.subsubtitle{
+    font-weight: 350;
+    font-size: medium;
 }

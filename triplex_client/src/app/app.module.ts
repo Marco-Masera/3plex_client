@@ -46,6 +46,7 @@ import { SendjobPromoterTestComponent } from './sendjob-promoter-test/sendjob-pr
 import { JssRNAFieldComponent } from './sendjob_components/jss-rna-field/jss-rna-field.component';
 import { GenesListComponent } from './sendjob_components/genes-list/genes-list.component';
 import { ErrorPopupComponent } from './sendjob-promoter-test/error-popup/error-popup.component';
+import { HelpPageComponent } from './help-page/help-page.component';
 
 @NgModule({
   declarations: [
@@ -70,6 +71,7 @@ import { ErrorPopupComponent } from './sendjob-promoter-test/error-popup/error-p
     JssRNAFieldComponent,
     GenesListComponent,
     ErrorPopupComponent,
+    HelpPageComponent,
   ],
   imports: [
     BrowserModule,
