@@ -78,7 +78,7 @@ export class TriplexServiceService {
     return this.get_data("3plex_default_params");
   }
 
-  private readonly CHUNK_SIZE = 1 * 1024 * 1024;
+  private readonly CHUNK_SIZE = 548575;
 
   private sliceFile(file: File): Blob[] {
     const chunks: Blob[] = [];
