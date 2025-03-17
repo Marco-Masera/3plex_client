@@ -102,7 +102,7 @@
             <div *ngIf="!isViewingDBD && !dsDNAID" style="margin-top: 24px;">
                 <app-summary-web-table [token]="token"></app-summary-web-table>
             </div>
-            <div *ngIf="!isViewingDBD && dsDNAID" style="margin-top: 24px;">
+            <div *ngIf="!isViewingDBD && dsDNAID" id="footer_visual">
                 <div id="openUCSCContainer">
                     <div *ngIf="loadingUCSC" class="spinnerDiv">
                         <mat-spinner></mat-spinner>
@@ -120,7 +120,9 @@
                 <div id="allTPXContainer">
                     <h2>All TPX table</h2>
                 </div>
-                <app-full-tpx-table *ngIf="filteredTPX" (onRowClicked)="highlightRegion($event)" [tpx]="filteredTPX"></app-full-tpx-table>
+                <div id="fullTPXTableContainer">
+                    <app-full-tpx-table *ngIf="filteredTPX" (onRowClicked)="highlightRegion($event)" [tpx]="filteredTPX"></app-full-tpx-table>
+                </div>
             </div>
         </div>
 </mat-card>

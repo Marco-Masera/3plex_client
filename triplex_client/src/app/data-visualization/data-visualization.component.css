@@ -169,3 +169,11 @@ h4{
     justify-content: end;
     padding-left: 64px; padding-right: 64px;
 }
+#fullTPXTableContainer{
+    width:auto;
+    overflow-x: scroll;
+}
+#footer_visual{
+    margin-top: 24px;
+    max-width: 100%;
+}

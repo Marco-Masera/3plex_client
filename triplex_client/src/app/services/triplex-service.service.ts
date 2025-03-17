@@ -78,11 +78,50 @@ export class TriplexServiceService {
     return this.get_data("3plex_default_params");
   }
 
-  submitJobPromoterTest(jobToSubmit: any){
+  private readonly CHUNK_SIZE = 2 * 1024 * 1024;
+
+  private sliceFile(file: File): Blob[] {
+    const chunks: Blob[] = [];
+    let currentPosition = 0;
+
+    while (currentPosition < file.size) {
+      const chunk = file.slice(
+        currentPosition, 
+        Math.min(currentPosition + this.CHUNK_SIZE, file.size)
+      );
+      chunks.push(chunk);
+      currentPosition += this.CHUNK_SIZE;
+   
+     }
+    return chunks;
+  }
+
+  async send_file_part(file: File): Promise<string> {
+    const chunks = this.sliceFile(file);
+    const totalChunks = chunks.length;
+    const uploadId = new Date().getTime().toString() + Math.random().toString();
+    for (let index = 0; index < totalChunks; index++) {
+      const chunk = chunks[index];
+      const formData = new FormData();
+      formData.append('file', chunk, file.name);
+      formData.append('chunk_index', index.toString());
+      formData.append('total_chunks', totalChunks.toString());
+      formData.append('upload_id', uploadId);
+      await fetch(BASE_URL+API_PATH+"upload_file_part/", {
+        method: "POST",
+        mode: "cors",  
+        body: formData,
+      });
+    };
+    return uploadId;
+  }
+
+  async submitJobPromoterTest(jobToSubmit: any){
     const formData = new FormData();
     //ssRNA input:
     if (jobToSubmit.SSRNA_FASTA){
-      formData.append('SSRNA_FASTA', jobToSubmit.SSRNA_FASTA);
+      const uploadId = await this.send_file_part(jobToSubmit.SSRNA_FASTA);
+      formData.append('SSRNA_FASTA', uploadId);
     } else if (jobToSubmit.SSRNA_STRING){
       formData.append('SSRNA_STRING', jobToSubmit.SSRNA_STRING);
     } else if (jobToSubmit.SSRNA_TRANSCRIPT_ID){
@@ -126,20 +165,23 @@ export class TriplexServiceService {
     return this.post_data_form("submit_promoter_test/", formData) 
   }
 
-  submitJob(jobToSubmit: JobToSubmit){
+  async submitJob(jobToSubmit: JobToSubmit){
     const formData = new FormData();
     // Append files to the form data object
     if (jobToSubmit.SSRNA_FASTA){
-      formData.append('SSRNA_FASTA', jobToSubmit.SSRNA_FASTA);
+      const uploadId = await this.send_file_part(jobToSubmit.SSRNA_FASTA);
+      formData.append('SSRNA_FASTA', uploadId);
     } else if (jobToSubmit.SSRNA_STRING){
       formData.append('SSRNA_STRING', jobToSubmit.SSRNA_STRING);
     } else if (jobToSubmit.SSRNA_TRANSCRIPT_ID){
       formData.append('SSRNA_ID', jobToSubmit.SSRNA_TRANSCRIPT_ID);
     }
     if (jobToSubmit.DSDNA_FASTA){
-      formData.append('DSDNA_FASTA', jobToSubmit.DSDNA_FASTA);
+      const uploadId = await this.send_file_part(jobToSubmit.DSDNA_FASTA);
+      formData.append('DSDNA_FASTA', uploadId);
     } else if (jobToSubmit.DSDNA_BED){
-      formData.append('DSDNA_COORD_BED', jobToSubmit.DSDNA_BED);
+      const uploadId = await this.send_file_part(jobToSubmit.DSDNA_BED);
+      formData.append('DSDNA_COORD_BED', uploadId);
     } else if (jobToSubmit.DSDNA_TARGET_NAME){
       formData.append("DSDNA_TARGET_NAME", jobToSubmit.DSDNA_TARGET_NAME)
     }
@@ -275,7 +317,6 @@ export class TriplexServiceService {
   }
 
   downloadTPXInExcel(token: string, dsDNA_id: string | null, stability: number, start: number | null, end: number | null){
-    console.log(stability)
     const queries: string[] = []
     if (dsDNA_id){ queries.push(`dsDNAID=${dsDNA_id}`);}
     if (stability != null){ queries.push(`stability=${stability}`);}
