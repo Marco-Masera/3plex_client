@@ -12,6 +12,7 @@ export class JssRNAFieldComponent {
   @Input() formGroup: FormGroup = new FormGroup({});
   @Input() sending: boolean = false;
   @Input() ssRNAMaxSize: number = 1;
+  @Input() ssRNAError: string | null = null;
   ssRNAFile: File | undefined;
   @Output() ssRNAFile_emitter: EventEmitter<any> = new EventEmitter();
   ssRNAToolTip = "A single ssRNA sequence - either chosen from our transcript's database or provided as a single fasta file or as simple text (max size: " + this.ssRNAMaxSize + " MB)."

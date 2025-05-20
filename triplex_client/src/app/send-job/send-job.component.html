@@ -29,6 +29,7 @@
 								[formGroup]="formGroup"
 								[sending]="sending"
 								[ssRNAMaxSize]="1"
+								[ssRNAError]="ssRNAError"
   							></app-jss-rna-field>
 							
 							<div class="verticalInputSection">
@@ -36,6 +37,10 @@
 									<h3>dsDNA*</h3>
 									<mat-icon [matTooltip]="dsDNAToolTip" matTooltipPosition="above"
 									aria-hidden="false" aria-label="Example home icon" fontIcon="help_outline"></mat-icon>
+								</div>
+								<div *ngIf="dsDNAError" style="color: red; font-size:medium; padding-bottom: 12px; max-width: 450px;">
+									<h4 style="color: red;">An error related to your dsDNA sequence occurred:</h4>
+									{{dsDNAError}}
 								</div>
 								<mat-radio-group style="margin-bottom: 20px;"  formControlName="dsDNA_chosen_type" aria-label="Select an option">
 									<mat-radio-button value="t"  [disabled]="formGroup.get('selected_species')?.value!='hsapiens'"

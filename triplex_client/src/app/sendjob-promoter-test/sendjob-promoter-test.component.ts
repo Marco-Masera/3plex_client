@@ -29,6 +29,8 @@ export class SendjobPromoterTestComponent {
   ssRNAFile: File | undefined = undefined;
   ssRNAMaxSize = 1;
 
+  ssRNAError: string | null = null;
+
   constructor(private triplexService: TriplexServiceService, private _router: Router, public dialog: MatDialog) {
 
     this.formGroup = new FormGroup({
@@ -53,6 +55,7 @@ export class SendjobPromoterTestComponent {
     }, { validators: formValidator });
   }
   setssRNA_file(file: File){
+    this.ssRNAError = null;
     this.ssRNAFile = file;
   }
 
@@ -183,7 +186,12 @@ export class SendjobPromoterTestComponent {
         }
       });
     } else {
-      window.alert("Cannot submit job: " + response.error);
+      if (response.errorType && response.errorType == "ssRNA_error"){
+        const error = response.whatsWrong;
+        this.ssRNAError = error || "Unknown error";
+      } else {
+        window.alert("Cannot submit job: " + response.error);
+      }
     }
   }
   onSuccess(response: any){
@@ -191,6 +199,7 @@ export class SendjobPromoterTestComponent {
   }
 
   submitForm(){
+    this.ssRNAError = null;
     if (this.sending){return;}
     const error = this.parseAndValidateGenesList();
     if (error.error){

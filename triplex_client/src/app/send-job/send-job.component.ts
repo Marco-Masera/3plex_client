@@ -72,6 +72,8 @@ export class SendJobComponent {
   dsDNAToolTip = "Target DNA sequences, either chosen from our database of target sites or provided as a multi-FASTA file containing dsDNA sequences or a bed file containing the target coordinates (max size: " + this.dsDNAMaxSize + " MB)."
   randomizationToolTip = "Run 3plex on randomized versions of the target dsDNA to produce a control track."
 
+  ssRNAError: string | null = null;
+  dsDNAError: string | null = null;
   
   constructor(private triplexService: TriplexServiceService, private _router: Router, public dialog: MatDialog) {
     this.formGroup = new FormGroup({
@@ -99,6 +101,7 @@ export class SendJobComponent {
 
   setssRNA_file(file: File){
     this.ssRNAFile = file;
+    this.ssRNAError = null;
   }
 
   ngOnInit(){
@@ -142,6 +145,7 @@ export class SendJobComponent {
   reset_selected_dsDNA(){
     this.formGroup.patchValue({dsDNA: null});
     this.dsDNAFile = undefined;
+    this.dsDNAError = null;
   }
 
   checkFileFastaFormat(file: File | undefined): boolean{
@@ -158,6 +162,7 @@ export class SendJobComponent {
   }
 
   onDnaChange(event: Event){
+    this.dsDNAError = null;
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length) {
       if (input.files[0].size > this.dsDNAMaxSize*1000000){
@@ -183,11 +188,21 @@ export class SendJobComponent {
   }
 
   onFailure(response: any){
-    window.alert("Cannot submit job: " + response.error);
+    if (response.errorType && response.errorType == "ssRNA_error"){
+      const error = response.whatsWrong;
+      this.ssRNAError = error || "Unknown error";
+    } else if (response.errorType && response.errorType == "dsDNA_error"){
+      const error = response.whatsWrong;
+      this.dsDNAError = error || "Unknown error";
+    } else {
+      window.alert("Cannot submit job: " + response.error);
+    }
   }
 
   submitForm() {if (this.sending){return;}
     if (this.formGroup.valid) {
+      this.ssRNAError = null;
+      this.dsDNAError = null;
       this.sending = true;
       const isUsingSequence = this.formGroup.value.ssRNA_chosen_type==ssRNA_input_type.sequence;
       const isUsingdsDNATarget = this.formGroup.value.dsDNA_chosen_type!=ssRNA_input_type.sequence

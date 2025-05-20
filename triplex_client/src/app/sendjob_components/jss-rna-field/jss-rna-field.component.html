@@ -7,6 +7,10 @@
         <mat-icon [matTooltip]="ssRNAToolTip" matTooltipPosition="above"
         aria-hidden="false" aria-label="Example home icon" fontIcon="help_outline"></mat-icon>
     </div>
+    <div *ngIf="ssRNAError" style="color: red; font-size:medium; padding-bottom: 12px; max-width: 450px;">
+        <h4 style="color: red;">An error related to your ssRNA sequence occurred:</h4>
+         {{ssRNAError}}
+    </div>
     <mat-radio-group formControlName="ssRNA_chosen_type" aria-label="Select an option" style="margin-bottom: 15px;">
         <mat-radio-button value="t" [disabled]="!formGroup.get('selected_species')?.value"
         [matTooltip]="formGroup.get('selected_species')?.value ? '' : 'Please select a species first'"
