@@ -18,7 +18,9 @@
 
         <div *ngIf="jobData != undefined" class="centered">
           <h2 *ngIf="jobData.state == 'Failed'" style="color: rgb(212, 0, 0);">Job has failed</h2>
-          <h4 *ngIf="jobData.state == 'Failed'" >Check the logs in the files below</h4>
+          <h4 *ngIf="jobData.state == 'Failed'" >Reasons for failure could be technical problems or malformed input data.</h4>
+          <h4 *ngIf="jobData.state == 'Failed'" >Another common reason for failure is simply 0 predicted tpx, especially with very short input sequences.</h4>
+          <h4 *ngIf="jobData.state == 'Failed'" >More more details, check the Logs_STDERR file in the data tab.</h4>
             <h2 style=" margin-bottom: 0px;">Job info</h2>
             <mat-list>
                   <mat-list-item *ngIf="jobData.state != 'Failed'">
