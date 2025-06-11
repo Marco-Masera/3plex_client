@@ -17,17 +17,23 @@
         <div *ngIf="loading" class="spinnerDiv">
             <mat-spinner></mat-spinner>
         </div>
-        <div id="allTPXExportContainer">
-            <button (click)="export_tpx()" type="button" mat-stroked-button style="height: 32px; width: 300px; margin-left: 14px; margin-top: 30px;">
-                Export in excel
-            </button>
-        </div>
-        <div id="allTPXContainer">
-            <h2>All TPX table</h2>
-        </div>
-        <div style="width: 100%; overflow: scroll;">
-            <app-full-tpx-table [tpx]="filtered_tpx"></app-full-tpx-table>
-        </div>
-
+        <ng-container *ngIf="!isLargeDataset; else largeDatasetMsg">
+            <div id="allTPXExportContainer">
+                <button (click)="export_tpx()" type="button" mat-stroked-button style="height: 32px; width: 300px; margin-left: 14px; margin-top: 30px;">
+                    Export in excel
+                </button>
+            </div>
+            <div id="allTPXContainer">
+                <h2>All TPX table</h2>
+            </div>
+            <div style="width: 100%; overflow: scroll;">
+                <app-full-tpx-table [tpx]="filtered_tpx"></app-full-tpx-table>
+            </div>
+        </ng-container>
+        <ng-template #largeDatasetMsg>
+            <div style="margin: 24px 0; color: #b20000; font-weight: 500;">
+                The full TPX table is temporarily unavailable due to the large amount of TPX in this region.
+            </div>
+        </ng-template>
     </div>
 </div>

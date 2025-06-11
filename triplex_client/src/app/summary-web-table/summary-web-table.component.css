@@ -30,3 +30,9 @@
 .mat-mdc-row:hover .mat-mdc-cell {
 border-color: currentColor;
 }
+.row-not-clickable {
+    cursor: default !important;
+}
+.row-not-clickable:hover .mat-mdc-cell {
+    border-color: transparent !important;
+}

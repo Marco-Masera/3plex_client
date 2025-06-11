@@ -1,4 +1,3 @@
-
 import { Component } from '@angular/core';
 import { TriplexServiceService } from '../services/triplex-service.service';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -51,6 +50,7 @@ export class DataVisualizationComponent {
   };
   oldPlotsLayout: any = {}
   height = 100;
+  isLargeDataset: boolean = false;
 
   constructor(private triplexService: TriplexServiceService, private route: ActivatedRoute,
     private _router: Router){}
@@ -853,5 +853,9 @@ onDBDSelected(index:number){
         ticktext:  this.fullSequence.slice(start-30, start+70),
         range: range
     }
+  }
+
+  onIsLargeDatasetChange(value: boolean) {
+    this.isLargeDataset = value;
   }
 }

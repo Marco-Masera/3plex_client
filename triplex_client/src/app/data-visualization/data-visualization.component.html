@@ -1,4 +1,3 @@
-
 <div id="profilePlotContainer">
     <mat-card class="visualsCard">
         <div id="backContainer">
@@ -13,6 +12,9 @@
                 <span><b>Submitted at:</b> {{ dataForVisuals?.job?.date || 'NA' }}</span>
                 <span><b>Transcript id:</b> {{ dataForVisuals?.job?.ssRNA_id  || 'NA' }}</span>
             </div>
+            <p *ngIf="isLargeDataset" style="margin-top: 8px; color: rgb(178, 0, 0); max-width: 550px;">
+                <b>Large dataset:</b> This sequence produced an unusually high number of TPXs. Certain functionalities are unavailable due to computational constraints.
+            </p>
             <hr style="margin-top: 20px; margin-bottom: 24px;"/>
         </div>
 
@@ -97,10 +99,11 @@
                     [randomizationVariance_]="randomizationVariance"
                     [fullSequence]="fullSequence"
                     [dsDNAID]="dsDNAID"
+                    [isLargeDataset]="isLargeDataset"
                 ></app-dbd-details>
             </div>
             <div *ngIf="!isViewingDBD && !dsDNAID" style="margin-top: 24px;">
-                <app-summary-web-table [token]="token"></app-summary-web-table>
+                <app-summary-web-table [token]="token" (isLargeDatasetChange)="onIsLargeDatasetChange($event)"></app-summary-web-table>
             </div>
             <div *ngIf="!isViewingDBD && dsDNAID" id="footer_visual">
                 <div id="openUCSCContainer">

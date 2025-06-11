@@ -36,6 +36,7 @@ export class DbdDetailsComponent {
   loading = false;
   controller = new AbortController();
   signal = this.controller.signal;
+  @Input() isLargeDataset: boolean = false;
 
   constructor(private triplexService: TriplexServiceService){}
 
@@ -105,6 +106,10 @@ export class DbdDetailsComponent {
     console.log("Initializing DBD details page");
     this.generateTFFBBoxPlotForRandomized();
     const self = this;
+    if (this.isLargeDataset) {
+      // Do not fetch or show the full TPX table
+      return;
+    }
     if (this.dbd && this.token){
       this.loading = true;
       this.tpx = [];

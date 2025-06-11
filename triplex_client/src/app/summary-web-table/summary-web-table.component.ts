@@ -1,4 +1,4 @@
-import { Component, ViewChild, AfterViewInit, Input } from '@angular/core';
+import { Component, ViewChild, AfterViewInit, Input, Output, EventEmitter } from '@angular/core';
 import {MatPaginator, MatPaginatorModule} from '@angular/material/paginator';
 import {MatTableDataSource, MatTableModule} from '@angular/material/table';
 import { TriplexServiceService } from '../services/triplex-service.service';
@@ -13,6 +13,8 @@ import { MatSort } from '@angular/material/sort';
 })
 export class SummaryWebTableComponent {
   @Input() token: string | null = "";
+  @Output() isLargeDatasetChange = new EventEmitter<boolean>();
+  isLargeDataset: boolean = false;
   tableColumns: string[] = ['ssRNA_id', 'dsDNA_id_short', 'dsDNA_chr', 'dsDNA_b', 'dsDNA_e', 'stability_best', 'stability_norm', 'score_best']
   tableColumnsNames: string[] = ['ssRNA Id', 'dsDNA Id', 'Chr', 'Begin', 'End', 'Best stability', 'Stability norm', 'Best score'];
   webSummaryDataSource = new MatTableDataSource<any>([]);
@@ -40,11 +42,20 @@ export class SummaryWebTableComponent {
         this.buildMinMaxValuesAnddsDNAID(results.payload);
         this.webSummaryDataSource.data = results.payload;
         this.tableData = results.payload;
+        if (results.extra != undefined && results.extra.has_stability_indexed == false){
+          // Is large dataset - set value in data visualization
+          this.isLargeDatasetChange.emit(true);
+          this.isLargeDataset = true;
+        } else {
+          this.isLargeDatasetChange.emit(false);
+          this.isLargeDataset = false;
+        }
       }
     })
   }
 
   clickedRow(row:any){
+    if (this.isLargeDataset) return;
     window.open(this.router.url + "/" + row.dsDNA_id, "_blank");
   }
 
