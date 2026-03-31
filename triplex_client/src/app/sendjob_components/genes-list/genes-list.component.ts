@@ -27,6 +27,7 @@ export class GenesListComponent {
   @Input() formControlName: string = "";
 
   getExample(){
+    gtag('event', 'get_genes_example', {});
     const v:any = {}
     v[this.formControlName] = examples?.[this.formControlName] || ""
     this.formGroup.patchValue(v);

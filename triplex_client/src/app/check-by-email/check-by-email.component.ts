@@ -41,6 +41,7 @@ export class CheckByEmailComponent {
   }
 
   load_data(){
+    gtag('event', 'load_data_by_email', {});
     if (this.email != null){
       this.triplexService.checkJobsMyEmail(this.email).then(
         (response: any) => {
@@ -51,11 +52,15 @@ export class CheckByEmailComponent {
             }
             this.onError = false;
           } else {
+            gtag('event', 'load_data_by_email_error', {error: response.error});
             this.onError = true; this.errorMessage = response.error;
           }
         }
       ).catch(
-        (response: any) => {this.onError = true; this.errorMessage = response.error;}
+        (response: any) => {
+          gtag('event', 'load_data_by_email_error', {error: response.error});
+          this.onError = true; this.errorMessage = response.error;
+        }
       )
     } else {
       this.onError = true;

@@ -128,6 +128,7 @@ export class SendjobPromoterTestComponent {
   }
 
   openPopupForError(error: any){
+    gtag('event', 'genes_list_error', {error: error.type});
     var data = {}
     switch(error.type){
       case 0:
@@ -168,6 +169,7 @@ export class SendjobPromoterTestComponent {
   }
 
   onFailure(response: any, parsedAndValidatedGenes: any){
+    gtag('event', 'submit_job_promoter_test_error', {error: response});
     if (response.notIncludedInMANE){
       var data = {type: 2, message: "Some genes specified are not included in MANE", list: response.notIncludedInMANE}
       const dialogRef = this.dialog.open(ErrorPopupComponent, {
@@ -195,6 +197,7 @@ export class SendjobPromoterTestComponent {
     }
   }
   onSuccess(response: any){
+    gtag('event', 'submit_job_promoter_test_success', {});
     this._router.navigate(['checkjob/token/', response.payload.token.token]);
   }
 
@@ -206,6 +209,8 @@ export class SendjobPromoterTestComponent {
       this.openPopupForError(error);
       return;
     }
+
+    gtag('event', 'submit_job_promoter_test', {});
 
     const isUsingSequence = this.formGroup.value.ssRNA_chosen_type==ssRNA_input_type.sequence;
     const toSubmit = {

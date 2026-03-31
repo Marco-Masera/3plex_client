@@ -30,6 +30,7 @@ export class JssRNAFieldComponent {
   }
 
   transcriptSearchSelectOption(selected: LncRnaTranscript){
+    gtag('event', 'select_rna_transcript', {});
     this.formGroup.patchValue({ssRNA_transcript_id: selected.id});
     //If no job name specified, add the filename
     if (!this.formGroup.value.jobName){
@@ -52,16 +53,20 @@ export class JssRNAFieldComponent {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length) {
       if (input.files[0].size > this.ssRNAMaxSize*1000000 ){
+        gtag('event', 'rna_file_error', {error: 'max_size_exceeded'});
         window.alert("Your input file exceed maximum file size of " + this.ssRNAMaxSize + " MB")
         this.formGroup.patchValue({ssRNA: null});
       } else {
         if (!this.checkFileFastaFormat(input.files[0])){
+          gtag('event', 'rna_file_error', {error: 'invalid_format'});
           window.alert("Please provide a file in FASTA format (.fa)")
           this.formGroup.patchValue({ssRNA: null});
         }else if (!this.validateFileName(input.files[0].name)){
+          gtag('event', 'rna_file_error', {error: 'invalid_filename'});
           window.alert("Invalid file name: allowed characters are a-z, A-Z, 0-9, and - _ . symbols")
           this.formGroup.patchValue({ssRNA: null});
         } else {
+          gtag('event', 'rna_file_success', {});
           const oldName = this.ssRNAFile?.name
           this.formGroup.patchValue({ssRNATextual: null});
           this.ssRNAFile = input.files[0];

@@ -149,7 +149,8 @@ export class SendJobComponent {
   }
 
   checkFileFastaFormat(file: File | undefined): boolean{
-    return file?.name.split(".").pop()=="fa" 
+    const extension = file?.name.split(".").pop()?.toLowerCase();
+    return extension=="fa" || extension=="fasta" 
   }
 
   checkFileBedFormat(file: File | undefined): boolean{
@@ -166,16 +167,20 @@ export class SendJobComponent {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length) {
       if (input.files[0].size > this.dsDNAMaxSize*1000000){
+        gtag('event', 'dna_file_error', {error: 'max_size_exceeded'});
         window.alert("Your input file exceed maximum file size of " + this.dsDNAMaxSize + " MB")
         this.formGroup.patchValue({dsDNA: null});
       } else {
         if (!this.checkFileFastaFormat(input.files[0]) && !this.checkFileBedFormat(input.files[0])){
+          gtag('event', 'dna_file_error', {error: 'invalid_format'});
           window.alert("Please provide a file in FASTA or BED format (.fa, .bed)")
           this.formGroup.patchValue({dsDNA: null});
         } else if (!this.validateFileName(input.files[0].name)){
+          gtag('event', 'dna_file_error', {error: 'invalid_filename'});
           window.alert("Invalid file name: allowed characters are a-z, A-Z, 0-9, and - _ . symbols")
           this.formGroup.patchValue({dsDNA: null});
         } else {
+          gtag('event', 'dna_file_success', {});
           this.formGroup.patchValue({dsDNA: input.files[0].name})
           this.dsDNAFile = input.files[0];
         }
@@ -184,10 +189,12 @@ export class SendJobComponent {
   }
 
   onSuccess(response: any){
+    gtag('event', 'submit_job_success', {});
     this._router.navigate(['checkjob/token/', response.payload.token.token]);
   }
 
   onFailure(response: any){
+    gtag('event', 'submit_job_error', {error: response});
     if (response.errorType && response.errorType == "ssRNA_error"){
       const error = response.whatsWrong;
       this.ssRNAError = error || "Unknown error";
@@ -201,6 +208,7 @@ export class SendJobComponent {
 
   submitForm() {if (this.sending){return;}
     if (this.formGroup.valid) {
+      gtag('event', 'submit_job', {});
       this.ssRNAError = null;
       this.dsDNAError = null;
       this.sending = true;
@@ -243,6 +251,7 @@ export class SendJobComponent {
   }
 
   dnaTargetSearchSelectOption(selected: DnaTargetSites){
+    gtag('event', 'select_dna_target', {});
     this.formGroup.patchValue({dsDNATargetSite: selected});
   }
 

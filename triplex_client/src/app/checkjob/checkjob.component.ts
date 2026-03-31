@@ -47,6 +47,7 @@ export class CheckjobComponent {
   }
 
   importButton(){
+    gtag('event', 'import_button', {});
     const self = this;
     var fileInput = document.getElementById('uploadFileInput') as HTMLInputElement;
     function handleFileUpload(event: Event) {
@@ -58,13 +59,16 @@ export class CheckjobComponent {
               result => {
                 self.isLoadingImport = false;
                 if (result.success){
+                  gtag('event', 'import_button_success', {});
                   window.location.reload();
                 } else {
+                  gtag('event', 'import_button_error', {error: result.error});
                   window.alert(result.error)
                 }
               }
             ).catch( e => {
               window.alert("Upload did not succeed")
+              gtag('event', 'import_button_error', {error: e});
               self.isLoadingImport = false;
             })
         }
@@ -76,32 +80,49 @@ export class CheckjobComponent {
   }
 
   exportButton(){
+    gtag('event', 'export_button', {});
     this.isLoadingExport = true;
     this.triplexService.fetchExportJobUrl(this.token || "").then( (response:any) => {
       this.isLoadingExport = false;
       if (response.success){
+        gtag('event', 'export_button_success', {});
         const url = this.triplexService.getBaseUrl().slice(0, -1) + response.payload.url
         window.open(url,  '_blank');
+      } else {
+        gtag('event', 'export_button_error', {error: response.error});
       }
-    })
+    }).catch(e => {
+      this.isLoadingExport = false;
+      gtag('event', 'export_button_error', {error: e});
+    });
   }
 
   mailInputInvalid(){
+    gtag('event', 'mail_input_wrong', {email: this.email_input });
     return !(this.email_input && new RegExp('^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$').test(this.email_input) )
   }
 
   updateEmail(){
     if (this.isUpdatingEmail){return;}
     this.isUpdatingEmail = true;
+    gtag('event', 'update_email', {});
     this.triplexService.updateJobMail(this.jobData?.token || "", this.email_input).then(
       (response: any) => {
-        if (this.jobData){
-          this.jobData.email_address = this.email_input;
+        if (response.success) {
+          gtag('event', 'update_email_success', {});
+          if (this.jobData){
+            this.jobData.email_address = this.email_input;
+          }
+        } else {
+          gtag('event', 'update_email_error', {error: response.error});
         }
         this.isUpdatingEmail = false;
       }
     ).catch(
-      (response: any) => {console.log(response); window.alert("Could not set email address"); this.isUpdatingEmail = false;}
+      (response: any) => {
+        gtag('event', 'update_email_error', {error: response});
+        console.log(response); window.alert("Could not set email address"); this.isUpdatingEmail = false;
+      }
     );
   }
 

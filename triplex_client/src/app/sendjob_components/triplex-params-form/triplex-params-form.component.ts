@@ -13,6 +13,7 @@ export class TriplexParamsFormComponent {
   @Input() sending: boolean = false;
 
   reset_triplex_params(){
+    gtag('event', 'reset_triplex_params', {});
     this.formGroup?.patchValue({
       min_len: null,
       max_len: null,
