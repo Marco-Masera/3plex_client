@@ -21,10 +21,12 @@ export class AppComponent implements OnInit {
   private setupGoogleAnalytics() {
     // Listen to router events
     this.router.events.pipe(
-      // Only track when navigation has fully completed
-      filter(event => event instanceof NavigationEnd)
+      // The crucial fix: adding "(event): event is NavigationEnd =>"
+      filter((event): event is NavigationEnd => event instanceof NavigationEnd)
     ).subscribe((event: NavigationEnd) => {
-      // Send the page view to Google Analytics
+      
+      // Now TypeScript knows for a fact 'event' is a NavigationEnd
+      // and has the 'urlAfterRedirects' property.
       gtag('config', trackingId, {
         page_path: event.urlAfterRedirects
       });

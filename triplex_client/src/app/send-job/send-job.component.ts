@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild, TemplateRef } from '@angular/core';
 import { Validators, FormControl, FormGroup, AbstractControl } from '@angular/forms';
 import { TriplexServiceService } from '../services/triplex-service.service';
 import { JobToSubmit } from '../model/jobToSubmit';
@@ -60,6 +60,8 @@ class ssRNA_input_type{
 export class SendJobComponent {
   ssRNAMaxSize = 1;
   dsDNAMaxSize = 300;
+
+  @ViewChild('errorDialogTemplate') errorDialogTemplate!: TemplateRef<any>;
 
   formGroup: FormGroup;
   dsDNAFile: File | undefined;
@@ -202,7 +204,9 @@ export class SendJobComponent {
       const error = response.whatsWrong;
       this.dsDNAError = error || "Unknown error";
     } else {
-      window.alert("Cannot submit job: " + response.error);
+      this.dialog.open(this.errorDialogTemplate, {
+        data: { error: response.error }
+      });
     }
   }
 
