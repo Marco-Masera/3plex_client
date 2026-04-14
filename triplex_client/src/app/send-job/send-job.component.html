@@ -135,12 +135,16 @@
 </div>
 
 <ng-template #errorDialogTemplate let-data>
-  <h2 mat-dialog-title style="color: red;">Cannot submit job right now</h2>
-  <mat-dialog-content>
-    <p *ngIf="data?.error">{{ data.error }}</p>
-    <p>Please consider 3plex web relies on the servers of the University of Torino, which are sometimes busy. We apologize for the issue and recommend trying again later</p>
-  </mat-dialog-content>
-  <mat-dialog-actions align="end">
-    <button mat-button mat-dialog-close>Close</button>
-  </mat-dialog-actions>
+  <div style="max-width: 400px;">
+    <h2 mat-dialog-title style="color: red;">Cannot submit job right now</h2>
+    <mat-dialog-content>
+      <p *ngIf="data?.error" style="font-weight: 500;">{{ data.error }}</p>
+      <p style="font-style: italic; color: #666; font-size: 0.9em; margin-top: 15px;">
+        Please consider 3plex web relies on the servers of the University of Torino, which are sometimes busy. We apologize for the issue and recommend trying again later.
+      </p>
+    </mat-dialog-content>
+    <mat-dialog-actions align="end">
+      <button mat-button mat-dialog-close>Close</button>
+    </mat-dialog-actions>
+  </div>
 </ng-template>
